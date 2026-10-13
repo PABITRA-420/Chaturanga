@@ -31,10 +31,69 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'CHATURANGA • JGEC Chess Club',
-  description: 'Official Chess Club of Jalpaiguri Government Engineering College. Organizing and managing chess events, tournaments and collegiate community activities.',
+  metadataBase: new URL('https://chaturangajgec.netlify.app'),
+  title: {
+    default: 'CHATURANGA • Premier JGEC Chess Club & Tournament Arena',
+    template: '%s | CHATURANGA JGEC',
+  },
+  description: 'Official Chess Club of Jalpaiguri Government Engineering College. Register for collegiate Swiss rapid championships, view real-time Elo leaderboards, and download official tournament passes.',
+  applicationName: 'Chaturanga JGEC',
+  authors: [{ name: 'Chaturanga JGEC Tech & Arbiter Team' }],
+  keywords: [
+    'Chaturanga',
+    'JGEC Chess Club',
+    'Jalpaiguri Government Engineering College',
+    'North Bengal Chess',
+    'Inter-College Chess Championship',
+    'Swiss Rapid Chess Tournament',
+    'FIDE Chess WB',
+    'Collegiate Chess Championship',
+    'Live Chess Leaderboard',
+    'Chess Tournament Registration',
+  ],
+  creator: 'Chaturanga JGEC',
+  publisher: 'Jalpaiguri Government Engineering College',
+  openGraph: {
+    type: 'website',
+    locale: 'en_IN',
+    url: 'https://chaturangajgec.netlify.app',
+    siteName: 'CHATURANGA • JGEC Chess Club',
+    title: 'CHATURANGA • Premier Collegiate Chess Championship & Community',
+    description: 'Official Chess Club of Jalpaiguri Government Engineering College. Register for collegiate championships, track pairings, and download digital tickets.',
+    images: [
+      {
+        url: '/hero.png',
+        width: 1200,
+        height: 630,
+        alt: 'Chaturanga JGEC Chess Club',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'CHATURANGA • JGEC Chess Club',
+    description: 'Official Chess Club of Jalpaiguri Government Engineering College. Register for collegiate championships & live pairings.',
+    images: ['/hero.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   icons: {
-    icon: '/favicon.svg',
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+    apple: [
+      { url: '/apple-icon.svg', type: 'image/svg+xml' },
+    ],
   },
 };
 

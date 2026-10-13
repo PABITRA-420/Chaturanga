@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bgGrad" cx="50%" cy="30%" r="75%">
+      <stop offset="0%" stop-color="#161F30"/>
+      <stop offset="60%" stop-color="#0A0E17"/>
+      <stop offset="100%" stop-color="#04060A"/>
+    </radialGradient>
+
+    <!-- Gold Edge Gradient -->
+    <linearGradient id="goldBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE79A"/>
+      <stop offset="35%" stop-color="#D4AF7C"/>
+      <stop offset="70%" stop-color="#8F6826"/>
+      <stop offset="100%" stop-color="#E5C158"/>
+    </linearGradient>
+
+    <!-- Royal Gold Piece Gradient -->
+    <linearGradient id="goldPiece" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#FFF5D1"/>
+      <stop offset="25%" stop-color="#F3DC9B"/>
+      <stop offset="60%" stop-color="#D4AF7C"/>
+      <stop offset="100%" stop-color="#9A6F24"/>
+    </linearGradient>
+
+    <!-- Deep Gold Shadow Gradient -->
+    <linearGradient id="goldShadow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#875E1E"/>
+      <stop offset="100%" stop-color="#4E330C"/>
+    </linearGradient>
+
+    <!-- Glow Filter -->
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="12" flood-color="#D4AF7C" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Squircle Base Frame -->
+  <rect x="16" y="16" width="480" height="480" rx="120" fill="url(#bgGrad)" stroke="url(#goldBorder)" stroke-width="12"/>
+
+  <!-- Subtle Inner Checkerboard Pattern Accent -->
+  <g opacity="0.04" fill="#FFFFFF">
+    <rect x="80" y="80" width="88" height="88" rx="8"/>
+    <rect x="256" y="80" width="88" height="88" rx="8"/>
+    <rect x="168" y="168" width="88" height="88" rx="8"/>
+    <rect x="344" y="168" width="88" height="88" rx="8"/>
+    <rect x="80" y="256" width="88" height="88" rx="8"/>
+    <rect x="256" y="256" width="88" height="88" rx="8"/>
+    <rect x="168" y="344" width="88" height="88" rx="8"/>
+    <rect x="344" y="344" width="88" height="88" rx="8"/>
+  </g>
+
+  <!-- Crown / Crest at Top -->
+  <g filter="url(#softGlow)">
+    <path d="M 216 112 L 236 138 L 256 104 L 276 138 L 296 112 L 292 148 L 220 148 Z" fill="url(#goldPiece)"/>
+    <circle cx="256" cy="94" r="7" fill="#FFE79A"/>
+    <circle cx="216" cy="104" r="5.5" fill="#FFE79A"/>
+    <circle cx="296" cy="104" r="5.5" fill="#FFE79A"/>
+  </g>
+
+  <!-- Sculpted Royal Chess Knight (Chaturanga Horse) -->
+  <g filter="url(#softGlow)">
+    <!-- Main Knight Silhouette -->
+    <path d="M 288 152 
+             C 272 152, 248 156, 230 168
+             C 214 178, 198 198, 182 224
+             C 170 244, 154 260, 134 268
+             C 124 272, 120 282, 126 292
+             C 134 306, 154 314, 178 308
+             C 192 304, 204 312, 206 326
+             C 208 340, 196 358, 186 376
+             C 180 388, 190 398, 204 398
+             L 332 398
+             C 344 398, 354 388, 350 376
+             C 344 354, 340 324, 342 292
+             C 344 252, 352 216, 356 190
+             C 358 174, 348 160, 332 156
+             C 320 153, 304 152, 288 152 Z" 
+          fill="url(#goldPiece)"/>
+
+    <!-- Knight Mane Details (Dark Gold Inset Shadows) -->
+    <path d="M 324 186 C 308 214, 304 246, 310 280 C 298 256, 302 222, 318 196 Z" fill="url(#goldShadow)" opacity="0.8"/>
+    <path d="M 336 244 C 322 272, 320 306, 324 340 C 314 316, 316 280, 330 254 Z" fill="url(#goldShadow)" opacity="0.8"/>
+
+    <!-- Snout & Jaw Contour Line -->
+    <path d="M 148 284 C 166 286, 184 278, 196 268" stroke="url(#goldShadow)" stroke-width="6" stroke-linecap="round" fill="none"/>
+
+    <!-- Keen Eye of the Knight -->
+    <circle cx="214" cy="222" r="9" fill="#0A0E17"/>
+    <circle cx="214" cy="222" r="7" fill="url(#goldBorder)"/>
+    <circle cx="216" cy="220" r="3" fill="#FFFFFF"/>
+
+    <!-- Ear Detail -->
+    <path d="M 264 148 L 278 184 L 254 176 Z" fill="url(#goldShadow)" opacity="0.9"/>
+    <path d="M 268 144 L 280 180 L 260 174 Z" fill="#FFE79A"/>
+
+    <!-- Heavy Pedestal Base -->
+    <rect x="160" y="408" width="192" height="24" rx="8" fill="url(#goldPiece)"/>
+    <rect x="140" y="436" width="232" height="18" rx="7" fill="url(#goldPiece)"/>
+    <!-- Highlight Line on Pedestal -->
+    <line x1="168" y1="412" x2="344" y2="412" stroke="#FFF5D1" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+  </g>
+</svg>

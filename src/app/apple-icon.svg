@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <radialGradient id="appleBg" cx="50%" cy="30%" r="75%">
+      <stop offset="0%" stop-color="#161F30"/>
+      <stop offset="60%" stop-color="#0A0E17"/>
+      <stop offset="100%" stop-color="#04060A"/>
+    </radialGradient>
+    <linearGradient id="goldBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE79A"/>
+      <stop offset="50%" stop-color="#D4AF7C"/>
+      <stop offset="100%" stop-color="#8F6826"/>
+    </linearGradient>
+    <linearGradient id="goldPiece" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#FFF5D1"/>
+      <stop offset="25%" stop-color="#F3DC9B"/>
+      <stop offset="60%" stop-color="#D4AF7C"/>
+      <stop offset="100%" stop-color="#9A6F24"/>
+    </linearGradient>
+    <linearGradient id="goldShadow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#875E1E"/>
+      <stop offset="100%" stop-color="#4E330C"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="10" flood-color="#D4AF7C" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <rect x="0" y="0" width="512" height="512" rx="112" fill="url(#appleBg)"/>
+  <rect x="12" y="12" width="488" height="488" rx="100" fill="none" stroke="url(#goldBorder)" stroke-width="8"/>
+
+  <!-- Crown -->
+  <g filter="url(#glow)">
+    <path d="M 216 112 L 236 138 L 256 104 L 276 138 L 296 112 L 292 148 L 220 148 Z" fill="url(#goldPiece)"/>
+    <circle cx="256" cy="94" r="7" fill="#FFE79A"/>
+    <circle cx="216" cy="104" r="5.5" fill="#FFE79A"/>
+    <circle cx="296" cy="104" r="5.5" fill="#FFE79A"/>
+  </g>
+
+  <!-- Knight Head -->
+  <g filter="url(#glow)">
+    <path d="M 288 152 
+             C 272 152, 248 156, 230 168
+             C 214 178, 198 198, 182 224
+             C 170 244, 154 260, 134 268
+             C 124 272, 120 282, 126 292
+             C 134 306, 154 314, 178 308
+             C 192 304, 204 312, 206 326
+             C 208 340, 196 358, 186 376
+             C 180 388, 190 398, 204 398
+             L 332 398
+             C 344 398, 354 388, 350 376
+             C 344 354, 340 324, 342 292
+             C 344 252, 352 216, 356 190
+             C 358 174, 348 160, 332 156
+             C 320 153, 304 152, 288 152 Z" 
+          fill="url(#goldPiece)"/>
+
+    <path d="M 324 186 C 308 214, 304 246, 310 280 C 298 256, 302 222, 318 196 Z" fill="url(#goldShadow)" opacity="0.8"/>
+    <path d="M 336 244 C 322 272, 320 306, 324 340 C 314 316, 316 280, 330 254 Z" fill="url(#goldShadow)" opacity="0.8"/>
+
+    <circle cx="214" cy="222" r="9" fill="#0A0E17"/>
+    <circle cx="214" cy="222" r="7" fill="url(#goldBorder)"/>
+    <circle cx="216" cy="220" r="3" fill="#FFFFFF"/>
+
+    <path d="M 264 148 L 278 184 L 254 176 Z" fill="url(#goldShadow)"/>
+    <path d="M 268 144 L 280 180 L 260 174 Z" fill="#FFE79A"/>
+
+    <rect x="160" y="408" width="192" height="24" rx="8" fill="url(#goldPiece)"/>
+    <rect x="140" y="436" width="232" height="18" rx="7" fill="url(#goldPiece)"/>
+  </g>
+</svg>
