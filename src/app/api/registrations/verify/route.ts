@@ -14,7 +14,7 @@ export async function GET(request: Request) {
       );
     }
 
-    const registration = findRegistration(query.trim());
+    const registration = await findRegistration(query.trim());
 
     if (!registration) {
       return NextResponse.json(
@@ -24,7 +24,7 @@ export async function GET(request: Request) {
     }
 
     // Attach tournament details if available
-    const tournament = getTournamentByName(registration.tournament);
+    const tournament = await getTournamentByName(registration.tournament);
 
     return NextResponse.json({
       success: true,

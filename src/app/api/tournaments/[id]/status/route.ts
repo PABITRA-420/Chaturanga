@@ -32,7 +32,7 @@ export async function POST(
       );
     }
 
-    const updated = updateTournament(id, { status });
+    const updated = await updateTournament(id, { status });
     if (!updated) {
       return NextResponse.json(
         { success: false, error: 'Tournament not found' },

@@ -14,7 +14,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const tournament = getTournamentById(id);
+    const tournament = await getTournamentById(id);
 
     if (!tournament) {
       return NextResponse.json(
@@ -51,7 +51,7 @@ export async function PUT(
     const { id } = await params;
     const body = await request.json();
 
-    const updated = updateTournament(id, body);
+    const updated = await updateTournament(id, body);
     if (!updated) {
       return NextResponse.json(
         { success: false, error: 'Tournament not found' },
@@ -86,7 +86,7 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    const success = deleteTournament(id);
+    const success = await deleteTournament(id);
 
     if (!success) {
       return NextResponse.json(

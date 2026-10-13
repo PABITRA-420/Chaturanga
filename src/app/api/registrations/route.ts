@@ -26,7 +26,7 @@ export async function GET(request: Request) {
     const search = searchParams.get('search')?.toLowerCase();
     const status = searchParams.get('status');
 
-    let list = getAllRegistrations();
+    let list = await getAllRegistrations();
 
     if (tournament && tournament !== 'All' && tournament !== 'all') {
       const tLower = tournament.toLowerCase();
@@ -52,7 +52,7 @@ export async function GET(request: Request) {
       );
     }
 
-    const stats = getRegistrationStats();
+    const stats = await getRegistrationStats();
 
     return NextResponse.json({ 
       success: true, 
@@ -98,7 +98,7 @@ export async function POST(request: Request) {
     }
 
     // Check duplicate
-    const existing = findDuplicateRegistration(rollNumber, tournament);
+    const existing = await findDuplicateRegistration(rollNumber, tournament);
     if (existing) {
       return NextResponse.json(
         { 
@@ -130,9 +130,9 @@ export async function POST(request: Request) {
       checkInStatus: (checkInStatus || 'checked_in') as 'registered' | 'confirmed' | 'checked_in'
     };
 
-    addRegistration(newRecord);
+    await addRegistration(newRecord);
     try {
-      incrementTournamentRegistrations(tournament);
+      await incrementTournamentRegistrations(tournament);
     } catch {}
 
     return NextResponse.json({
@@ -159,7 +159,7 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
     }
 
-    const updated = updateRegistrationStatus(ticketId, status);
+    const updated = await updateRegistrationStatus(ticketId, status);
     if (!updated) {
       return NextResponse.json({ error: 'Registration not found' }, { status: 404 });
     }
@@ -184,13 +184,13 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Missing ticketId parameter' }, { status: 400 });
     }
 
-    const result = deleteRegistration(ticketId);
+    const result = await deleteRegistration(ticketId);
     if (!result.success) {
       return NextResponse.json({ error: 'Registration not found' }, { status: 404 });
     }
 
     if (result.deletedRecord?.tournament) {
-      decrementTournamentRegistrations(result.deletedRecord.tournament);
+      await decrementTournamentRegistrations(result.deletedRecord.tournament);
     }
 
     return NextResponse.json({ success: true, message: 'Registration deleted successfully' });

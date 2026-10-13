@@ -15,7 +15,7 @@ export async function GET(request: Request) {
     const type = searchParams.get('type'); // 'upcoming', 'past', or undefined for all
     const status = searchParams.get('status');
 
-    let tournaments = getAllTournaments();
+    let tournaments = await getAllTournaments();
 
     if (type === 'upcoming') {
       tournaments = tournaments.filter(t => !t.isPast && t.status !== 'completed');
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const created = createTournament(body);
+    const created = await createTournament(body);
 
     return NextResponse.json({
       success: true,

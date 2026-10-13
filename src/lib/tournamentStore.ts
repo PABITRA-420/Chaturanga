@@ -1,13 +1,10 @@
 import fs from 'fs';
 import path from 'path';
+import { supabaseServer } from '@/lib/supabase/server';
 import { UPCOMING_EVENTS, PAST_EVENTS } from '@/data/tournamentData';
 import { 
   Tournament, 
   TournamentStatus, 
-  FormFieldConfig, 
-  CustomField, 
-  TournamentPodiumItem, 
-  TournamentStandingResult, 
   DEFAULT_FORM_FIELDS 
 } from '@/types/tournament';
 
@@ -16,11 +13,78 @@ export * from '@/types/tournament';
 const DATA_DIR = path.join(process.cwd(), 'src', 'data');
 const DATA_FILE = path.join(DATA_DIR, 'tournaments.json');
 
-// Initialize initial seed data from tournamentData.ts if tournaments.json doesn't exist
+function dbToTournament(row: any): Tournament {
+  return {
+    id: row.id,
+    title: row.title,
+    date: row.date || '',
+    targetDate: row.target_date || row.targetDate || '',
+    time: row.time || '',
+    venue: row.venue || '',
+    format: row.format || '',
+    prizePool: row.prize_pool || row.prizePool || '',
+    slots: row.slots || '',
+    maxSlots: Number(row.max_slots ?? row.maxSlots ?? 100),
+    registeredCount: Number(row.registered_count ?? row.registeredCount ?? 0),
+    isFeatured: Boolean(row.is_featured ?? row.isFeatured),
+    description: row.description || '',
+    status: (row.status as TournamentStatus) || 'upcoming',
+    registrationStartDate: row.registration_start_date || row.registrationStartDate,
+    registrationEndDate: row.registration_end_date || row.registrationEndDate,
+    entryFee: row.entry_fee || row.entryFee,
+    arbiterName: row.arbiter_name || row.arbiterName,
+    contactEmail: row.contact_email || row.contactEmail,
+    contactPhone: row.contact_phone || row.contactPhone,
+    fairPlayNotice: row.fair_play_notice || row.fairPlayNotice,
+    formConfig: Array.isArray(row.form_config) ? row.form_config : (row.formConfig || []),
+    customFields: Array.isArray(row.custom_fields) ? row.custom_fields : (row.customFields || []),
+    isPast: Boolean(row.is_past ?? row.isPast),
+    totalParticipants: Number(row.total_participants ?? row.totalParticipants ?? 0),
+    summary: row.summary,
+    podium: Array.isArray(row.podium) ? row.podium : [],
+    results: Array.isArray(row.results) ? row.results : [],
+    createdAt: row.created_at || row.createdAt || new Date().toISOString(),
+    updatedAt: row.updated_at || row.updatedAt || new Date().toISOString()
+  };
+}
+
+function tournamentToDb(t: Tournament): any {
+  return {
+    id: t.id,
+    title: t.title,
+    date: t.date,
+    target_date: t.targetDate,
+    time: t.time,
+    venue: t.venue,
+    format: t.format,
+    prize_pool: t.prizePool,
+    slots: t.slots,
+    max_slots: t.maxSlots,
+    registered_count: t.registeredCount,
+    is_featured: t.isFeatured,
+    description: t.description,
+    status: t.status,
+    registration_start_date: t.registrationStartDate,
+    registration_end_date: t.registrationEndDate,
+    entry_fee: t.entryFee,
+    arbiter_name: t.arbiterName,
+    contact_email: t.contactEmail,
+    contact_phone: t.contactPhone,
+    fair_play_notice: t.fairPlayNotice,
+    form_config: t.formConfig,
+    custom_fields: t.customFields,
+    is_past: t.isPast,
+    total_participants: t.totalParticipants,
+    summary: t.summary,
+    podium: t.podium,
+    results: t.results,
+    updated_at: new Date().toISOString()
+  };
+}
+
+// Fallback initial seeds if offline
 function getInitialSeedTournaments(): Tournament[] {
   const seed: Tournament[] = [];
-
-  // Seed upcoming events
   UPCOMING_EVENTS.forEach((ue, index) => {
     seed.push({
       id: ue.id,
@@ -43,7 +107,7 @@ function getInitialSeedTournaments(): Tournament[] {
       arbiterName: 'IA Dr. P. K. Sen / Chief Arbiter JGEC',
       contactEmail: 'tournaments@chaturanga-jgec.ac.in',
       contactPhone: '+91 94340 12345',
-      fairPlayNotice: 'Standard FIDE Anti-Cheating and Digital Clock Regulations apply. Mobile devices strictly prohibited in tournament hall.',
+      fairPlayNotice: 'Standard FIDE Anti-Cheating and Digital Clock Regulations apply.',
       formConfig: JSON.parse(JSON.stringify(DEFAULT_FORM_FIELDS)),
       customFields: [],
       isPast: false,
@@ -52,7 +116,6 @@ function getInitialSeedTournaments(): Tournament[] {
     });
   });
 
-  // Seed past events as completed tournaments
   PAST_EVENTS.forEach((pe) => {
     seed.push({
       id: pe.id,
@@ -83,54 +146,55 @@ function getInitialSeedTournaments(): Tournament[] {
   return seed;
 }
 
-// In-memory cache for ultra-fast access, with disk persistence
-let cachedTournaments: Tournament[] | null = null;
-
-export function getAllTournaments(): Tournament[] {
-  if (cachedTournaments) {
-    return cachedTournaments;
-  }
-
+function getLocalTournamentsFallback(): Tournament[] {
   try {
     if (fs.existsSync(DATA_FILE)) {
       const content = fs.readFileSync(DATA_FILE, 'utf-8');
-      cachedTournaments = JSON.parse(content);
-      return cachedTournaments || [];
+      const parsed = JSON.parse(content);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
     }
-  } catch (err) {
-    console.error('Error reading tournaments.json, using fallback:', err);
-  }
-
-  // File doesn't exist, seed it
-  const initial = getInitialSeedTournaments();
-  saveTournaments(initial);
-  return initial;
+  } catch {}
+  return getInitialSeedTournaments();
 }
 
-export function saveTournaments(tournaments: Tournament[]): boolean {
+export async function getAllTournaments(): Promise<Tournament[]> {
   try {
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
+    const { data, error } = await supabaseServer
+      .from('tournaments')
+      .select('*')
+      .order('is_featured', { ascending: false })
+      .order('target_date', { ascending: true });
+
+    if (!error && data && data.length > 0) {
+      return data.map(dbToTournament);
     }
-    fs.writeFileSync(DATA_FILE, JSON.stringify(tournaments, null, 2), 'utf-8');
-    cachedTournaments = tournaments;
-    return true;
   } catch (err) {
-    console.error('Failed to save tournaments to file:', err);
-    cachedTournaments = tournaments; // Keep in memory at least
-    return false;
+    console.warn('Supabase fetch tournaments failed, using local fallback:', err);
   }
+
+  return getLocalTournamentsFallback();
 }
 
-export function getTournamentById(id: string): Tournament | null {
-  const tournaments = getAllTournaments();
-  return tournaments.find(t => t.id === id) || null;
+export async function getTournamentById(id: string): Promise<Tournament | null> {
+  try {
+    const { data, error } = await supabaseServer
+      .from('tournaments')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (!error && data) {
+      return dbToTournament(data);
+    }
+  } catch {}
+
+  const local = getLocalTournamentsFallback();
+  return local.find(t => t.id === id) || null;
 }
 
-export function createTournament(data: Partial<Tournament>): Tournament {
-  const tournaments = getAllTournaments();
+export async function createTournament(data: Partial<Tournament>): Promise<Tournament> {
+  const existing = await getAllTournaments();
   
-  // Create unique slug ID if not provided
   const slugBase = (data.title || 'tournament')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
@@ -138,7 +202,7 @@ export function createTournament(data: Partial<Tournament>): Tournament {
   
   let newId = slugBase || `tourn-${Date.now()}`;
   let counter = 1;
-  while (tournaments.some(t => t.id === newId)) {
+  while (existing.some(t => t.id === newId)) {
     newId = `${slugBase}-${counter++}`;
   }
 
@@ -171,74 +235,105 @@ export function createTournament(data: Partial<Tournament>): Tournament {
     updatedAt: new Date().toISOString()
   };
 
-  const updated = [newTournament, ...tournaments];
-  saveTournaments(updated);
+  try {
+    const dbRecord = tournamentToDb(newTournament);
+    const { error } = await supabaseServer
+      .from('tournaments')
+      .insert([dbRecord]);
+
+    if (error) console.error('Supabase create tournament error:', error);
+  } catch (err) {
+    console.error('Supabase insert exception:', err);
+  }
+
   return newTournament;
 }
 
-export function updateTournament(id: string, updates: Partial<Tournament>): Tournament | null {
-  const tournaments = getAllTournaments();
-  const index = tournaments.findIndex(t => t.id === id);
-  if (index === -1) return null;
+export async function updateTournament(id: string, updates: Partial<Tournament>): Promise<Tournament | null> {
+  const current = await getTournamentById(id);
+  if (!current) return null;
 
-  const current = tournaments[index];
   const updatedTournament: Tournament = {
     ...current,
     ...updates,
-    id: current.id, // ID remains immutable to preserve links
+    id: current.id,
     updatedAt: new Date().toISOString()
   };
 
-  tournaments[index] = updatedTournament;
-  saveTournaments(tournaments);
+  try {
+    const dbRecord = tournamentToDb(updatedTournament);
+    const { error } = await supabaseServer
+      .from('tournaments')
+      .update(dbRecord)
+      .eq('id', id);
+
+    if (error) console.error('Supabase update tournament error:', error);
+  } catch (err) {
+    console.error('Supabase update exception:', err);
+  }
+
   return updatedTournament;
 }
 
-export function deleteTournament(id: string): boolean {
-  const tournaments = getAllTournaments();
-  const filtered = tournaments.filter(t => t.id !== id);
-  if (filtered.length === tournaments.length) return false;
-  saveTournaments(filtered);
-  return true;
+export async function deleteTournament(id: string): Promise<boolean> {
+  try {
+    const { error } = await supabaseServer
+      .from('tournaments')
+      .delete()
+      .eq('id', id);
+
+    if (!error) return true;
+  } catch {}
+
+  return false;
 }
 
-export function incrementTournamentRegistrations(tournamentTitleOrId: string): void {
-  const tournaments = getAllTournaments();
-  const t = tournaments.find(x => x.id === tournamentTitleOrId || x.title.toLowerCase() === tournamentTitleOrId.toLowerCase());
+export async function incrementTournamentRegistrations(tournamentTitleOrId: string): Promise<void> {
+  const tournaments = await getAllTournaments();
+  const t = tournaments.find(x => 
+    x.id === tournamentTitleOrId || 
+    x.title.toLowerCase() === tournamentTitleOrId.toLowerCase()
+  );
+
   if (t) {
-    t.registeredCount = (t.registeredCount || 0) + 1;
-    t.slots = `${t.maxSlots || 128} Max (${t.registeredCount} Registered)`;
-    if (t.maxSlots && t.registeredCount >= t.maxSlots) {
-      t.status = 'closed'; // Auto-close when capacity reached
-    }
-    saveTournaments(tournaments);
+    const newCount = (t.registeredCount || 0) + 1;
+    const newSlots = `${t.maxSlots || 128} Max (${newCount} Registered)`;
+    const newStatus = t.maxSlots && newCount >= t.maxSlots ? 'closed' : t.status;
+
+    await updateTournament(t.id, {
+      registeredCount: newCount,
+      slots: newSlots,
+      status: newStatus
+    });
   }
 }
 
-export function decrementTournamentRegistrations(tournamentTitleOrId: string): void {
-  const tournaments = getAllTournaments();
+export async function decrementTournamentRegistrations(tournamentTitleOrId: string): Promise<void> {
+  const tournaments = await getAllTournaments();
   const t = tournaments.find(x => 
     x.id === tournamentTitleOrId || 
     x.title.toLowerCase() === tournamentTitleOrId.toLowerCase() ||
     x.title.toLowerCase().includes(tournamentTitleOrId.toLowerCase())
   );
+
   if (t) {
-    t.registeredCount = Math.max(0, (t.registeredCount || 1) - 1);
-    t.slots = `${t.maxSlots || 128} Max (${t.registeredCount} Registered)`;
-    if (t.status === 'closed' && t.maxSlots && t.registeredCount < t.maxSlots) {
-      t.status = 'open';
-    }
-    saveTournaments(tournaments);
+    const newCount = Math.max(0, (t.registeredCount || 1) - 1);
+    const newSlots = `${t.maxSlots || 128} Max (${newCount} Registered)`;
+    const newStatus = t.status === 'closed' && t.maxSlots && newCount < t.maxSlots ? 'open' : t.status;
+
+    await updateTournament(t.id, {
+      registeredCount: newCount,
+      slots: newSlots,
+      status: newStatus
+    });
   }
 }
 
-export function getTournamentByName(tournamentTitleOrId: string): Tournament | undefined {
-  const tournaments = getAllTournaments();
+export async function getTournamentByName(tournamentTitleOrId: string): Promise<Tournament | undefined> {
+  const tournaments = await getAllTournaments();
   return tournaments.find(x => 
     x.id === tournamentTitleOrId || 
     x.title.toLowerCase() === tournamentTitleOrId.toLowerCase() ||
     x.title.toLowerCase().includes(tournamentTitleOrId.toLowerCase())
   );
 }
-
-

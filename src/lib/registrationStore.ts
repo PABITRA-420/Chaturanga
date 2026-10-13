@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { supabaseServer } from '@/lib/supabase/server';
 
 export interface RegistrationRecord {
   ticketId: string;
@@ -21,136 +22,175 @@ export interface RegistrationRecord {
 
 const REGISTRATIONS_FILE_PATH = path.join(process.cwd(), 'src', 'data', 'registrations.json');
 
-const INITIAL_REGISTRATIONS: RegistrationRecord[] = [
-  {
-    ticketId: 'CHTR-2026-AR94K1',
-    tournament: 'Chaturanga Spring Blitz Open 2026',
-    fullName: 'Aritra Sen',
-    rollNumber: '22101104012',
-    institution: 'Jalpaiguri Government Engineering College',
-    department: 'Computer Science & Engineering',
-    year: '3rd Year',
-    email: 'aritra.sen@jgec.ac.in',
-    phone: '9876543210',
-    ratingCategory: 'College Champion (1600+)',
-    chessUsername: 'aritra_gambit',
-    fideId: '50291844',
-    registeredAt: '2026-03-28T14:22:00.000Z',
-    checkInStatus: 'confirmed'
-  },
-  {
-    ticketId: 'CHTR-2026-SB72E9',
-    tournament: 'Chaturanga Spring Blitz Open 2026',
-    fullName: 'Debanjan Ghosh',
-    rollNumber: '23101102008',
-    institution: 'Jalpaiguri Government Engineering College',
-    department: 'Information Technology',
-    year: '2nd Year',
-    email: 'debanjan.g@jgec.ac.in',
-    phone: '9832109876',
-    ratingCategory: 'Club Player (1200 - 1600)',
-    chessUsername: 'debanjan_knight',
-    fideId: 'Unrated',
-    registeredAt: '2026-03-29T10:15:00.000Z',
-    checkInStatus: 'registered'
-  },
-  {
-    ticketId: 'CHTR-2026-MR55P3',
-    tournament: 'Chaturanga Spring Blitz Open 2026',
-    fullName: 'Sayanika Roy',
-    rollNumber: '24101103019',
-    institution: 'Jalpaiguri Government Engineering College',
-    department: 'Electronics & Communication',
-    year: '1st Year',
-    email: 'sayanika.roy@jgec.ac.in',
-    phone: '9748231145',
-    ratingCategory: 'Beginner / Intermediate (<1200)',
-    chessUsername: 'sayanika_queen',
-    fideId: 'Unrated',
-    registeredAt: '2026-03-30T16:45:00.000Z',
-    checkInStatus: 'confirmed'
-  }
-];
+function dbToRegistration(row: any): RegistrationRecord {
+  return {
+    ticketId: row.ticket_id,
+    tournament: row.tournament,
+    fullName: row.full_name,
+    rollNumber: row.roll_number,
+    institution: row.institution,
+    department: row.department,
+    year: row.year,
+    email: row.email,
+    phone: row.phone,
+    ratingCategory: row.rating_category,
+    chessUsername: row.chess_username || 'N/A',
+    fideId: row.fide_id || 'Unrated',
+    customAnswers: row.custom_answers || {},
+    registeredAt: row.registered_at || new Date().toISOString(),
+    checkInStatus: (row.check_in_status as any) || 'confirmed'
+  };
+}
 
-function ensureDataFile(): void {
+function registrationToDb(r: RegistrationRecord): any {
+  return {
+    ticket_id: r.ticketId,
+    tournament: r.tournament,
+    full_name: r.fullName,
+    roll_number: r.rollNumber,
+    institution: r.institution,
+    department: r.department,
+    year: r.year,
+    email: r.email,
+    phone: r.phone,
+    rating_category: r.ratingCategory,
+    chess_username: r.chessUsername || 'N/A',
+    fide_id: r.fideId || 'Unrated',
+    custom_answers: r.customAnswers || {},
+    check_in_status: r.checkInStatus,
+    registered_at: r.registeredAt || new Date().toISOString()
+  };
+}
+
+function getLocalRegistrationsFallback(): RegistrationRecord[] {
   try {
-    const dir = path.dirname(REGISTRATIONS_FILE_PATH);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+    if (fs.existsSync(REGISTRATIONS_FILE_PATH)) {
+      const content = fs.readFileSync(REGISTRATIONS_FILE_PATH, 'utf-8');
+      const data = JSON.parse(content);
+      return Array.isArray(data) ? data : [];
     }
-    if (!fs.existsSync(REGISTRATIONS_FILE_PATH)) {
-      fs.writeFileSync(REGISTRATIONS_FILE_PATH, JSON.stringify(INITIAL_REGISTRATIONS, null, 2), 'utf-8');
+  } catch {}
+  return [];
+}
+
+export async function getAllRegistrations(): Promise<RegistrationRecord[]> {
+  try {
+    const { data, error } = await supabaseServer
+      .from('registrations')
+      .select('*')
+      .order('registered_at', { ascending: false });
+
+    if (!error && data) {
+      return data.map(dbToRegistration);
     }
-  } catch (error) {
-    console.error('Error ensuring registrations.json file exists:', error);
+  } catch (err) {
+    console.warn('Supabase fetch registrations failed, using fallback:', err);
   }
+
+  return getLocalRegistrationsFallback();
 }
 
-export function getAllRegistrations(): RegistrationRecord[] {
-  ensureDataFile();
-  try {
-    const content = fs.readFileSync(REGISTRATIONS_FILE_PATH, 'utf-8');
-    const data = JSON.parse(content);
-    return Array.isArray(data) ? data : INITIAL_REGISTRATIONS;
-  } catch (error) {
-    console.error('Error reading registrations.json, falling back to initial data:', error);
-    return INITIAL_REGISTRATIONS;
-  }
-}
-
-export function saveRegistrations(registrations: RegistrationRecord[]): boolean {
-  ensureDataFile();
-  try {
-    fs.writeFileSync(REGISTRATIONS_FILE_PATH, JSON.stringify(registrations, null, 2), 'utf-8');
-    return true;
-  } catch (error) {
-    console.error('Error writing to registrations.json:', error);
-    return false;
-  }
-}
-
-export function findDuplicateRegistration(rollNumber: string, tournament: string): RegistrationRecord | undefined {
-  const all = getAllRegistrations();
+export async function findDuplicateRegistration(rollNumber: string, tournament: string): Promise<RegistrationRecord | undefined> {
   const cleanRoll = rollNumber.trim().toLowerCase();
   const cleanTourn = tournament.trim().toLowerCase();
-  return all.find(r => 
+
+  try {
+    const { data, error } = await supabaseServer
+      .from('registrations')
+      .select('*')
+      .ilike('roll_number', cleanRoll)
+      .ilike('tournament', cleanTourn)
+      .maybeSingle();
+
+    if (!error && data) {
+      return dbToRegistration(data);
+    }
+  } catch {}
+
+  const local = getLocalRegistrationsFallback();
+  return local.find(r => 
     r.rollNumber.trim().toLowerCase() === cleanRoll && 
     r.tournament.trim().toLowerCase() === cleanTourn
   );
 }
 
-export function findRegistration(query: string): RegistrationRecord | undefined {
-  const all = getAllRegistrations();
+export async function findRegistration(query: string): Promise<RegistrationRecord | undefined> {
   const q = query.trim().toLowerCase();
-  return all.find(r => 
+
+  try {
+    const { data, error } = await supabaseServer
+      .from('registrations')
+      .select('*')
+      .or(`ticket_id.ilike.${q},roll_number.ilike.${q},email.ilike.${q}`)
+      .limit(1)
+      .maybeSingle();
+
+    if (!error && data) {
+      return dbToRegistration(data);
+    }
+  } catch {}
+
+  const local = getLocalRegistrationsFallback();
+  return local.find(r => 
     r.ticketId.toLowerCase() === q || 
     r.rollNumber.toLowerCase() === q ||
     r.email.toLowerCase() === q
   );
 }
 
-export function addRegistration(record: RegistrationRecord): RegistrationRecord {
-  const all = getAllRegistrations();
-  all.unshift(record);
-  saveRegistrations(all);
+export async function addRegistration(record: RegistrationRecord): Promise<RegistrationRecord> {
+  try {
+    const dbRecord = registrationToDb(record);
+    const { error } = await supabaseServer
+      .from('registrations')
+      .insert([dbRecord]);
+
+    if (error) {
+      console.error('Supabase add registration error:', error);
+    }
+  } catch (err) {
+    console.error('Supabase insert exception:', err);
+  }
+
   return record;
 }
 
-export function updateRegistrationStatus(ticketId: string, status: 'registered' | 'confirmed' | 'checked_in'): boolean {
-  const all = getAllRegistrations();
-  const index = all.findIndex(r => r.ticketId === ticketId);
-  if (index === -1) return false;
-  all[index].checkInStatus = status;
-  return saveRegistrations(all);
+export async function updateRegistrationStatus(ticketId: string, status: 'registered' | 'confirmed' | 'checked_in'): Promise<boolean> {
+  try {
+    const { error } = await supabaseServer
+      .from('registrations')
+      .update({ check_in_status: status })
+      .eq('ticket_id', ticketId);
+
+    if (!error) return true;
+  } catch {}
+
+  return false;
 }
 
-export function deleteRegistration(ticketId: string): { success: boolean; deletedRecord?: RegistrationRecord } {
-  const all = getAllRegistrations();
-  const index = all.findIndex(r => r.ticketId === ticketId);
-  if (index === -1) return { success: false };
-  const [deletedRecord] = all.splice(index, 1);
-  saveRegistrations(all);
-  return { success: true, deletedRecord };
+export async function deleteRegistration(ticketId: string): Promise<{ success: boolean; deletedRecord?: RegistrationRecord }> {
+  try {
+    // Get existing first to return it
+    const { data: existing } = await supabaseServer
+      .from('registrations')
+      .select('*')
+      .eq('ticket_id', ticketId)
+      .single();
+
+    const { error } = await supabaseServer
+      .from('registrations')
+      .delete()
+      .eq('ticket_id', ticketId);
+
+    if (!error) {
+      return { 
+        success: true, 
+        deletedRecord: existing ? dbToRegistration(existing) : undefined 
+      };
+    }
+  } catch {}
+
+  return { success: false };
 }
 
 export interface RegistrationStats {
@@ -160,8 +200,8 @@ export interface RegistrationStats {
   byTournament: Record<string, { total: number; checkedIn: number; confirmed: number }>;
 }
 
-export function getRegistrationStats(): RegistrationStats {
-  const all = getAllRegistrations();
+export async function getRegistrationStats(): Promise<RegistrationStats> {
+  const all = await getAllRegistrations();
   const stats: RegistrationStats = {
     total: all.length,
     checkedIn: all.filter(r => r.checkInStatus === 'checked_in').length,

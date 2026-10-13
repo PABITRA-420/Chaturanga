@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     const ticketId = body.ticketId || `CHTR-2026-${uniqueRandom}`;
 
     // Check for duplicate registration
-    const existing = findDuplicateRegistration(rollNumber, tournamentName);
+    const existing = await findDuplicateRegistration(rollNumber, tournamentName);
     if (existing) {
       return NextResponse.json(
         {
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
 
     // Increment count in persistent tournament store
     try {
-      incrementTournamentRegistrations(tournamentName);
+      await incrementTournamentRegistrations(tournamentName);
     } catch {
       // Non-blocking
     }
@@ -74,7 +74,7 @@ export async function POST(request: Request) {
     };
 
     // Save to persistent registrations store
-    addRegistration(registrationRecord);
+    await addRegistration(registrationRecord);
 
     const registrationPayload = {
       ...registrationRecord,
