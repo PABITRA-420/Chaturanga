@@ -50,6 +50,7 @@ export interface Tournament {
   maxSlots: number;
   registeredCount: number;
   isFeatured: boolean;
+  isVisible?: boolean;
   description: string;
   status: TournamentStatus;
   

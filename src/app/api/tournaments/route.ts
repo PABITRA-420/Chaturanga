@@ -12,10 +12,15 @@ async function isAdminAuthenticated(): Promise<boolean> {
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const type = searchParams.get('type'); // 'upcoming', 'past', or undefined for all
+    const type = searchParams.get('type');
     const status = searchParams.get('status');
+    const includeHidden = searchParams.get('includeHidden') === 'true';
 
     let tournaments = await getAllTournaments();
+
+    if (!includeHidden) {
+      tournaments = tournaments.filter(t => t.isVisible !== false);
+    }
 
     if (type === 'upcoming') {
       tournaments = tournaments.filter(t => !t.isPast && t.status !== 'completed');

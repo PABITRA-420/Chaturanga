@@ -12,6 +12,7 @@ import {
   TournamentPodiumItem,
   DEFAULT_FORM_FIELDS 
 } from '@/types/tournament';
+import { createSupabaseClient } from '@/lib/supabase/client';
 import { 
   ShieldCheck, 
   Users, 
@@ -44,6 +45,8 @@ import {
   ToggleLeft,
   ToggleRight,
   Eye,
+  EyeOff,
+  Radio,
   Award,
   Settings,
   HelpCircle
@@ -283,16 +286,76 @@ export default function AdminDashboardPage() {
     verifyAuth();
   }, [router]);
 
-  // Load tournaments from API
+  // Load tournaments from API (include hidden/draft events for admin)
   const loadTournaments = async () => {
     try {
-      const res = await fetch('/api/tournaments');
+      const res = await fetch('/api/tournaments?includeHidden=true');
       const data = await res.json();
       if (data.success && data.tournaments) {
         setTournaments(data.tournaments);
       }
     } catch (err) {
       console.error('Failed to load tournaments:', err);
+    }
+  };
+
+  // Supabase Realtime Listener for Instant Arbiter Dashboard Sync
+  useEffect(() => {
+    let channel: any = null;
+    try {
+      const supabase = createSupabaseClient();
+      channel = supabase
+        .channel('admin-dashboard-live-sync')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'tournaments' },
+          () => {
+            loadTournaments();
+          }
+        )
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'registrations' },
+          () => {
+            loadTournaments();
+            loadRegistrations();
+          }
+        )
+        .subscribe();
+    } catch (err) {
+      console.warn('Realtime subscription notice:', err);
+    }
+
+    return () => {
+      if (channel) {
+        try {
+          const supabase = createSupabaseClient();
+          supabase.removeChannel(channel);
+        } catch {}
+      }
+    };
+  }, []);
+
+  // 1-Click Quick Toggle Tournament Visibility (Live vs Hidden/Draft)
+  const [togglingVisibilityId, setTogglingVisibilityId] = useState<string | null>(null);
+  const handleToggleVisibility = async (tournament: Tournament) => {
+    const nextVisible = tournament.isVisible === false ? true : false;
+    setTogglingVisibilityId(tournament.id);
+
+    try {
+      const res = await fetch(`/api/tournaments/${tournament.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isVisible: nextVisible })
+      });
+      const data = await res.json();
+      if (data.success && data.tournament) {
+        setTournaments(prev => prev.map(t => t.id === tournament.id ? data.tournament : t));
+      }
+    } catch (err) {
+      console.error('Visibility toggle failed:', err);
+    } finally {
+      setTogglingVisibilityId(null);
     }
   };
 
@@ -1073,6 +1136,18 @@ export default function AdminDashboardPage() {
                                 ★ Featured
                               </span>
                             )}
+
+                            {tournament.isVisible === false ? (
+                              <span className="px-2.5 py-1 rounded-full text-[10px] font-bold text-amber-400 bg-amber-500/15 border border-amber-500/40 inline-flex items-center gap-1">
+                                <EyeOff className="w-3 h-3" />
+                                <span>Hidden Draft</span>
+                              </span>
+                            ) : (
+                              <span className="px-2.5 py-1 rounded-full text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 inline-flex items-center gap-1">
+                                <Eye className="w-3 h-3" />
+                                <span>Live on Site</span>
+                              </span>
+                            )}
                           </div>
 
                           {/* Quick 1-Click Open/Close Toggle Button */}
@@ -1183,15 +1258,35 @@ export default function AdminDashboardPage() {
                           )}
                         </div>
 
-                        {/* Right side: Preview link & Delete */}
+                        {/* Right side: Visibility Toggle, Preview link & Delete */}
                         <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => handleToggleVisibility(tournament)}
+                            disabled={togglingVisibilityId === tournament.id}
+                            className={`p-2 rounded-xl transition cursor-pointer ${
+                              tournament.isVisible === false
+                                ? 'text-amber-400 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30'
+                                : 'text-[#A0A6B0] hover:text-[#D4AF7C] hover:bg-white/5'
+                            }`}
+                            title={tournament.isVisible === false ? "Currently Hidden from public (Click to make Visible)" : "Currently Live on site (Click to Hide/Draft)"}
+                          >
+                            {togglingVisibilityId === tournament.id ? (
+                              <RefreshCw className="w-4 h-4 animate-spin text-amber-400" />
+                            ) : tournament.isVisible === false ? (
+                              <EyeOff className="w-4 h-4" />
+                            ) : (
+                              <Eye className="w-4 h-4" />
+                            )}
+                          </button>
+
                           <Link
                             href={`/register?event=${tournament.id}`}
                             target="_blank"
                             className="p-2 rounded-xl text-[#A0A6B0] hover:text-[#D4AF7C] hover:bg-white/5 transition cursor-pointer"
                             title="Test public registration form"
                           >
-                            <Eye className="w-4 h-4" />
+                            <ExternalLink className="w-4 h-4" />
                           </Link>
 
                           <button
