@@ -3,9 +3,27 @@ import path from 'path';
 import pg from 'pg';
 
 const { Client } = pg;
+
+// Auto-load .env.local if present
+const envLocalPath = path.join(process.cwd(), '.env.local');
+if (fs.existsSync(envLocalPath)) {
+  const envContent = fs.readFileSync(envLocalPath, 'utf-8');
+  envContent.split('\n').forEach(line => {
+    const trimmed = line.trim();
+    if (trimmed && !trimmed.startsWith('#')) {
+      const eqIdx = trimmed.indexOf('=');
+      if (eqIdx !== -1) {
+        const k = trimmed.substring(0, eqIdx).trim();
+        const v = trimmed.substring(eqIdx + 1).trim().replace(/^["']|["']$/g, '');
+        if (k && !process.env[k]) process.env[k] = v;
+      }
+    }
+  });
+}
+
 const connectionString = process.env.DATABASE_URL || 'postgresql://postgres@db.gwceeuyenweuszxzmewp.supabase.co:5432/postgres';
 
-async function syncAllData() {
+async function syncAllData(): Promise<void> {
   const client = new Client({ connectionString, ssl: { rejectUnauthorized: false } });
   await client.connect();
 

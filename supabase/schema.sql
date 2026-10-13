@@ -100,17 +100,20 @@ ALTER TABLE public.registrations ENABLE ROW LEVEL SECURITY;
 
 -- Tournaments Policies:
 -- Anyone (public) can view all tournaments
+DROP POLICY IF EXISTS "Public tournaments viewable by everyone" ON public.tournaments;
 CREATE POLICY "Public tournaments viewable by everyone" 
   ON public.tournaments FOR SELECT 
   USING (true);
 
 -- Registrations Policies:
 -- Anyone can submit a registration
+DROP POLICY IF EXISTS "Public registration submission" ON public.registrations;
 CREATE POLICY "Public registration submission" 
   ON public.registrations FOR INSERT 
   WITH CHECK (true);
 
 -- Anyone can search/view their own ticket by ticket_id or roll_number
+DROP POLICY IF EXISTS "Public ticket lookup" ON public.registrations;
 CREATE POLICY "Public ticket lookup" 
   ON public.registrations FOR SELECT 
   USING (true);

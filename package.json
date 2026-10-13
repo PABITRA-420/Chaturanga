@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "db:sync": "tsx scripts/sync_data.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
@@ -26,6 +28,7 @@
     "@types/react-dom": "^19.3.0",
     "pg": "^8.23.1",
     "postcss": "^8.5.8",
+    "tsx": "^4.23.15",
     "typescript": "~6.0.2"
   }
 }

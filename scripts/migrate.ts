@@ -4,9 +4,26 @@ import pg from 'pg';
 
 const { Client } = pg;
 
+// Auto-load .env.local if present
+const envLocalPath = path.join(process.cwd(), '.env.local');
+if (fs.existsSync(envLocalPath)) {
+  const envContent = fs.readFileSync(envLocalPath, 'utf-8');
+  envContent.split('\n').forEach(line => {
+    const trimmed = line.trim();
+    if (trimmed && !trimmed.startsWith('#')) {
+      const eqIdx = trimmed.indexOf('=');
+      if (eqIdx !== -1) {
+        const k = trimmed.substring(0, eqIdx).trim();
+        const v = trimmed.substring(eqIdx + 1).trim().replace(/^["']|["']$/g, '');
+        if (k && !process.env[k]) process.env[k] = v;
+      }
+    }
+  });
+}
+
 const connectionString = process.env.DATABASE_URL || 'postgresql://postgres@db.gwceeuyenweuszxzmewp.supabase.co:5432/postgres';
 
-async function runMigration() {
+async function runMigration(): Promise<void> {
   console.log('Connecting to Supabase PostgreSQL database...');
   
   const client = new Client({
@@ -32,7 +49,7 @@ async function runMigration() {
     console.log(`Verified public.registrations count: ${resReg.rows[0].count}`);
 
     console.log('MIGRATION COMPLETED SUCCESSFULLY!');
-  } catch (err) {
+  } catch (err: any) {
     console.error('Migration failed:', err.message);
     if (err.code) console.error('Error code:', err.code);
   } finally {
