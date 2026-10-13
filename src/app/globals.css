@@ -1,0 +1,172 @@
+@import "tailwindcss";
+
+@theme {
+  --color-gold: #D4AF7C;
+  --color-gold-hover: #E6C98A;
+  --color-gold-light: #F3E2B8;
+  --color-bg-dark: #0B0F14;
+  --color-card-dark: #12161D;
+  --color-card-surface: #181D26;
+  --color-white-soft: #F5F5F5;
+  --color-muted: #A0A6B0;
+
+  --font-heading: var(--font-montserrat), sans-serif;
+  --font-body: var(--font-poppins), sans-serif;
+  --font-ui: var(--font-inter), sans-serif;
+  --font-mono: var(--font-roboto-mono), monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+
+body {
+  font-family: var(--font-poppins), sans-serif;
+  background-color: #0B0F14;
+  color: #F5F5F5;
+  overflow-x: hidden;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-montserrat), sans-serif;
+}
+
+button,
+input,
+select,
+textarea,
+nav {
+  font-family: var(--font-inter), sans-serif;
+}
+
+/* Custom scrollbar matching gold luxury palette */
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0B0F14;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #232936;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #D4AF7C;
+}
+
+/* Luxury visual utilities */
+.glass-panel {
+  background: rgba(18, 22, 29, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.gold-glow {
+  box-shadow: 0 0 30px rgba(212, 175, 124, 0.18);
+}
+
+.gold-glow-lg {
+  box-shadow: 0 0 50px rgba(212, 175, 124, 0.28);
+}
+
+.gold-glow-sm {
+  box-shadow: 0 0 15px rgba(212, 175, 124, 0.15);
+}
+
+.gold-gradient-text {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F3E2B8 35%, #D4AF7C 70%, #AA8246 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Subtle luxury chess board pattern */
+.chess-bg-pattern {
+  background-image: radial-gradient(rgba(212, 175, 124, 0.06) 1px, transparent 1px),
+                    linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size: 32px 32px, 64px 64px, 64px 64px;
+}
+
+/* Metallic gold foil border */
+.gold-foil-border {
+  position: relative;
+  background: linear-gradient(#12161D, #12161D) padding-box,
+              linear-gradient(135deg, #D4AF7C, rgba(212, 175, 124, 0.2), #F3E2B8, rgba(212, 175, 124, 0.1)) border-box;
+  border: 1px solid transparent;
+}
+
+/* Animated subtle light sweep across cards */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+.animate-shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(212, 175, 124, 0.06),
+    transparent
+  );
+  animation: shimmer 6s infinite;
+  pointer-events: none;
+}
+
+@keyframes pulseSlow {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.06); }
+}
+
+.animate-pulse-slow {
+  animation: pulseSlow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Smooth card hover lift */
+.hover-lift {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.28s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+}
+
+/* Continuous smooth hardware-accelerated marquee for ticker */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 32s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Accessible focus ring for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid #D4AF7C;
+  outline-offset: 2px;
+}

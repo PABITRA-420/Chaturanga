@@ -1,0 +1,234 @@
+[
+  {
+    "ticketId": "CHTR-2026-WLK4708",
+    "tournament": "Spring Blitz Arena 2026",
+    "fullName": "Grandmaster Test Player",
+    "rollNumber": "TEST_WALKIN_1791895244281",
+    "institution": "Jalpaiguri Government Engineering College",
+    "department": "Computer Science",
+    "year": "3rd Year",
+    "email": "gm_test@jgec.ac.in",
+    "phone": "+91 9876543210",
+    "ratingCategory": "FIDE Rated (1800+)",
+    "chessUsername": "gm_blitz_test",
+    "fideId": "FIDE-998877",
+    "customAnswers": {
+      "Lichess Blitz Rating": "2100"
+    },
+    "registeredAt": "2026-10-13T12:40:44.355Z",
+    "checkInStatus": "checked_in"
+  },
+  {
+    "ticketId": "CHTR-2026-AR94K1",
+    "tournament": "Chaturanga Annual Inter-College Chess Championship 2026",
+    "fullName": "Aritra Sen",
+    "rollNumber": "22101104012",
+    "institution": "Jalpaiguri Government Engineering College",
+    "department": "Computer Science & Engineering",
+    "year": "3rd Year",
+    "email": "aritra.sen@jgec.ac.in",
+    "phone": "9876543210",
+    "ratingCategory": "College Champion (1600+)",
+    "chessUsername": "aritra_gambit",
+    "fideId": "50291844",
+    "registeredAt": "2026-10-10T14:22:00.000Z",
+    "checkInStatus": "confirmed",
+    "customAnswers": {
+      "hostel_needed": "Yes - Boys Hostel 1",
+      "tshirt_size": "L (42)"
+    }
+  },
+  {
+    "ticketId": "CHTR-2026-SB72E9",
+    "tournament": "Chaturanga Annual Inter-College Chess Championship 2026",
+    "fullName": "Debanjan Ghosh",
+    "rollNumber": "23101102008",
+    "institution": "Jalpaiguri Government Engineering College",
+    "department": "Information Technology",
+    "year": "2nd Year",
+    "email": "debanjan.g@jgec.ac.in",
+    "phone": "9832109876",
+    "ratingCategory": "Club Player (1200 - 1600)",
+    "chessUsername": "debanjan_knight",
+    "fideId": "Unrated",
+    "registeredAt": "2026-10-11T10:15:00.000Z",
+    "checkInStatus": "confirmed",
+    "customAnswers": {
+      "hostel_needed": "No - Day Scholar / Local Stay",
+      "tshirt_size": "M (40)"
+    }
+  },
+  {
+    "ticketId": "CHTR-2026-MR55P3",
+    "tournament": "Chaturanga Annual Inter-College Chess Championship 2026",
+    "fullName": "Sayanika Roy",
+    "rollNumber": "24101103019",
+    "institution": "Jalpaiguri Government Engineering College",
+    "department": "Electronics & Communication",
+    "year": "1st Year",
+    "email": "sayanika.roy@jgec.ac.in",
+    "phone": "9748231145",
+    "ratingCategory": "Beginner / Intermediate (<1200)",
+    "chessUsername": "sayanika_queen",
+    "fideId": "Unrated",
+    "registeredAt": "2026-10-11T16:45:00.000Z",
+    "checkInStatus": "checked_in",
+    "customAnswers": {
+      "hostel_needed": "Yes - Girls Hostel 2",
+      "tshirt_size": "S (38)"
+    }
+  },
+  {
+    "ticketId": "CHTR-2026-PX88K2",
+    "tournament": "Chaturanga Annual Inter-College Chess Championship 2026",
+    "fullName": "Sounak Chakraborty",
+    "rollNumber": "22101101034",
+    "institution": "Siliguri Institute of Technology",
+    "department": "Civil Engineering",
+    "year": "3rd Year",
+    "email": "sounak.c@sit.ac.in",
+    "phone": "9845012398",
+    "ratingCategory": "Intermediate / Rated (1600 - 1900)",
+    "chessUsername": "sounak_tactics",
+    "fideId": "50341920",
+    "registeredAt": "2026-10-12T09:12:00.000Z",
+    "checkInStatus": "confirmed",
+    "customAnswers": {
+      "hostel_needed": "Yes - Boys Hostel 1",
+      "tshirt_size": "XL (44)"
+    }
+  },
+  {
+    "ticketId": "CHTR-2026-SR10A1",
+    "tournament": "North Bengal State Rapid Rating Open 2026",
+    "fullName": "Aniket Sen",
+    "rollNumber": "22101102031",
+    "institution": "North Bengal University",
+    "department": "Mathematics & Computing",
+    "year": "3rd Year",
+    "email": "aniket.sen@nbu.ac.in",
+    "phone": "9832145678",
+    "ratingCategory": "Advanced / FIDE Master (> 1900)",
+    "chessUsername": "AniketTactician",
+    "fideId": "5018322",
+    "registeredAt": "2026-10-12T13:04:00.000Z",
+    "checkInStatus": "checked_in",
+    "customAnswers": {
+      "aicf_id": "AICF-WB-2024-9912"
+    }
+  },
+  {
+    "ticketId": "CHTR-2026-SR22B4",
+    "tournament": "North Bengal State Rapid Rating Open 2026",
+    "fullName": "Rupayan Mukherjee",
+    "rollNumber": "21101104005",
+    "institution": "Jalpaiguri Government Engineering College",
+    "department": "Computer Science & Engineering",
+    "year": "4th Year (Final Year)",
+    "email": "rupayan.m@jgec.ac.in",
+    "phone": "9434098765",
+    "ratingCategory": "Intermediate / Rated (1600 - 1900)",
+    "chessUsername": "RupayanKing",
+    "fideId": "50241908",
+    "registeredAt": "2026-10-12T14:40:00.000Z",
+    "checkInStatus": "confirmed",
+    "customAnswers": {
+      "aicf_id": "AICF-WB-2023-4510"
+    }
+  },
+  {
+    "ticketId": "CHTR-2026-SR33C7",
+    "tournament": "North Bengal State Rapid Rating Open 2026",
+    "fullName": "Tanvi Agarwal",
+    "rollNumber": "23101105018",
+    "institution": "Heritage Institute of Technology",
+    "department": "Electrical Engineering",
+    "year": "2nd Year",
+    "email": "tanvi.agarwal@heritage.edu.in",
+    "phone": "9874561230",
+    "ratingCategory": "Intermediate / Rated (1600 - 1900)",
+    "chessUsername": "tanvi_checkmate",
+    "fideId": "50419280",
+    "registeredAt": "2026-10-12T17:20:00.000Z",
+    "checkInStatus": "checked_in",
+    "customAnswers": {
+      "aicf_id": "AICF-WB-2025-1104"
+    }
+  },
+  {
+    "ticketId": "CHTR-2026-BZ44D2",
+    "tournament": "Chaturanga Spring Blitz Arena 2026",
+    "fullName": "Bishal Saha",
+    "rollNumber": "23101106042",
+    "institution": "Jalpaiguri Government Engineering College",
+    "department": "Mechanical Engineering",
+    "year": "2nd Year",
+    "email": "bishal.s@jgec.ac.in",
+    "phone": "9832104561",
+    "ratingCategory": "Club Player (1200 - 1600)",
+    "chessUsername": "bishal_bullet",
+    "fideId": "Unrated",
+    "registeredAt": "2026-10-13T08:15:00.000Z",
+    "checkInStatus": "checked_in",
+    "customAnswers": {
+      "lichess_blitz_rating": "1845"
+    }
+  },
+  {
+    "ticketId": "CHTR-2026-BZ55E9",
+    "tournament": "Chaturanga Spring Blitz Arena 2026",
+    "fullName": "Sneha Barman",
+    "rollNumber": "24101103011",
+    "institution": "Jalpaiguri Government Engineering College",
+    "department": "ECE",
+    "year": "1st Year",
+    "email": "sneha.barman@jgec.ac.in",
+    "phone": "9875123490",
+    "ratingCategory": "Beginner / Casual (< 1200)",
+    "chessUsername": "sneha_blitz",
+    "fideId": "Unrated",
+    "registeredAt": "2026-10-13T10:05:00.000Z",
+    "checkInStatus": "confirmed",
+    "customAnswers": {
+      "lichess_blitz_rating": "1420"
+    }
+  },
+  {
+    "ticketId": "CHTR-2026-FD66F1",
+    "tournament": "Chaturanga Freshers Induction Chess Derby 2026",
+    "fullName": "Anurag Ghosh",
+    "rollNumber": "24101104008",
+    "institution": "Jalpaiguri Government Engineering College",
+    "department": "CSE",
+    "year": "1st Year (Freshers)",
+    "email": "anurag.g@jgec.ac.in",
+    "phone": "9732104588",
+    "ratingCategory": "Beginner / Casual (< 1200)",
+    "chessUsername": "anurag_pawn",
+    "fideId": "Unrated",
+    "registeredAt": "2026-10-13T11:45:00.000Z",
+    "checkInStatus": "checked_in",
+    "customAnswers": {
+      "prior_tournament_exp": "Yes - Casual matches with friends"
+    }
+  },
+  {
+    "ticketId": "CHTR-2026-FD77G3",
+    "tournament": "Chaturanga Freshers Induction Chess Derby 2026",
+    "fullName": "Pritam Das",
+    "rollNumber": "24101102025",
+    "institution": "Jalpaiguri Government Engineering College",
+    "department": "IT",
+    "year": "1st Year (Freshers)",
+    "email": "pritam.d@jgec.ac.in",
+    "phone": "9832456711",
+    "ratingCategory": "Club Player (1200 - 1600)",
+    "chessUsername": "pritam_rook",
+    "fideId": "Unrated",
+    "registeredAt": "2026-10-13T12:10:00.000Z",
+    "checkInStatus": "confirmed",
+    "customAnswers": {
+      "prior_tournament_exp": "Yes - Official tournament experience"
+    }
+  }
+]

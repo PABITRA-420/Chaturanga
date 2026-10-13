@@ -1,0 +1,1083 @@
+[
+  {
+    "id": "inter-college-2026",
+    "title": "Chaturanga Annual Inter-College Chess Championship 2026",
+    "date": "November 07, 2026",
+    "targetDate": "2026-11-07T09:30:00",
+    "time": "09:30 AM – 06:00 PM IST",
+    "venue": "Main Auditorium, JGEC Campus",
+    "format": "7 Rounds Swiss System • Rapid (15m + 10s)",
+    "prizePool": "₹25,000 + Trophies",
+    "slots": "128 Max (42 Enrolled)",
+    "maxSlots": 128,
+    "registeredCount": 42,
+    "isFeatured": true,
+    "description": "The premier collegiate chess championship of North Bengal. Open for students across engineering and collegiate institutions with digital clock setups and broadcast live boards.",
+    "status": "open",
+    "registrationStartDate": "2026-10-01T00:00:00",
+    "registrationEndDate": "2026-11-07T09:30:00",
+    "entryFee": "Free for JGEC • ₹100 External",
+    "arbiterName": "IA Dr. P. K. Sen / Chief Arbiter JGEC",
+    "contactEmail": "tournaments@chaturanga-jgec.ac.in",
+    "contactPhone": "+91 94340 12345",
+    "fairPlayNotice": "Standard FIDE Anti-Cheating and Digital Clock Regulations apply. Mobile devices strictly prohibited in tournament hall.",
+    "formConfig": [
+      {
+        "id": "fullName",
+        "label": "Full Legal Name",
+        "type": "text",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "rollNumber",
+        "label": "College / University Roll No.",
+        "type": "text",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "institution",
+        "label": "Institution / College",
+        "type": "text",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "department",
+        "label": "Department / Branch",
+        "type": "text",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "year",
+        "label": "Academic Year",
+        "type": "select",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "email",
+        "label": "Official Email Address",
+        "type": "email",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "phone",
+        "label": "WhatsApp / Mobile Number",
+        "type": "tel",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "chessUsername",
+        "label": "Chess.com / Lichess Handle",
+        "type": "text",
+        "enabled": true,
+        "required": false
+      },
+      {
+        "id": "fideId",
+        "label": "Official FIDE ID",
+        "type": "text",
+        "enabled": true,
+        "required": false
+      },
+      {
+        "id": "ratingCategory",
+        "label": "Player Rating Category",
+        "type": "select",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "acceptTerms",
+        "label": "Fair Play Adherence",
+        "type": "checkbox",
+        "enabled": true,
+        "required": true
+      }
+    ],
+    "customFields": [
+      {
+        "id": "hostel_needed",
+        "label": "Do you require campus hostel accommodation for the tournament weekend?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "No - Day Scholar / Local Stay",
+          "Yes - Boys Hostel 1",
+          "Yes - Girls Hostel 2"
+        ]
+      },
+      {
+        "id": "tshirt_size",
+        "label": "Official Chaturanga 2026 Jersey T-Shirt Size",
+        "type": "select",
+        "required": false,
+        "options": [
+          "S (38)",
+          "M (40)",
+          "L (42)",
+          "XL (44)"
+        ]
+      }
+    ],
+    "isPast": false,
+    "createdAt": "2026-10-01T10:00:00Z",
+    "updatedAt": "2026-10-13T12:25:31.600Z"
+  },
+  {
+    "id": "state-rapid-2026",
+    "title": "North Bengal State Rapid Rating Open 2026",
+    "date": "December 12, 2026",
+    "targetDate": "2026-12-12T10:00:00",
+    "time": "10:00 AM – 07:00 PM IST",
+    "venue": "Indoor Sports Complex, JGEC",
+    "format": "6 Rounds Rapid (25m + 10s) • FIDE Rated",
+    "prizePool": "₹40,000 Cash Pool",
+    "slots": "64 Slots (52 Enrolled - Almost Full)",
+    "maxSlots": 64,
+    "registeredCount": 52,
+    "isFeatured": false,
+    "description": "Official FIDE-rated Rapid circuit leg organized in association with the North Bengal Chess Federation. Standard electronic clocks and international arbiters.",
+    "status": "closing_soon",
+    "registrationStartDate": "2026-10-01T00:00:00",
+    "registrationEndDate": "2026-12-12T10:00:00",
+    "entryFee": "₹150 All Players",
+    "arbiterName": "IA Dr. P. K. Sen / Chief Arbiter JGEC",
+    "contactEmail": "tournaments@chaturanga-jgec.ac.in",
+    "contactPhone": "+91 94340 12345",
+    "fairPlayNotice": "Standard FIDE Anti-Cheating and Digital Clock Regulations apply. Mobile devices strictly prohibited.",
+    "formConfig": [
+      {
+        "id": "fullName",
+        "label": "Full Legal Name",
+        "type": "text",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "rollNumber",
+        "label": "College / University Roll No.",
+        "type": "text",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "institution",
+        "label": "Institution / College",
+        "type": "text",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "department",
+        "label": "Department / Branch",
+        "type": "text",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "year",
+        "label": "Academic Year",
+        "type": "select",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "email",
+        "label": "Official Email Address",
+        "type": "email",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "phone",
+        "label": "WhatsApp / Mobile Number",
+        "type": "tel",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "chessUsername",
+        "label": "Chess.com / Lichess Handle",
+        "type": "text",
+        "enabled": true,
+        "required": false
+      },
+      {
+        "id": "fideId",
+        "label": "Official FIDE ID",
+        "type": "text",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "ratingCategory",
+        "label": "Player Rating Category",
+        "type": "select",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "acceptTerms",
+        "label": "Fair Play Adherence",
+        "type": "checkbox",
+        "enabled": true,
+        "required": true
+      }
+    ],
+    "customFields": [
+      {
+        "id": "aicf_id",
+        "label": "AICF (All India Chess Federation) Player Registration Number",
+        "type": "text",
+        "required": true
+      }
+    ],
+    "isPast": false,
+    "createdAt": "2026-10-01T10:00:00Z",
+    "updatedAt": "2026-10-13T12:25:31.621Z"
+  },
+  {
+    "id": "spring-blitz-2026",
+    "title": "Chaturanga Spring Blitz Arena 2026",
+    "date": "January 15, 2027",
+    "targetDate": "2027-01-15T15:00:00",
+    "time": "03:00 PM – 08:30 PM IST",
+    "venue": "Student Activity Centre (SAC) Hall 1",
+    "format": "9 Double-Rounds (3m + 2s Blitz Arena)",
+    "prizePool": "₹15,000 + Medals",
+    "slots": "64 Max (23 Registered)",
+    "maxSlots": 64,
+    "registeredCount": 23,
+    "isFeatured": false,
+    "description": "Fast-paced, adrenaline-filled blitz derby open to beginner, intermediate, and advanced players. Sudden death playoffs for top 4 finishers.",
+    "status": "closed",
+    "registrationStartDate": "2026-10-01T00:00:00",
+    "registrationEndDate": "2027-01-15T15:00:00",
+    "entryFee": "₹50 Entry Fee",
+    "arbiterName": "FA Debashis Paul / Blitz Arbiter",
+    "contactEmail": "blitz@chaturanga-jgec.ac.in",
+    "contactPhone": "+91 94340 12345",
+    "fairPlayNotice": "Standard FIDE Blitz Anti-Cheating and Digital Clock Regulations apply.",
+    "formConfig": [
+      {
+        "id": "fullName",
+        "label": "Full Legal Name",
+        "type": "text",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "rollNumber",
+        "label": "College / University Roll No.",
+        "type": "text",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "institution",
+        "label": "Institution / College",
+        "type": "text",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "department",
+        "label": "Department / Branch",
+        "type": "text",
+        "enabled": true,
+        "required": false
+      },
+      {
+        "id": "year",
+        "label": "Academic Year",
+        "type": "select",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "email",
+        "label": "Official Email Address",
+        "type": "email",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "phone",
+        "label": "WhatsApp / Mobile Number",
+        "type": "tel",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "chessUsername",
+        "label": "Chess.com / Lichess Handle",
+        "type": "text",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "fideId",
+        "label": "Official FIDE ID",
+        "type": "text",
+        "enabled": true,
+        "required": false
+      },
+      {
+        "id": "ratingCategory",
+        "label": "Player Rating Category",
+        "type": "select",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "acceptTerms",
+        "label": "Fair Play Adherence",
+        "type": "checkbox",
+        "enabled": true,
+        "required": true
+      }
+    ],
+    "customFields": [
+      {
+        "id": "lichess_blitz_rating",
+        "label": "Peak Lichess or Chess.com Blitz Rating",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "isPast": false,
+    "createdAt": "2026-10-01T10:00:00Z",
+    "updatedAt": "2026-10-13T13:00:46.476Z"
+  },
+  {
+    "id": "freshers-derby-2026",
+    "title": "Chaturanga Freshers Induction Chess Derby 2026",
+    "date": "February 06, 2027",
+    "targetDate": "2027-02-06T10:00:00",
+    "time": "10:00 AM – 04:30 PM IST",
+    "venue": "Civil Seminar Hall, JGEC",
+    "format": "5 Rounds Rapid (10m + 5s) • Freshers & Sophomores Only",
+    "prizePool": "Trophies + Starter Chess Sets + Certificates",
+    "slots": "48 Slots (16 Enrolled)",
+    "maxSlots": 48,
+    "registeredCount": 16,
+    "isFeatured": false,
+    "description": "Exclusive tournament tailored for 1st and 2nd year students to showcase talent, earn club ranking, and get selected into the JGEC Inter-College Varsity Squad.",
+    "status": "closed",
+    "registrationStartDate": "2026-10-01T00:00:00",
+    "registrationEndDate": "2027-02-06T10:00:00",
+    "entryFee": "Free for All Freshers",
+    "arbiterName": "Arindam Mukherjee / Club Captain",
+    "contactEmail": "freshers@chaturanga-jgec.ac.in",
+    "contactPhone": "+91 94340 12345",
+    "fairPlayNotice": "Standard fair play and club etiquette apply. Clocks will be explained before Round 1.",
+    "formConfig": [
+      {
+        "id": "fullName",
+        "label": "Full Legal Name",
+        "type": "text",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "rollNumber",
+        "label": "College / University Roll No.",
+        "type": "text",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "institution",
+        "label": "Institution / College",
+        "type": "text",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "department",
+        "label": "Department / Branch",
+        "type": "text",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "year",
+        "label": "Academic Year",
+        "type": "select",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "email",
+        "label": "Official Email Address",
+        "type": "email",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "phone",
+        "label": "WhatsApp / Mobile Number",
+        "type": "tel",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "chessUsername",
+        "label": "Chess.com / Lichess Handle",
+        "type": "text",
+        "enabled": true,
+        "required": false
+      },
+      {
+        "id": "fideId",
+        "label": "Official FIDE ID",
+        "type": "text",
+        "enabled": false,
+        "required": false
+      },
+      {
+        "id": "ratingCategory",
+        "label": "Player Rating Category",
+        "type": "select",
+        "enabled": true,
+        "required": true
+      },
+      {
+        "id": "acceptTerms",
+        "label": "Fair Play Adherence",
+        "type": "checkbox",
+        "enabled": true,
+        "required": true
+      }
+    ],
+    "customFields": [
+      {
+        "id": "prior_tournament_exp",
+        "label": "Have you played with physical chess clocks before?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "No - This is my first time",
+          "Yes - Casual matches with friends",
+          "Yes - Official tournament experience"
+        ]
+      }
+    ],
+    "isPast": false,
+    "createdAt": "2026-10-01T10:00:00Z",
+    "updatedAt": "2026-10-13T13:00:46.489Z"
+  },
+  {
+    "id": "autumn-swiss-2025",
+    "title": "Autumn Swiss Cup 2025",
+    "date": "September 18, 2025",
+    "targetDate": "September 18, 2025T09:00:00",
+    "time": "10:00 AM – 06:30 PM",
+    "venue": "Main Auditorium, JGEC Campus",
+    "format": "7 Rounds Swiss (15m + 10s)",
+    "prizePool": "Completed",
+    "slots": "84 Participants",
+    "maxSlots": 84,
+    "registeredCount": 84,
+    "isFeatured": false,
+    "description": "Aniket Roy secured the tournament victory undefeated after a decisive tactical rook sacrifice in round 7 against Ritwick Paul.",
+    "status": "completed",
+    "formConfig": [
+      {
+        "id": "fullName",
+        "label": "Full Legal Name",
+        "type": "text",
+        "enabled": true,
+        "required": true,
+        "placeholder": "e.g. Viswanathan Anand",
+        "helpText": "Official name as recognized in college ID or FIDE records"
+      },
+      {
+        "id": "rollNumber",
+        "label": "College / University Roll No.",
+        "type": "text",
+        "enabled": true,
+        "required": true,
+        "placeholder": "e.g. 23101104018",
+        "helpText": "College identity card roll number for arbiter validation"
+      },
+      {
+        "id": "institution",
+        "label": "Institution / College",
+        "type": "text",
+        "enabled": true,
+        "required": true,
+        "placeholder": "e.g. Jalpaiguri Government Engineering College",
+        "helpText": "Host or visiting collegiate affiliation"
+      },
+      {
+        "id": "department",
+        "label": "Department / Branch",
+        "type": "text",
+        "enabled": true,
+        "required": true,
+        "placeholder": "e.g. Computer Science & Engineering",
+        "helpText": "Academic discipline"
+      },
+      {
+        "id": "year",
+        "label": "Academic Year",
+        "type": "select",
+        "enabled": true,
+        "required": true,
+        "options": [
+          "1st Year (Freshers)",
+          "2nd Year",
+          "3rd Year",
+          "4th Year (Final Year)",
+          "Postgraduate / Alumni / Guest"
+        ],
+        "helpText": "Year of study for category awards"
+      },
+      {
+        "id": "email",
+        "label": "Official Email Address",
+        "type": "email",
+        "enabled": true,
+        "required": true,
+        "placeholder": "e.g. player@jgec.ac.in",
+        "helpText": "For pairings, timetable notices, and ticket PDF delivery"
+      },
+      {
+        "id": "phone",
+        "label": "WhatsApp / Mobile Number",
+        "type": "tel",
+        "enabled": true,
+        "required": true,
+        "placeholder": "e.g. 9876543210",
+        "helpText": "Direct mobile number for emergency arbiter notices"
+      },
+      {
+        "id": "chessUsername",
+        "label": "Chess.com / Lichess Handle",
+        "type": "text",
+        "enabled": true,
+        "required": false,
+        "placeholder": "e.g. JGEC_Grandmaster",
+        "helpText": "Optional online handle to verify rapid rating track record"
+      },
+      {
+        "id": "fideId",
+        "label": "Official FIDE ID",
+        "type": "text",
+        "enabled": true,
+        "required": false,
+        "placeholder": "e.g. 5029411 (or leave blank if unrated)",
+        "helpText": "Required only for FIDE rated sections; leave blank if unrated"
+      },
+      {
+        "id": "ratingCategory",
+        "label": "Player Rating Category",
+        "type": "select",
+        "enabled": true,
+        "required": true,
+        "options": [
+          "Beginner / Casual (< 1200)",
+          "Club Player (1200 - 1600)",
+          "Intermediate / Rated (1600 - 1900)",
+          "Advanced / FIDE Master (> 1900)"
+        ],
+        "helpText": "Seed bracket calculation for Swiss system initial pairing"
+      },
+      {
+        "id": "acceptTerms",
+        "label": "Fair Play & FIDE Regulation Adherence",
+        "type": "checkbox",
+        "enabled": true,
+        "required": true,
+        "helpText": "Adherence to FIDE anti-cheating guidelines and zero-tolerance policy"
+      }
+    ],
+    "isPast": true,
+    "totalParticipants": 84,
+    "summary": "Aniket Roy secured the tournament victory undefeated after a decisive tactical rook sacrifice in round 7 against Ritwick Paul.",
+    "podium": [
+      {
+        "rank": "1st (Gold)",
+        "name": "Aniket Roy",
+        "dept": "CSE 4th Year",
+        "score": "6.5 / 7.0",
+        "prize": "₹10,000 + Champion Cup"
+      },
+      {
+        "rank": "2nd (Silver)",
+        "name": "Ritwick Paul",
+        "dept": "ECE 4th Year",
+        "score": "6.0 / 7.0",
+        "prize": "₹6,000 + Silver Shield"
+      },
+      {
+        "rank": "3rd (Bronze)",
+        "name": "Suman Sen",
+        "dept": "ME 3rd Year",
+        "score": "5.5 / 7.0",
+        "prize": "₹4,000 + Bronze Trophy"
+      }
+    ],
+    "results": [
+      {
+        "rank": 1,
+        "name": "Aniket Roy",
+        "idNumber": "JGEC-22101",
+        "dept": "CSE",
+        "score": "6.5",
+        "tieBreak": "29.5"
+      },
+      {
+        "rank": 2,
+        "name": "Ritwick Paul",
+        "idNumber": "JGEC-22145",
+        "dept": "ECE",
+        "score": "6.0",
+        "tieBreak": "28.0"
+      },
+      {
+        "rank": 3,
+        "name": "Suman Sen",
+        "idNumber": "JGEC-23112",
+        "dept": "ME",
+        "score": "5.5",
+        "tieBreak": "26.5"
+      },
+      {
+        "rank": 4,
+        "name": "Priya Das",
+        "idNumber": "JGEC-23189",
+        "dept": "IT",
+        "score": "5.0",
+        "tieBreak": "25.0"
+      },
+      {
+        "rank": 5,
+        "name": "Debjyoti Bose",
+        "idNumber": "JGEC-24102",
+        "dept": "EE",
+        "score": "4.5",
+        "tieBreak": "24.0"
+      },
+      {
+        "rank": 6,
+        "name": "Sneha Mukherjee",
+        "idNumber": "JGEC-23140",
+        "dept": "CE",
+        "score": "4.5",
+        "tieBreak": "22.5"
+      },
+      {
+        "rank": 7,
+        "name": "Abhirup Ghosh",
+        "idNumber": "JGEC-24155",
+        "dept": "ECE",
+        "score": "4.0",
+        "tieBreak": "21.0"
+      },
+      {
+        "rank": 8,
+        "name": "Rahul Karmakar",
+        "idNumber": "JGEC-22180",
+        "dept": "IT",
+        "score": "4.0",
+        "tieBreak": "20.5"
+      }
+    ],
+    "createdAt": "2025-01-01T10:00:00Z",
+    "updatedAt": "2025-09-20T10:00:00Z"
+  },
+  {
+    "id": "grand-blitz-2025",
+    "title": "Grand Blitz Summer Derby 2025",
+    "date": "June 22, 2025",
+    "targetDate": "June 22, 2025T09:00:00",
+    "time": "02:00 PM – 07:30 PM",
+    "venue": "Student Activity Centre (Room 204)",
+    "format": "Arena Knockout (3m + 2s)",
+    "prizePool": "Completed",
+    "slots": "64 Participants",
+    "maxSlots": 64,
+    "registeredCount": 64,
+    "isFeatured": false,
+    "description": "Over 190 intense blitz games played in 5 hours. Suman Sen capitalized on time pressure in endgame scramble to win the finals 3-1.",
+    "status": "completed",
+    "formConfig": [
+      {
+        "id": "fullName",
+        "label": "Full Legal Name",
+        "type": "text",
+        "enabled": true,
+        "required": true,
+        "placeholder": "e.g. Viswanathan Anand",
+        "helpText": "Official name as recognized in college ID or FIDE records"
+      },
+      {
+        "id": "rollNumber",
+        "label": "College / University Roll No.",
+        "type": "text",
+        "enabled": true,
+        "required": true,
+        "placeholder": "e.g. 23101104018",
+        "helpText": "College identity card roll number for arbiter validation"
+      },
+      {
+        "id": "institution",
+        "label": "Institution / College",
+        "type": "text",
+        "enabled": true,
+        "required": true,
+        "placeholder": "e.g. Jalpaiguri Government Engineering College",
+        "helpText": "Host or visiting collegiate affiliation"
+      },
+      {
+        "id": "department",
+        "label": "Department / Branch",
+        "type": "text",
+        "enabled": true,
+        "required": true,
+        "placeholder": "e.g. Computer Science & Engineering",
+        "helpText": "Academic discipline"
+      },
+      {
+        "id": "year",
+        "label": "Academic Year",
+        "type": "select",
+        "enabled": true,
+        "required": true,
+        "options": [
+          "1st Year (Freshers)",
+          "2nd Year",
+          "3rd Year",
+          "4th Year (Final Year)",
+          "Postgraduate / Alumni / Guest"
+        ],
+        "helpText": "Year of study for category awards"
+      },
+      {
+        "id": "email",
+        "label": "Official Email Address",
+        "type": "email",
+        "enabled": true,
+        "required": true,
+        "placeholder": "e.g. player@jgec.ac.in",
+        "helpText": "For pairings, timetable notices, and ticket PDF delivery"
+      },
+      {
+        "id": "phone",
+        "label": "WhatsApp / Mobile Number",
+        "type": "tel",
+        "enabled": true,
+        "required": true,
+        "placeholder": "e.g. 9876543210",
+        "helpText": "Direct mobile number for emergency arbiter notices"
+      },
+      {
+        "id": "chessUsername",
+        "label": "Chess.com / Lichess Handle",
+        "type": "text",
+        "enabled": true,
+        "required": false,
+        "placeholder": "e.g. JGEC_Grandmaster",
+        "helpText": "Optional online handle to verify rapid rating track record"
+      },
+      {
+        "id": "fideId",
+        "label": "Official FIDE ID",
+        "type": "text",
+        "enabled": true,
+        "required": false,
+        "placeholder": "e.g. 5029411 (or leave blank if unrated)",
+        "helpText": "Required only for FIDE rated sections; leave blank if unrated"
+      },
+      {
+        "id": "ratingCategory",
+        "label": "Player Rating Category",
+        "type": "select",
+        "enabled": true,
+        "required": true,
+        "options": [
+          "Beginner / Casual (< 1200)",
+          "Club Player (1200 - 1600)",
+          "Intermediate / Rated (1600 - 1900)",
+          "Advanced / FIDE Master (> 1900)"
+        ],
+        "helpText": "Seed bracket calculation for Swiss system initial pairing"
+      },
+      {
+        "id": "acceptTerms",
+        "label": "Fair Play & FIDE Regulation Adherence",
+        "type": "checkbox",
+        "enabled": true,
+        "required": true,
+        "helpText": "Adherence to FIDE anti-cheating guidelines and zero-tolerance policy"
+      }
+    ],
+    "isPast": true,
+    "totalParticipants": 64,
+    "summary": "Over 190 intense blitz games played in 5 hours. Suman Sen capitalized on time pressure in endgame scramble to win the finals 3-1.",
+    "podium": [
+      {
+        "rank": "1st (Gold)",
+        "name": "Suman Sen",
+        "dept": "ME 3rd Year",
+        "score": "Finals 3 - 1",
+        "prize": "₹8,000 + Blitz Shield"
+      },
+      {
+        "rank": "2nd (Silver)",
+        "name": "Aniket Roy",
+        "dept": "CSE 4th Year",
+        "score": "Finals 1 - 3",
+        "prize": "₹4,000 + Silver Medal"
+      },
+      {
+        "rank": "3rd (Bronze)",
+        "name": "Abhirup Ghosh",
+        "dept": "ECE 2nd Year",
+        "score": "Playoff Win",
+        "prize": "₹2,500 + Bronze Medal"
+      }
+    ],
+    "results": [
+      {
+        "rank": 1,
+        "name": "Suman Sen",
+        "idNumber": "JGEC-23112",
+        "dept": "ME",
+        "score": "9.0",
+        "tieBreak": "32.0"
+      },
+      {
+        "rank": 2,
+        "name": "Aniket Roy",
+        "idNumber": "JGEC-22101",
+        "dept": "CSE",
+        "score": "8.5",
+        "tieBreak": "31.0"
+      },
+      {
+        "rank": 3,
+        "name": "Abhirup Ghosh",
+        "idNumber": "JGEC-24155",
+        "dept": "ECE",
+        "score": "7.0",
+        "tieBreak": "27.5"
+      },
+      {
+        "rank": 4,
+        "name": "Ritwick Paul",
+        "idNumber": "JGEC-22145",
+        "dept": "ECE",
+        "score": "6.5",
+        "tieBreak": "26.0"
+      },
+      {
+        "rank": 5,
+        "name": "Priya Das",
+        "idNumber": "JGEC-23189",
+        "dept": "IT",
+        "score": "6.0",
+        "tieBreak": "24.5"
+      }
+    ],
+    "createdAt": "2025-01-01T10:00:00Z",
+    "updatedAt": "2025-09-20T10:00:00Z"
+  },
+  {
+    "id": "north-bengal-2025",
+    "title": "North Bengal Inter-Tech Cup",
+    "date": "February 10, 2025",
+    "targetDate": "February 10, 2025T09:00:00",
+    "time": "09:00 AM – 08:00 PM",
+    "venue": "Indoor Sports Complex & Gymnasium",
+    "format": "Team Classical 4 Boards (45m + 30s)",
+    "prizePool": "Completed",
+    "slots": "48 Participants",
+    "maxSlots": 48,
+    "registeredCount": 48,
+    "isFeatured": false,
+    "description": "Host team JGEC swept the collegiate championship without dropping a single round, defending their title for the second consecutive year.",
+    "status": "completed",
+    "formConfig": [
+      {
+        "id": "fullName",
+        "label": "Full Legal Name",
+        "type": "text",
+        "enabled": true,
+        "required": true,
+        "placeholder": "e.g. Viswanathan Anand",
+        "helpText": "Official name as recognized in college ID or FIDE records"
+      },
+      {
+        "id": "rollNumber",
+        "label": "College / University Roll No.",
+        "type": "text",
+        "enabled": true,
+        "required": true,
+        "placeholder": "e.g. 23101104018",
+        "helpText": "College identity card roll number for arbiter validation"
+      },
+      {
+        "id": "institution",
+        "label": "Institution / College",
+        "type": "text",
+        "enabled": true,
+        "required": true,
+        "placeholder": "e.g. Jalpaiguri Government Engineering College",
+        "helpText": "Host or visiting collegiate affiliation"
+      },
+      {
+        "id": "department",
+        "label": "Department / Branch",
+        "type": "text",
+        "enabled": true,
+        "required": true,
+        "placeholder": "e.g. Computer Science & Engineering",
+        "helpText": "Academic discipline"
+      },
+      {
+        "id": "year",
+        "label": "Academic Year",
+        "type": "select",
+        "enabled": true,
+        "required": true,
+        "options": [
+          "1st Year (Freshers)",
+          "2nd Year",
+          "3rd Year",
+          "4th Year (Final Year)",
+          "Postgraduate / Alumni / Guest"
+        ],
+        "helpText": "Year of study for category awards"
+      },
+      {
+        "id": "email",
+        "label": "Official Email Address",
+        "type": "email",
+        "enabled": true,
+        "required": true,
+        "placeholder": "e.g. player@jgec.ac.in",
+        "helpText": "For pairings, timetable notices, and ticket PDF delivery"
+      },
+      {
+        "id": "phone",
+        "label": "WhatsApp / Mobile Number",
+        "type": "tel",
+        "enabled": true,
+        "required": true,
+        "placeholder": "e.g. 9876543210",
+        "helpText": "Direct mobile number for emergency arbiter notices"
+      },
+      {
+        "id": "chessUsername",
+        "label": "Chess.com / Lichess Handle",
+        "type": "text",
+        "enabled": true,
+        "required": false,
+        "placeholder": "e.g. JGEC_Grandmaster",
+        "helpText": "Optional online handle to verify rapid rating track record"
+      },
+      {
+        "id": "fideId",
+        "label": "Official FIDE ID",
+        "type": "text",
+        "enabled": true,
+        "required": false,
+        "placeholder": "e.g. 5029411 (or leave blank if unrated)",
+        "helpText": "Required only for FIDE rated sections; leave blank if unrated"
+      },
+      {
+        "id": "ratingCategory",
+        "label": "Player Rating Category",
+        "type": "select",
+        "enabled": true,
+        "required": true,
+        "options": [
+          "Beginner / Casual (< 1200)",
+          "Club Player (1200 - 1600)",
+          "Intermediate / Rated (1600 - 1900)",
+          "Advanced / FIDE Master (> 1900)"
+        ],
+        "helpText": "Seed bracket calculation for Swiss system initial pairing"
+      },
+      {
+        "id": "acceptTerms",
+        "label": "Fair Play & FIDE Regulation Adherence",
+        "type": "checkbox",
+        "enabled": true,
+        "required": true,
+        "helpText": "Adherence to FIDE anti-cheating guidelines and zero-tolerance policy"
+      }
+    ],
+    "isPast": true,
+    "totalParticipants": 48,
+    "summary": "Host team JGEC swept the collegiate championship without dropping a single round, defending their title for the second consecutive year.",
+    "podium": [
+      {
+        "rank": "1st (Gold)",
+        "name": "Team JGEC",
+        "dept": "Host College Squad",
+        "score": "Match Pts: 10/10",
+        "prize": "₹20,000 + Championship Cup"
+      },
+      {
+        "rank": "2nd (Silver)",
+        "name": "Siliguri Inst. of Tech (SIT)",
+        "dept": "Guest Squad",
+        "score": "Match Pts: 8/10",
+        "prize": "₹10,000 + Silver Cup"
+      },
+      {
+        "rank": "3rd (Bronze)",
+        "name": "Cooch Behar Govt Engg (CGEC)",
+        "dept": "Guest Squad",
+        "score": "Match Pts: 6/10",
+        "prize": "₹5,000 + Bronze Cup"
+      }
+    ],
+    "results": [
+      {
+        "rank": 1,
+        "name": "Team JGEC",
+        "idNumber": "JGEC-SQUAD",
+        "dept": "All Branches",
+        "score": "10.0",
+        "tieBreak": "38.0"
+      },
+      {
+        "rank": 2,
+        "name": "SIT Siliguri",
+        "idNumber": "SIT-TEAM",
+        "dept": "External",
+        "score": "8.0",
+        "tieBreak": "33.0"
+      },
+      {
+        "rank": 3,
+        "name": "CGEC Cooch Behar",
+        "idNumber": "CGEC-TEAM",
+        "dept": "External",
+        "score": "6.0",
+        "tieBreak": "29.0"
+      },
+      {
+        "rank": 4,
+        "name": "Jalpaiguri Polytechnic",
+        "idNumber": "JPC-TEAM",
+        "dept": "External",
+        "score": "4.0",
+        "tieBreak": "24.0"
+      }
+    ],
+    "createdAt": "2025-01-01T10:00:00Z",
+    "updatedAt": "2025-09-20T10:00:00Z"
+  }
+]

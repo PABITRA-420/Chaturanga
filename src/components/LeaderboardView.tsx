@@ -1,0 +1,478 @@
+'use client';
+
+import React, { useState, useMemo } from 'react';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import Link from 'next/link';
+import { 
+  Trophy, 
+  Crown, 
+  Search, 
+  Medal, 
+  ChevronRight, 
+  ShieldCheck, 
+  Clock, 
+  Zap, 
+  BookOpen, 
+  Sparkles
+} from 'lucide-react';
+import { LEADERBOARD_PLAYERS } from '@/data/leaderboardData';
+
+export default function LeaderboardView() {
+  const [ratingMode, setRatingMode] = useState<'rapid' | 'blitz' | 'classical'>('rapid');
+  const [selectedDept, setSelectedDept] = useState<string>('All');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [sortBy, setSortBy] = useState<'rating' | 'winRate' | 'matches'>('rating');
+
+  // Filter and Sort Players
+  const filteredPlayers = useMemo(() => {
+    return LEADERBOARD_PLAYERS.filter(p => {
+      const matchesSearch = 
+        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.rollNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (p.chessUsername && p.chessUsername.toLowerCase().includes(searchQuery.toLowerCase()));
+
+      const matchesDept = selectedDept === 'All' || p.department === selectedDept;
+
+      return matchesSearch && matchesDept;
+    }).sort((a, b) => {
+      if (sortBy === 'rating') {
+        return b.rating[ratingMode] - a.rating[ratingMode];
+      }
+      if (sortBy === 'winRate') {
+        return b.stats.winRate - a.stats.winRate;
+      }
+      return b.stats.matchesPlayed - a.stats.matchesPlayed;
+    });
+  }, [ratingMode, selectedDept, searchQuery, sortBy]);
+
+  const topThree = useMemo(() => {
+    return filteredPlayers.slice(0, 3);
+  }, [filteredPlayers]);
+
+  return (
+    <div className="min-h-screen bg-[#0B0F14] text-[#F5F5F5] font-['Inter',sans-serif] selection:bg-[#D4AF7C] selection:text-[#0B0F14]">
+      <Navbar />
+
+      <main id="main-content" className="pt-28 pb-20">
+        
+        {/* HEADER SECTION */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+          <div className="relative p-8 sm:p-12 rounded-3xl bg-gradient-to-b from-[#12161D] to-[#0D1016] border border-white/10 overflow-hidden shadow-2xl">
+            
+            {/* Background chess watermark */}
+            <div className="absolute right-6 -bottom-10 select-none pointer-events-none opacity-5 text-9xl font-serif text-[#D4AF7C]">
+              ♔
+            </div>
+            
+            <div className="relative z-10 max-w-3xl">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 text-xs font-bold uppercase tracking-widest text-[#D4AF7C] mb-4">
+                <Crown className="w-3.5 h-3.5" />
+                <span>Official JGEC Club Elo Ratings</span>
+              </div>
+              <h1 className="font-['Montserrat',sans-serif] font-black text-3xl sm:text-5xl text-[#F5F5F5] tracking-tight leading-tight mb-4">
+                Club Elo Leaderboard <span className="text-[#D4AF7C]">&</span> Standings
+              </h1>
+              <p className="text-sm sm:text-base text-[#A0A6B0] leading-relaxed mb-6 font-['Poppins',sans-serif]">
+                Recognized collegiate ratings calculated after every official JGEC championship, rapid arena, and blitz night following standard FIDE Elo rating guidelines.
+              </p>
+
+              {/* Quick telemetry metrics */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-white/10">
+                <div className="p-3 rounded-2xl bg-white/5 border border-white/5">
+                  <div className="text-xs text-[#A0A6B0] mb-0.5">Top Rating</div>
+                  <div className="text-lg font-black font-mono text-[#D4AF7C]">2185 Elo</div>
+                </div>
+                <div className="p-3 rounded-2xl bg-white/5 border border-white/5">
+                  <div className="text-xs text-[#A0A6B0] mb-0.5">Ranked Players</div>
+                  <div className="text-lg font-black font-mono text-[#F5F5F5]">48 Active</div>
+                </div>
+                <div className="p-3 rounded-2xl bg-white/5 border border-white/5">
+                  <div className="text-xs text-[#A0A6B0] mb-0.5">Top Dept Win Rate</div>
+                  <div className="text-lg font-black font-mono text-emerald-400">86.5% CSE</div>
+                </div>
+                <div className="p-3 rounded-2xl bg-white/5 border border-white/5">
+                  <div className="text-xs text-[#A0A6B0] mb-0.5">Active Tournaments</div>
+                  <div className="text-lg font-black font-mono text-[#F5F5F5]">7 Concluded</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* TOP 3 PODIUM CARDS */}
+        {topThree.length >= 3 && searchQuery === '' && selectedDept === 'All' && (
+          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+            <div className="text-center mb-8">
+              <span className="text-xs uppercase tracking-[0.25em] text-[#D4AF7C] font-bold">Hall of Fame</span>
+              <h2 className="text-2xl sm:text-3xl font-black font-['Montserrat',sans-serif] mt-1 text-[#F5F5F5]">
+                Collegiate Grandmaster Podium
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+              
+              {/* RANK 2 - SILVER */}
+              <div className="order-2 md:order-1 p-6 rounded-3xl bg-[#12161D] border border-slate-400/20 shadow-xl relative overflow-hidden group hover:border-slate-300/40 transition">
+                <div className="absolute top-4 right-4 text-xs font-black px-2.5 py-1 rounded-full bg-slate-300/10 text-slate-300 border border-slate-300/30 flex items-center gap-1">
+                  <Medal className="w-3.5 h-3.5 text-slate-300" />
+                  <span>Rank #2</span>
+                </div>
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-300 to-slate-500 text-[#0B0F14] font-black text-2xl flex items-center justify-center font-mono mb-4 shadow-lg">
+                  🥈
+                </div>
+                <div className="text-xs font-bold text-slate-300 uppercase tracking-widest mb-1">
+                  {topThree[1].title || 'Candidate Master'}
+                </div>
+                <h3 className="text-xl font-bold font-['Montserrat',sans-serif] text-[#F5F5F5] mb-1">
+                  {topThree[1].name}
+                </h3>
+                <p className="text-xs text-[#A0A6B0] mb-4">
+                  Dept: {topThree[1].department} • {topThree[1].year} • Roll: {topThree[1].rollNumber}
+                </p>
+
+                <div className="p-3 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-between">
+                  <div>
+                    <div className="text-[11px] text-[#A0A6B0] uppercase">Rating ({ratingMode})</div>
+                    <div className="text-xl font-black font-mono text-slate-200">{topThree[1].rating[ratingMode]}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[11px] text-[#A0A6B0] uppercase">Win Rate</div>
+                    <div className="text-sm font-bold font-mono text-emerald-400">{topThree[1].stats.winRate}%</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* RANK 1 - GOLD (CROWN) */}
+              <div className="order-1 md:order-2 p-8 rounded-3xl bg-gradient-to-b from-[#181D26] to-[#12161D] border-2 border-[#D4AF7C]/60 shadow-2xl relative overflow-hidden group transform md:-translate-y-4">
+                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#D4AF7C] via-[#F3E5AB] to-[#D4AF7C]" />
+                <div className="absolute top-4 right-4 text-xs font-black px-3 py-1 rounded-full bg-[#D4AF7C]/20 text-[#D4AF7C] border border-[#D4AF7C]/40 flex items-center gap-1.5 shadow-lg">
+                  <Crown className="w-4 h-4 text-[#D4AF7C]" />
+                  <span>CLUB CHAMPION #1</span>
+                </div>
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#D4AF7C] to-[#E6C98A] text-[#0B0F14] font-black text-3xl flex items-center justify-center font-mono mb-4 shadow-xl shadow-[#D4AF7C]/20">
+                  👑
+                </div>
+                <div className="text-xs font-bold text-[#D4AF7C] uppercase tracking-widest mb-1 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Reigning College Champion</span>
+                </div>
+                <h3 className="text-2xl font-black font-['Montserrat',sans-serif] text-[#F5F5F5] mb-1">
+                  {topThree[0].name}
+                </h3>
+                <p className="text-xs text-[#A0A6B0] mb-4">
+                  Dept: {topThree[0].department} • {topThree[0].year} • Roll: {topThree[0].rollNumber}
+                </p>
+
+                <div className="p-4 rounded-2xl bg-black/50 border border-[#D4AF7C]/20 grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-xs text-[#A0A6B0] uppercase">Active Elo</div>
+                    <div className="text-2xl font-black font-mono text-[#D4AF7C]">{topThree[0].rating[ratingMode]}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-xs text-[#A0A6B0] uppercase">Win Ratio</div>
+                    <div className="text-lg font-bold font-mono text-emerald-400">{topThree[0].stats.winRate}%</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* RANK 3 - BRONZE */}
+              <div className="order-3 md:order-3 p-6 rounded-3xl bg-[#12161D] border border-amber-700/30 shadow-xl relative overflow-hidden group hover:border-amber-600/40 transition">
+                <div className="absolute top-4 right-4 text-xs font-black px-2.5 py-1 rounded-full bg-amber-700/20 text-amber-500 border border-amber-700/40 flex items-center gap-1">
+                  <Medal className="w-3.5 h-3.5 text-amber-500" />
+                  <span>Rank #3</span>
+                </div>
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-600 to-amber-800 text-[#0B0F14] font-black text-2xl flex items-center justify-center font-mono mb-4 shadow-lg">
+                  🥉
+                </div>
+                <div className="text-xs font-bold text-amber-500 uppercase tracking-widest mb-1">
+                  {topThree[2].title || 'Collegiate Master'}
+                </div>
+                <h3 className="text-xl font-bold font-['Montserrat',sans-serif] text-[#F5F5F5] mb-1">
+                  {topThree[2].name}
+                </h3>
+                <p className="text-xs text-[#A0A6B0] mb-4">
+                  Dept: {topThree[2].department} • {topThree[2].year} • Roll: {topThree[2].rollNumber}
+                </p>
+
+                <div className="p-3 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-between">
+                  <div>
+                    <div className="text-[11px] text-[#A0A6B0] uppercase">Rating ({ratingMode})</div>
+                    <div className="text-xl font-black font-mono text-amber-400">{topThree[2].rating[ratingMode]}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[11px] text-[#A0A6B0] uppercase">Win Rate</div>
+                    <div className="text-sm font-bold font-mono text-emerald-400">{topThree[2].stats.winRate}%</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </section>
+        )}
+
+        {/* CONTROLS & FILTERS BAR */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+          <div className="p-4 sm:p-5 rounded-3xl bg-[#12161D] border border-white/10 flex flex-col lg:flex-row items-center justify-between gap-4 shadow-xl">
+            
+            {/* Format Selector */}
+            <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-black/40 border border-white/10 w-full sm:w-auto overflow-x-auto">
+              <button
+                type="button"
+                onClick={() => setRatingMode('rapid')}
+                className={`flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer ${
+                  ratingMode === 'rapid'
+                    ? 'bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] text-[#0B0F14] shadow'
+                    : 'text-[#A0A6B0] hover:text-[#F5F5F5] hover:bg-white/5'
+                }`}
+              >
+                <Clock className="w-3.5 h-3.5" />
+                <span>Rapid (15+10)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setRatingMode('blitz')}
+                className={`flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer ${
+                  ratingMode === 'blitz'
+                    ? 'bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] text-[#0B0F14] shadow'
+                    : 'text-[#A0A6B0] hover:text-[#F5F5F5] hover:bg-white/5'
+                }`}
+              >
+                <Zap className="w-3.5 h-3.5" />
+                <span>Blitz (3+2 / 5+0)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setRatingMode('classical')}
+                className={`flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer ${
+                  ratingMode === 'classical'
+                    ? 'bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] text-[#0B0F14] shadow'
+                    : 'text-[#A0A6B0] hover:text-[#F5F5F5] hover:bg-white/5'
+                }`}
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                <span>Classical (60+30)</span>
+              </button>
+            </div>
+
+            {/* Department Filter & Search */}
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
+              
+              {/* Department Dropdown */}
+              <div className="w-full sm:w-auto">
+                <select
+                  value={selectedDept}
+                  onChange={(e) => setSelectedDept(e.target.value)}
+                  className="w-full sm:w-auto px-3.5 py-2 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C] cursor-pointer"
+                  aria-label="Filter by department"
+                >
+                  <option value="All">All Departments</option>
+                  <option value="CSE">CSE (Computer Science)</option>
+                  <option value="IT">IT (Info Tech)</option>
+                  <option value="ECE">ECE (Electronics)</option>
+                  <option value="ME">ME (Mechanical)</option>
+                  <option value="CE">CE (Civil)</option>
+                  <option value="EE">EE (Electrical)</option>
+                </select>
+              </div>
+
+              {/* Search Bar */}
+              <div className="relative w-full sm:w-64">
+                <Search className="w-4 h-4 text-[#A0A6B0] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Search player or roll..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] placeholder-[#A0A6B0]/50 focus:outline-none focus:border-[#D4AF7C]"
+                  aria-label="Search players by name or roll number"
+                />
+              </div>
+
+              {/* Sort Switcher */}
+              <div className="w-full sm:w-auto">
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as any)}
+                  className="w-full sm:w-auto px-3.5 py-2 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C] cursor-pointer"
+                  aria-label="Sort by metric"
+                >
+                  <option value="rating">Sort by Rating</option>
+                  <option value="winRate">Sort by Win Rate</option>
+                  <option value="matches">Sort by Matches Played</option>
+                </select>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        {/* MAIN LEADERBOARD TABLE */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="rounded-3xl bg-[#12161D] border border-white/10 shadow-2xl overflow-hidden">
+            
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-white/10 bg-black/40 text-[11px] uppercase tracking-wider text-[#A0A6B0] font-semibold">
+                    <th scope="col" className="py-4 px-4 sm:px-6 text-center w-16">Rank</th>
+                    <th scope="col" className="py-4 px-4 sm:px-6">Player & Title</th>
+                    <th scope="col" className="py-4 px-4 text-center">Department</th>
+                    <th scope="col" className="py-4 px-4 text-right">Active Elo</th>
+                    <th scope="col" className="py-4 px-4 text-center">Peak</th>
+                    <th scope="col" className="py-4 px-4 text-center">Win Rate</th>
+                    <th scope="col" className="py-4 px-4 text-center">Form (Last 5)</th>
+                    <th scope="col" className="py-4 px-4 sm:px-6 text-center">Trophies</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5 text-xs sm:text-sm">
+                  {filteredPlayers.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} className="py-12 text-center text-[#A0A6B0]">
+                        <div className="max-w-sm mx-auto space-y-2">
+                          <p className="text-base font-semibold text-[#F5F5F5]">No players found</p>
+                          <p className="text-xs">No active club ratings matching your current search or department filter.</p>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredPlayers.map((player, idx) => {
+                      const displayRank = idx + 1;
+                      const isTop1 = displayRank === 1;
+                      const isTop2 = displayRank === 2;
+                      const isTop3 = displayRank === 3;
+
+                      return (
+                        <tr 
+                          key={player.id} 
+                          className="hover:bg-white/[0.03] transition-colors group"
+                        >
+                          <td className="py-4 px-4 sm:px-6 text-center">
+                            <span className={`inline-flex items-center justify-center w-7 h-7 rounded-xl font-mono text-xs font-bold ${
+                              isTop1 ? 'bg-[#D4AF7C] text-[#0B0F14] shadow-md shadow-[#D4AF7C]/30' :
+                              isTop2 ? 'bg-slate-300 text-[#0B0F14]' :
+                              isTop3 ? 'bg-amber-700 text-amber-100' :
+                              'text-[#A0A6B0] bg-white/5'
+                            }`}>
+                              {displayRank}
+                            </span>
+                          </td>
+
+                          <td className="py-4 px-4 sm:px-6">
+                            <div className="flex items-center gap-3">
+                              <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${player.avatarColor} text-[#0B0F14] font-black text-sm flex items-center justify-center shadow`}>
+                                {player.chessPiece === 'King' ? '♚' :
+                                 player.chessPiece === 'Queen' ? '♛' :
+                                 player.chessPiece === 'Rook' ? '♜' :
+                                 player.chessPiece === 'Bishop' ? '♝' : '♞'}
+                              </div>
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-bold text-[#F5F5F5] group-hover:text-[#D4AF7C] transition">
+                                    {player.name}
+                                  </span>
+                                  {player.title && (
+                                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#D4AF7C]/15 text-[#D4AF7C] border border-[#D4AF7C]/30">
+                                      {player.title}
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="text-xs text-[#A0A6B0] font-mono">
+                                  Roll: {player.rollNumber} {player.chessUsername && `• @${player.chessUsername}`}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td className="py-4 px-4 text-center">
+                            <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/5 text-xs font-semibold text-[#F5F5F5]">
+                              {player.department} • {player.year.replace(' Year', 'yr')}
+                            </span>
+                          </td>
+
+                          <td className="py-4 px-4 text-right">
+                            <span className="font-mono text-base font-black text-[#D4AF7C]">
+                              {player.rating[ratingMode]}
+                            </span>
+                          </td>
+
+                          <td className="py-4 px-4 text-center font-mono text-xs text-[#A0A6B0]">
+                            {player.rating.peak}
+                          </td>
+
+                          <td className="py-4 px-4 text-center">
+                            <div className="inline-flex flex-col items-center">
+                              <span className="font-mono font-bold text-emerald-400 text-xs">
+                                {player.stats.winRate}%
+                              </span>
+                              <div className="w-16 h-1.5 rounded-full bg-white/10 mt-1 overflow-hidden">
+                                <div 
+                                  className="h-full bg-emerald-400 rounded-full" 
+                                  style={{ width: `${player.stats.winRate}%` }} 
+                                />
+                              </div>
+                            </div>
+                          </td>
+
+                          <td className="py-4 px-4 text-center">
+                            <div className="inline-flex items-center gap-1">
+                              {player.recentForm.map((f, i) => (
+                                <span
+                                  key={i}
+                                  className={`w-5 h-5 rounded text-[10px] font-black flex items-center justify-center font-mono ${
+                                    f === 'W' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
+                                    f === 'D' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
+                                    'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                                  }`}
+                                  title={f === 'W' ? 'Win' : f === 'D' ? 'Draw' : 'Loss'}
+                                >
+                                  {f}
+                                </span>
+                              ))}
+                            </div>
+                          </td>
+
+                          <td className="py-4 px-4 sm:px-6 text-center">
+                            {player.stats.tournamentsWon > 0 ? (
+                              <span className="inline-flex items-center gap-1 text-xs font-bold text-[#D4AF7C]">
+                                <Trophy className="w-3.5 h-3.5" />
+                                <span>{player.stats.tournamentsWon}</span>
+                              </span>
+                            ) : (
+                              <span className="text-[#A0A6B0]/40 text-xs">—</span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Table Footer */}
+            <div className="p-4 sm:p-5 bg-black/40 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#A0A6B0]">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-[#D4AF7C]" />
+                <span>Ratings calibrated per FIDE Handbook Section B02 (Collegiate Swiss Engine).</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Link 
+                  href="/register" 
+                  className="text-[#D4AF7C] hover:underline font-semibold inline-flex items-center gap-1"
+                >
+                  <span>Play next tournament to get rated</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
