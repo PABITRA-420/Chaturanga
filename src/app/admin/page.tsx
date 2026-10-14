@@ -215,9 +215,9 @@ export default function AdminDashboardPage() {
     registrationStartDate: '',
     registrationEndDate: '',
     entryFee: 'Free for JGEC • ₹100 External',
-    arbiterName: 'IA Dr. P. K. Sen / Chief Arbiter JGEC',
+    arbiterName: '',
     contactEmail: 'tournaments@chaturanga-jgec.ac.in',
-    contactPhone: '+91 94340 12345',
+    contactPhone: '',
     fairPlayNotice: 'Standard FIDE Anti-Cheating and Digital Clock Regulations apply.',
     formConfig: JSON.parse(JSON.stringify(DEFAULT_FORM_FIELDS)),
     customFields: []
@@ -490,9 +490,9 @@ export default function AdminDashboardPage() {
       registrationStartDate: new Date().toISOString().slice(0, 16),
       registrationEndDate: defaultDate.toISOString().slice(0, 16),
       entryFee: 'Free for JGEC • ₹100 External',
-      arbiterName: 'IA Dr. P. K. Sen / Chief Arbiter JGEC',
+      arbiterName: '',
       contactEmail: 'tournaments@chaturanga-jgec.ac.in',
-      contactPhone: '+91 94340 12345',
+      contactPhone: '',
       fairPlayNotice: 'Standard FIDE Anti-Cheating and Digital Clock Regulations apply. Mobile devices prohibited in tournament hall.',
       formConfig: JSON.parse(JSON.stringify(DEFAULT_FORM_FIELDS)),
       customFields: []

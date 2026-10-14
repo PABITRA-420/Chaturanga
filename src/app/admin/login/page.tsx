@@ -91,12 +91,6 @@ export default function AdminLoginPage() {
     }
   };
 
-  const handleUseQuickCredentials = () => {
-    setUsername('admin');
-    setPassword('');
-    setErrorMessage('');
-  };
-
   return (
     <div className="min-h-screen bg-[#070A0E] text-[#F5F5F5] font-['Inter',sans-serif] flex flex-col justify-between relative overflow-hidden selection:bg-[#D4AF7C] selection:text-[#0B0F14]">
       {/* Background Ambience & Chess Grid Texture */}
@@ -195,7 +189,7 @@ export default function AdminLoginPage() {
                       id="admin-username"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      placeholder="admin@jgec.ac.in or admin"
+                      placeholder="admin@chaturanga-jgec.ac.in or username"
                       autoComplete="username"
                       required
                       className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#090D12] border border-white/10 text-sm text-[#F5F5F5] placeholder-[#A0A6B0]/40 focus:outline-none focus:border-[#D4AF7C] focus:ring-1 focus:ring-[#D4AF7C]/40 transition"
@@ -223,7 +217,7 @@ export default function AdminLoginPage() {
                       id="admin-password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Enter password"
+                      placeholder="Enter administrator password"
                       autoComplete="current-password"
                       required
                       className="w-full pl-10 pr-11 py-3 rounded-xl bg-[#090D12] border border-white/10 text-sm text-[#F5F5F5] placeholder-[#A0A6B0]/40 focus:outline-none focus:border-[#D4AF7C] focus:ring-1 focus:ring-[#D4AF7C]/40 transition font-mono"
@@ -278,36 +272,26 @@ export default function AdminLoginPage() {
               </form>
             )}
 
-            {/* Quick Credentials Assistant Box */}
+            {/* Enterprise Security Notice */}
             <div className="mt-6 pt-5 border-t border-white/10">
-              <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 text-xs space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 font-semibold text-[#D4AF7C]">
-                    <KeyRound className="w-3.5 h-3.5" />
-                    <span>Access Configuration</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleUseQuickCredentials}
-                    className="text-[11px] font-semibold text-[#D4AF7C] hover:underline cursor-pointer"
-                    title="Fill default admin username"
-                  >
-                    Quick Fill User
-                  </button>
+              <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/10 text-xs space-y-2">
+                <div className="flex items-center gap-2 font-semibold text-[#D4AF7C]">
+                  <KeyRound className="w-3.5 h-3.5" />
+                  <span>Restricted Access System</span>
                 </div>
                 
                 <p className="text-[11px] text-[#A0A6B0] leading-relaxed">
-                  Enter your credentials configured in <code className="text-[#D4AF7C]">.env.local</code> or Supabase Auth. All logins are verified via cryptographic JWTs and protected by PostgreSQL RLS.
+                  This console is restricted to certified JGEC arbiters and authorized tournament directors. All sessions are authenticated using Supabase Auth JWTs with PostgreSQL Row Level Security enforcement.
                 </p>
 
-                <div className="grid grid-cols-2 gap-2 pt-0.5 font-mono text-[11px]">
+                <div className="grid grid-cols-2 gap-2 pt-1 font-mono text-[11px]">
                   <div className="px-2.5 py-1.5 rounded-lg bg-[#090D12] border border-white/5 flex flex-col">
-                    <span className="text-[9px] uppercase tracking-wider text-[#A0A6B0]">Authentication</span>
-                    <span className="text-[#F5F5F5] font-semibold">Supabase Auth</span>
+                    <span className="text-[9px] uppercase tracking-wider text-[#A0A6B0]">Audit Logging</span>
+                    <span className="text-[#F5F5F5] font-semibold">Active &amp; Monitored</span>
                   </div>
                   <div className="px-2.5 py-1.5 rounded-lg bg-[#090D12] border border-white/5 flex flex-col">
-                    <span className="text-[9px] uppercase tracking-wider text-[#A0A6B0]">Security Level</span>
-                    <span className="text-emerald-400 font-semibold">Superadmin / RLS</span>
+                    <span className="text-[9px] uppercase tracking-wider text-[#A0A6B0]">Security Standard</span>
+                    <span className="text-emerald-400 font-semibold">FIDE / AICF Fair Play</span>
                   </div>
                 </div>
               </div>

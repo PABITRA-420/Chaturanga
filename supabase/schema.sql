@@ -577,3 +577,39 @@ ON CONFLICT (id) DO UPDATE SET
   link_text = EXCLUDED.link_text,
   link_url = EXCLUDED.link_url,
   is_active = EXCLUDED.is_active;
+
+-- 4. Seed / Link Primary Admin Profile (Auto-assign superadmin to auth user)
+INSERT INTO public.admin_profiles (id, email, full_name, role, is_active)
+SELECT 
+  id, 
+  email, 
+  'Chief Arbiter & Tournament Director', 
+  'superadmin', 
+  true
+FROM auth.users
+WHERE LOWER(email) = 'admin.jgechelper@gmail.com'
+ON CONFLICT (id) DO UPDATE SET 
+  role = 'superadmin',
+  is_active = true,
+  updated_at = now();
+
+-- 5. Trigger: Auto-promote designated admin users when created in Supabase Auth
+CREATE OR REPLACE FUNCTION public.handle_new_admin_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF LOWER(NEW.email) = 'admin.jgechelper@gmail.com' OR LOWER(NEW.email) LIKE 'admin@%' THEN
+    INSERT INTO public.admin_profiles (id, email, full_name, role, is_active)
+    VALUES (NEW.id, NEW.email, 'Chief Arbiter & Tournament Director', 'superadmin', true)
+    ON CONFLICT (id) DO UPDATE SET 
+      role = 'superadmin', 
+      is_active = true, 
+      updated_at = now();
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_admin_user();

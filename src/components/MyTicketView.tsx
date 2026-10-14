@@ -123,24 +123,12 @@ export default function MyTicketView() {
             </button>
           </form>
 
-          {/* Quick Demo Help */}
-          <div className="flex items-center justify-center gap-2 mt-3 text-xs text-[#A0A6B0]">
-            <span>Try sample roll:</span>
-            <button 
-              type="button" 
-              onClick={() => { setQuery('22101104012'); handleLookup('22101104012'); }}
-              className="text-[#D4AF7C] underline hover:text-white cursor-pointer"
-            >
-              22101104012 (Aritra Sen)
-            </button>
+          {/* Format Guidance */}
+          <div className="flex items-center justify-center gap-1.5 mt-3 text-xs text-[#A0A6B0]">
+            <span>Supported formats:</span>
+            <span className="font-mono text-[#D4AF7C]">11-Digit University Roll No.</span>
             <span>or</span>
-            <button 
-              type="button" 
-              onClick={() => { setQuery('23101102008'); handleLookup('23101102008'); }}
-              className="text-[#D4AF7C] underline hover:text-white cursor-pointer"
-            >
-              23101102008 (Debanjan Ghosh)
-            </button>
+            <span className="font-mono text-[#D4AF7C]">Ticket ID (CHTR-2026-...)</span>
           </div>
 
           {error && (
