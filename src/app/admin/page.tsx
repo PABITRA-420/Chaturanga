@@ -166,7 +166,13 @@ export default function AdminDashboardPage() {
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
-  const [adminUser, setAdminUser] = useState<{ username: string; role: string } | null>(null);
+  const [adminUser, setAdminUser] = useState<{ 
+    username?: string; 
+    email?: string; 
+    role?: string; 
+    fullName?: string; 
+    authMethod?: string;
+  } | null>(null);
   const [activeTab, setActiveTab] = useState<'tournaments' | 'roster' | 'results' | 'leaderboard' | 'announcements' | 'settings'>('tournaments');
 
   // Tournaments state
@@ -407,6 +413,10 @@ export default function AdminDashboardPage() {
   // Handle Logout
   const handleLogout = async () => {
     try {
+      try {
+        const supabase = createSupabaseClient();
+        await supabase.auth.signOut();
+      } catch {}
       await fetch('/api/admin/logout', { method: 'POST' });
     } finally {
       router.push('/admin/login');
@@ -894,10 +904,16 @@ export default function AdminDashboardPage() {
               </div>
             </Link>
 
-            <span className="hidden md:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 text-[11px] font-semibold text-[#D4AF7C] ml-3">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF7C]" />
-              <span>Superior Admin: {adminUser?.username || 'admin'}</span>
-            </span>
+            <div className="hidden md:flex items-center gap-2 ml-3">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 text-[11px] font-semibold text-[#D4AF7C]">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF7C]" />
+                <span>{adminUser?.role || 'Chief Arbiter'}: {adminUser?.username || adminUser?.email || 'admin'}</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[10px] font-medium text-emerald-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Supabase Auth & RLS
+              </span>
+            </div>
           </div>
 
           {/* Right Action Buttons */}

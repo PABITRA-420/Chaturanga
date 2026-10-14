@@ -11,13 +11,7 @@ import {
   incrementTournamentRegistrations, 
   decrementTournamentRegistrations 
 } from '@/lib/tournamentStore';
-import { cookies } from 'next/headers';
-
-async function isAuthenticated() {
-  const cookieStore = await cookies();
-  const session = cookieStore.get('chaturanga_admin_session');
-  return !!session && session.value === 'authenticated_arbiter_session_2026';
-}
+import { isAdminAuthenticated } from '@/lib/adminAuth';
 
 export async function GET(request: Request) {
   try {
@@ -68,7 +62,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const auth = await isAuthenticated();
+    const auth = await isAdminAuthenticated();
     if (!auth) {
       return NextResponse.json({ error: 'Unauthorized arbiter session required' }, { status: 401 });
     }
@@ -147,7 +141,7 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
-    const auth = await isAuthenticated();
+    const auth = await isAdminAuthenticated();
     if (!auth) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -172,7 +166,7 @@ export async function PATCH(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    const auth = await isAuthenticated();
+    const auth = await isAdminAuthenticated();
     if (!auth) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

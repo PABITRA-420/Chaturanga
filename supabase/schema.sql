@@ -152,6 +152,18 @@ CREATE TABLE IF NOT EXISTS public.admin_settings (
   updated_at TIMESTAMPTZ DEFAULT now()
 );
 
+-- 6. Create ADMIN_PROFILES table (Supabase Auth RBAC for Arbiter & Admin Access)
+CREATE TABLE IF NOT EXISTS public.admin_profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  email TEXT NOT NULL UNIQUE,
+  full_name TEXT NOT NULL DEFAULT 'Tournament Arbiter',
+  role TEXT NOT NULL DEFAULT 'arbiter' CHECK (role IN ('superadmin', 'arbiter', 'editor')),
+  is_active BOOLEAN NOT NULL DEFAULT true,
+  last_login TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
 -- ==============================================================================
 -- INDEXES FOR MAXIMUM QUERY PERFORMANCE
 -- ==============================================================================
@@ -254,27 +266,61 @@ CREATE TRIGGER trg_auto_calculate_player_stats
   FOR EACH ROW EXECUTE FUNCTION auto_calculate_player_stats();
 
 -- ==============================================================================
--- ROW LEVEL SECURITY (RLS) POLICIES
+-- SUPABASE AUTH FUNCTIONS & ROW LEVEL SECURITY (RLS) POLICIES
 -- ==============================================================================
+
+-- Helper function to check if current user is an active admin or service_role
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS BOOLEAN AS $$
+BEGIN
+  -- Service role and postgres superuser always have administrative access
+  IF (current_user = 'postgres' OR auth.role() = 'service_role') THEN
+    RETURN true;
+  END IF;
+  
+  RETURN EXISTS (
+    SELECT 1 FROM public.admin_profiles
+    WHERE id = auth.uid() AND is_active = true
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
+
+-- Helper function to check if current user is a superadmin or service_role
+CREATE OR REPLACE FUNCTION public.is_superadmin()
+RETURNS BOOLEAN AS $$
+BEGIN
+  IF (current_user = 'postgres' OR auth.role() = 'service_role') THEN
+    RETURN true;
+  END IF;
+  
+  RETURN EXISTS (
+    SELECT 1 FROM public.admin_profiles
+    WHERE id = auth.uid() AND role = 'superadmin' AND is_active = true
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
+
+-- Enable RLS across all tables
 ALTER TABLE public.tournaments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.registrations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.leaderboard_players ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.announcements ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.admin_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.admin_profiles ENABLE ROW LEVEL SECURITY;
 
--- Tournaments Policies
+-- 1. Tournaments Policies
 DROP POLICY IF EXISTS "Public tournaments viewable by everyone" ON public.tournaments;
 CREATE POLICY "Public tournaments viewable by everyone" 
   ON public.tournaments FOR SELECT 
-  USING (true);
+  USING (is_visible = true OR public.is_admin());
 
 DROP POLICY IF EXISTS "Admin write access for tournaments" ON public.tournaments;
 CREATE POLICY "Admin write access for tournaments" 
   ON public.tournaments FOR ALL 
-  USING (true)
-  WITH CHECK (true);
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
--- Registrations Policies
+-- 2. Registrations Policies
 DROP POLICY IF EXISTS "Public registration submission" ON public.registrations;
 CREATE POLICY "Public registration submission" 
   ON public.registrations FOR INSERT 
@@ -287,35 +333,40 @@ CREATE POLICY "Public ticket lookup"
 
 DROP POLICY IF EXISTS "Admin write access for registrations" ON public.registrations;
 CREATE POLICY "Admin write access for registrations" 
-  ON public.registrations FOR ALL 
-  USING (true)
-  WITH CHECK (true);
+  ON public.registrations FOR UPDATE 
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
--- Leaderboard Players Policies
+DROP POLICY IF EXISTS "Admin delete access for registrations" ON public.registrations;
+CREATE POLICY "Admin delete access for registrations" 
+  ON public.registrations FOR DELETE 
+  USING (public.is_admin());
+
+-- 3. Leaderboard Players Policies
 DROP POLICY IF EXISTS "Public leaderboard viewable by everyone" ON public.leaderboard_players;
 CREATE POLICY "Public leaderboard viewable by everyone" 
   ON public.leaderboard_players FOR SELECT 
-  USING (true);
+  USING (is_active = true OR public.is_admin());
 
 DROP POLICY IF EXISTS "Admin write access for leaderboard" ON public.leaderboard_players;
 CREATE POLICY "Admin write access for leaderboard" 
   ON public.leaderboard_players FOR ALL 
-  USING (true)
-  WITH CHECK (true);
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
--- Announcements Policies
+-- 4. Announcements Policies
 DROP POLICY IF EXISTS "Public announcements viewable by everyone" ON public.announcements;
 CREATE POLICY "Public announcements viewable by everyone" 
   ON public.announcements FOR SELECT 
-  USING (true);
+  USING (is_active = true OR public.is_admin());
 
 DROP POLICY IF EXISTS "Admin write access for announcements" ON public.announcements;
 CREATE POLICY "Admin write access for announcements" 
   ON public.announcements FOR ALL 
-  USING (true)
-  WITH CHECK (true);
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
--- Admin Settings Policies
+-- 5. Admin Settings Policies
 DROP POLICY IF EXISTS "Public admin settings viewable" ON public.admin_settings;
 CREATE POLICY "Public admin settings viewable" 
   ON public.admin_settings FOR SELECT 
@@ -324,8 +375,20 @@ CREATE POLICY "Public admin settings viewable"
 DROP POLICY IF EXISTS "Admin write access for settings" ON public.admin_settings;
 CREATE POLICY "Admin write access for settings" 
   ON public.admin_settings FOR ALL 
-  USING (true)
-  WITH CHECK (true);
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
+
+-- 6. Admin Profiles Policies
+DROP POLICY IF EXISTS "Admin view own profile" ON public.admin_profiles;
+CREATE POLICY "Admin view own profile" 
+  ON public.admin_profiles FOR SELECT 
+  USING (auth.uid() = id OR public.is_superadmin());
+
+DROP POLICY IF EXISTS "Superadmin manage admin profiles" ON public.admin_profiles;
+CREATE POLICY "Superadmin manage admin profiles" 
+  ON public.admin_profiles FOR ALL 
+  USING (public.is_superadmin())
+  WITH CHECK (public.is_superadmin());
 
 -- ==============================================================================
 -- SEED INITIAL DATA (IDEMPOTENT INSERTIONS)

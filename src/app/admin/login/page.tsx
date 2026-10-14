@@ -16,7 +16,8 @@ import {
   CheckCircle2, 
   ChevronLeft,
   KeyRound,
-  Info
+  Database,
+  Fingerprint
 } from 'lucide-react';
 
 export default function AdminLoginPage() {
@@ -55,7 +56,7 @@ export default function AdminLoginPage() {
     setErrorMessage('');
 
     if (!username.trim() || !password.trim()) {
-      setErrorMessage('Please enter both Admin ID and Password.');
+      setErrorMessage('Please enter both Admin Email / ID and Password.');
       return;
     }
 
@@ -65,7 +66,12 @@ export default function AdminLoginPage() {
       const response = await fetch('/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password, rememberMe }),
+        body: JSON.stringify({ 
+          email: username.trim(),
+          username: username.trim(), 
+          password: password.trim(), 
+          rememberMe 
+        }),
       });
 
       const data = await response.json();
@@ -83,6 +89,12 @@ export default function AdminLoginPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleUseSupabaseAdmin = () => {
+    setUsername('chaturanga.jgec@gmail.com');
+    setPassword('Chaturanga@2026');
+    setErrorMessage('');
   };
 
   const handleUseQuickCredentials = () => {
@@ -112,14 +124,14 @@ export default function AdminLoginPage() {
         </Link>
 
         <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/10 text-[11px] text-[#A0A6B0]">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span>Arbiter Portal Gate • JGEC</span>
+          <Database className="w-3.5 h-3.5 text-emerald-400" />
+          <span className="text-emerald-400 font-medium">Supabase Auth Protected</span>
         </div>
       </header>
 
       {/* Main Login Card Section */}
       <main className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-6 py-8">
-        <div className="w-full max-w-[460px]">
+        <div className="w-full max-w-[480px]">
           
           {/* Brand & Badge Top */}
           <div className="text-center mb-8 space-y-3">
@@ -130,7 +142,7 @@ export default function AdminLoginPage() {
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-[0.2em] text-[#D4AF7C] bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 mb-2">
                 <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF7C]" />
-                <span>Restricted Arbiter Access</span>
+                <span>Supabase RBAC & Arbiter Protection</span>
               </div>
               <h1 className="font-['Montserrat',sans-serif] text-2xl sm:text-3xl font-extrabold tracking-tight text-[#F5F5F5]">
                 CHATURANGA Admin
@@ -148,7 +160,7 @@ export default function AdminLoginPage() {
             {checkingExistingSession ? (
               <div className="py-12 text-center space-y-3">
                 <div className="w-8 h-8 border-2 border-[#D4AF7C] border-t-transparent rounded-full animate-spin mx-auto" />
-                <p className="text-xs text-[#A0A6B0]">Checking active session status...</p>
+                <p className="text-xs text-[#A0A6B0]">Verifying Supabase cryptographic session...</p>
               </div>
             ) : success ? (
               <div className="py-10 text-center space-y-4 animate-in fade-in zoom-in-95 duration-300">
@@ -157,10 +169,10 @@ export default function AdminLoginPage() {
                 </div>
                 <div>
                   <h3 className="font-['Montserrat',sans-serif] text-lg font-bold text-[#F5F5F5]">
-                    Authorized Successfully
+                    Supabase Authentication Verified
                   </h3>
                   <p className="text-xs text-[#A0A6B0] mt-1">
-                    Opening Arbiter Dashboard...
+                    Granting Arbiter Console privileges...
                   </p>
                 </div>
               </div>
@@ -175,10 +187,10 @@ export default function AdminLoginPage() {
                   </div>
                 )}
 
-                {/* Username Input */}
+                {/* Username / Email Input */}
                 <div className="space-y-1.5">
                   <label className="block text-xs font-semibold text-[#A0A6B0] uppercase tracking-wider">
-                    Admin Identifier
+                    Admin Email / Identifier
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#A0A6B0]">
@@ -189,7 +201,7 @@ export default function AdminLoginPage() {
                       id="admin-username"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      placeholder="admin or admin@jgec.ac.in"
+                      placeholder="chaturanga.jgec@gmail.com or admin"
                       autoComplete="username"
                       required
                       className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#090D12] border border-white/10 text-sm text-[#F5F5F5] placeholder-[#A0A6B0]/40 focus:outline-none focus:border-[#D4AF7C] focus:ring-1 focus:ring-[#D4AF7C]/40 transition"
@@ -203,8 +215,9 @@ export default function AdminLoginPage() {
                     <label className="block text-xs font-semibold text-[#A0A6B0] uppercase tracking-wider">
                       Password
                     </label>
-                    <span className="text-[11px] text-[#A0A6B0]/70">
-                      Standard Security Key
+                    <span className="text-[11px] text-[#A0A6B0]/70 flex items-center gap-1">
+                      <Fingerprint className="w-3 h-3 text-[#D4AF7C]" />
+                      <span>Encrypted Credential</span>
                     </span>
                   </div>
                   <div className="relative">
@@ -216,7 +229,7 @@ export default function AdminLoginPage() {
                       id="admin-password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Enter admin password"
+                      placeholder="Enter password"
                       autoComplete="current-password"
                       required
                       className="w-full pl-10 pr-11 py-3 rounded-xl bg-[#090D12] border border-white/10 text-sm text-[#F5F5F5] placeholder-[#A0A6B0]/40 focus:outline-none focus:border-[#D4AF7C] focus:ring-1 focus:ring-[#D4AF7C]/40 transition font-mono"
@@ -244,7 +257,10 @@ export default function AdminLoginPage() {
                     />
                     <span>Remember this session</span>
                   </label>
-                  <span className="text-[11px] text-[#A0A6B0]/70">Session: 7 days</span>
+                  <span className="text-[11px] text-emerald-400 font-medium flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-ping" />
+                    Supabase JWT
+                  </span>
                 </div>
 
                 {/* Submit Button */}
@@ -256,7 +272,7 @@ export default function AdminLoginPage() {
                   {loading ? (
                     <>
                       <div className="w-4 h-4 border-2 border-[#0B0F14] border-t-transparent rounded-full animate-spin" />
-                      <span>Verifying Credentials...</span>
+                      <span>Verifying via Supabase Auth...</span>
                     </>
                   ) : (
                     <>
@@ -268,35 +284,47 @@ export default function AdminLoginPage() {
               </form>
             )}
 
-            {/* Quick Demo Credentials Assistant Box */}
+            {/* Quick Credentials Assistant Box */}
             <div className="mt-6 pt-5 border-t border-white/10">
-              <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 text-xs space-y-2">
+              <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 text-xs space-y-2.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5 font-semibold text-[#D4AF7C]">
                     <KeyRound className="w-3.5 h-3.5" />
-                    <span>Configured .env Credentials</span>
+                    <span>Quick Access (Supabase Auth & Dev)</span>
                   </div>
-                  <button
-                    type="button"
-                    onClick={handleUseQuickCredentials}
-                    className="text-[11px] font-semibold text-[#D4AF7C] hover:underline cursor-pointer"
-                  >
-                    Auto-Fill
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleUseSupabaseAdmin}
+                      className="text-[11px] font-semibold text-emerald-400 hover:underline cursor-pointer"
+                      title="Use Supabase Auth Credentials"
+                    >
+                      Supabase Superadmin
+                    </button>
+                    <span className="text-white/20">•</span>
+                    <button
+                      type="button"
+                      onClick={handleUseQuickCredentials}
+                      className="text-[11px] font-semibold text-[#D4AF7C] hover:underline cursor-pointer"
+                      title="Use Arbiter Dev Credentials"
+                    >
+                      Dev Quick-fill
+                    </button>
+                  </div>
                 </div>
                 
                 <p className="text-[11px] text-[#A0A6B0] leading-relaxed">
-                  Firebase is currently uninitiated. Active fallback credentials loaded from <code className="text-[#D4AF7C]">.env.local</code>:
+                  Secured with PostgreSQL Row Level Security (RLS) & Supabase Identity.
                 </p>
 
-                <div className="grid grid-cols-2 gap-2 pt-1 font-mono text-[11px]">
+                <div className="grid grid-cols-2 gap-2 pt-0.5 font-mono text-[11px]">
                   <div className="px-2.5 py-1.5 rounded-lg bg-[#090D12] border border-white/5 flex flex-col">
-                    <span className="text-[9px] uppercase tracking-wider text-[#A0A6B0]">Admin ID</span>
-                    <span className="text-[#F5F5F5] font-semibold">admin</span>
+                    <span className="text-[9px] uppercase tracking-wider text-[#A0A6B0]">Supabase User</span>
+                    <span className="text-[#F5F5F5] font-semibold truncate text-[10px]">chaturanga.jgec@gmail.com</span>
                   </div>
                   <div className="px-2.5 py-1.5 rounded-lg bg-[#090D12] border border-white/5 flex flex-col">
-                    <span className="text-[9px] uppercase tracking-wider text-[#A0A6B0]">Password</span>
-                    <span className="text-[#F5F5F5] font-semibold">1234</span>
+                    <span className="text-[9px] uppercase tracking-wider text-[#A0A6B0]">Security Level</span>
+                    <span className="text-emerald-400 font-semibold">Superadmin / RLS</span>
                   </div>
                 </div>
               </div>
@@ -315,7 +343,7 @@ export default function AdminLoginPage() {
 
       {/* Footer Info */}
       <footer className="relative z-10 py-4 text-center text-[11px] text-[#A0A6B0]/50 border-t border-white/5">
-        © 2026 CHATURANGA Arbiter Administration. All administrative actions are logged.
+        © 2026 CHATURANGA Arbiter Administration. Protected by Supabase Auth & PostgreSQL RLS.
       </footer>
     </div>
   );

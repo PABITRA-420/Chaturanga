@@ -1,13 +1,6 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { getAllTournaments, createTournament } from '@/lib/tournamentStore';
-
-// Helper to check admin session
-async function isAdminAuthenticated(): Promise<boolean> {
-  const cookieStore = await cookies();
-  const session = cookieStore.get('chaturanga_admin_session');
-  return Boolean(session && session.value === 'authenticated_arbiter_session_2026');
-}
+import { isAdminAuthenticated } from '@/lib/adminAuth';
 
 export async function GET(request: Request) {
   try {
