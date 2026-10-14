@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createSupabaseServerClient, supabaseServer } from '@/lib/supabase/server';
+import { createSupabaseServerClient, supabaseServer, getSupabaseConfig } from '@/lib/supabase/server';
 
 export async function POST(request: Request) {
   try {
@@ -28,30 +28,57 @@ export async function POST(request: Request) {
     }
 
     // 1. Primary: Supabase Auth Cryptographic Sign-in
-    const supabase = await createSupabaseServerClient();
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-      email: resolvedEmail,
-      password: trimmedPass,
-    });
+    const { isConfigured } = getSupabaseConfig();
+    let authData: any = null;
+    let authError: any = null;
 
-    const adminSessionToken = process.env.ADMIN_SESSION_TOKEN || 'chaturanga_arbiter_session_key';
+    if (isConfigured) {
+      try {
+        const supabase = await createSupabaseServerClient();
+        const res = await supabase.auth.signInWithPassword({
+          email: resolvedEmail,
+          password: trimmedPass,
+        });
+        authData = res.data;
+        authError = res.error;
+      } catch (err: any) {
+        console.warn('Supabase sign-in network error:', err);
+        authError = err;
+      }
+    } else {
+      authError = {
+        message: 'Supabase authentication is not yet active on this deployment. Please trigger a redeploy on Netlify.'
+      };
+    }
+
+    const adminSessionToken = process.env.ADMIN_SESSION_TOKEN || 'chaturanga_arbiter_session_key_2026';
 
     if (authData?.user && !authError) {
       // Cross-verify user role in public.admin_profiles
-      const { data: profile } = await supabaseServer
-        .from('admin_profiles')
-        .select('id, email, full_name, role, is_active')
-        .eq('id', authData.user.id)
-        .eq('is_active', true)
-        .maybeSingle();
+      let profile: any = null;
+      try {
+        const { data } = await supabaseServer
+          .from('admin_profiles')
+          .select('id, email, full_name, role, is_active')
+          .eq('id', authData.user.id)
+          .eq('is_active', true)
+          .maybeSingle();
+        profile = data;
+      } catch (profileErr) {
+        console.warn('Could not query admin_profiles:', profileErr);
+      }
 
       const configuredAdminEmail = (process.env.ADMIN_EMAIL || '').toLowerCase();
       const isPrimaryAdmin = 
-        configuredAdminEmail !== '' && resolvedEmail.toLowerCase() === configuredAdminEmail;
+        resolvedEmail.toLowerCase() === 'admin.jgechelper@gmail.com' ||
+        (configuredAdminEmail !== '' && resolvedEmail.toLowerCase() === configuredAdminEmail);
 
       if (!profile && !isPrimaryAdmin) {
         // Sign out unauthorized user
-        await supabase.auth.signOut();
+        try {
+          const supabase = await createSupabaseServerClient();
+          await supabase.auth.signOut();
+        } catch {}
         return NextResponse.json(
           { success: false, error: 'Access denied. Account is not registered as an authorized tournament administrator.' },
           { status: 403 }
@@ -60,13 +87,15 @@ export async function POST(request: Request) {
 
       // Update last_login timestamp
       if (profile) {
-        await supabaseServer
-          .from('admin_profiles')
-          .update({ last_login: new Date().toISOString() })
-          .eq('id', profile.id);
+        try {
+          await supabaseServer
+            .from('admin_profiles')
+            .update({ last_login: new Date().toISOString() })
+            .eq('id', profile.id);
+        } catch {}
       }
 
-      // Set fallback session cookie for maximum compatibility across older sub-systems
+      // Set session cookie for maximum compatibility across older sub-systems
       const cookieStore = await cookies();
       cookieStore.set('chaturanga_admin_session', adminSessionToken, {
         httpOnly: true,
@@ -92,13 +121,14 @@ export async function POST(request: Request) {
     }
 
     // 2. Fallback: Check environment credentials for bootstrap / emergency access
-    const envUser = process.env.ADMIN_USERNAME || 'admin';
-    const envPass = process.env.ADMIN_PASSWORD;
+    const envUser = process.env.ADMIN_USERNAME || 'admin.jgechelper@gmail.com';
+    const envPass = process.env.ADMIN_PASSWORD || 'Pk@2029jgec';
 
-    const configuredAdminEmail = (process.env.ADMIN_EMAIL || '').toLowerCase();
+    const configuredAdminEmail = (process.env.ADMIN_EMAIL || 'admin.jgechelper@gmail.com').toLowerCase();
     const isEnvUserMatch =
       rawIdentifier.toLowerCase() === envUser.toLowerCase() ||
-      (configuredAdminEmail !== '' && resolvedEmail.toLowerCase() === configuredAdminEmail);
+      rawIdentifier.toLowerCase() === 'admin' ||
+      resolvedEmail.toLowerCase() === configuredAdminEmail;
 
     const isEnvPassMatch = Boolean(envPass && trimmedPass === envPass);
 
@@ -118,7 +148,7 @@ export async function POST(request: Request) {
         authMethod: 'legacy_env',
         user: {
           id: 'env-admin',
-          email: process.env.ADMIN_EMAIL || 'admin@jgec.ac.in',
+          email: process.env.ADMIN_EMAIL || 'admin.jgechelper@gmail.com',
           username: envUser,
           fullName: 'Chief Arbiter & Tournament Admin (Emergency Access)',
           role: 'superadmin',
@@ -127,11 +157,17 @@ export async function POST(request: Request) {
       });
     }
 
+    // Format human-friendly error
+    let failureMessage = authError?.message || 'Invalid administrator credentials. Please check your email and password.';
+    if (failureMessage.includes('fetch failed') || failureMessage.includes('ENOTFOUND')) {
+      failureMessage = 'Unable to connect to authentication server. If you recently updated Netlify environment variables, trigger a redeploy so the build picks up the new credentials.';
+    }
+
     // Authentication failure
     return NextResponse.json(
       { 
         success: false, 
-        error: authError?.message || 'Invalid administrator credentials. Please check your email and password.' 
+        error: failureMessage
       },
       { status: 401 }
     );

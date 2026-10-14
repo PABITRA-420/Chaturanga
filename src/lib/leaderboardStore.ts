@@ -119,7 +119,7 @@ export async function getAllLeaderboardPlayers(sortBy: 'rapid' | 'blitz' | 'clas
     const { data, error } = await query;
     if (!error && data && data.length > 0) {
       // Re-assign dynamic ranking 1..N based on active sort
-      return data.map((row, idx) => ({
+      return data.map((row: any, idx: number) => ({
         ...dbToPlayer(row),
         rank: idx + 1
       }));
