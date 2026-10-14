@@ -6,7 +6,18 @@ import { Crown, Trophy, Medal, ArrowRight, Sparkles, ShieldCheck } from 'lucide-
 import { LEADERBOARD_PLAYERS } from '@/data/leaderboardData';
 
 export default function HomeLeaderboardPreview() {
-  const topThree = LEADERBOARD_PLAYERS.slice(0, 3);
+  const [topThree, setTopThree] = React.useState<any[]>(LEADERBOARD_PLAYERS.slice(0, 3));
+
+  React.useEffect(() => {
+    fetch('/api/leaderboard?sortBy=rapid')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && Array.isArray(data.players) && data.players.length >= 3) {
+          setTopThree(data.players.slice(0, 3));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <section className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-12">

@@ -16,7 +16,7 @@ import {
   BookOpen, 
   Sparkles
 } from 'lucide-react';
-import { LEADERBOARD_PLAYERS } from '@/data/leaderboardData';
+import { LEADERBOARD_PLAYERS, LeaderboardPlayer } from '@/data/leaderboardData';
 
 export default function LeaderboardView() {
   const [ratingMode, setRatingMode] = useState<'rapid' | 'blitz' | 'classical'>('rapid');
@@ -24,9 +24,31 @@ export default function LeaderboardView() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<'rating' | 'winRate' | 'matches'>('rating');
 
+  const [players, setPlayers] = useState<LeaderboardPlayer[]>(LEADERBOARD_PLAYERS);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  // Fetch live players from Supabase API
+  React.useEffect(() => {
+    let isMounted = true;
+    setLoading(true);
+    fetch(`/api/leaderboard?sortBy=${ratingMode}`)
+      .then(res => res.json())
+      .then(data => {
+        if (isMounted && data.success && Array.isArray(data.players) && data.players.length > 0) {
+          setPlayers(data.players);
+        }
+      })
+      .catch(err => console.warn('Leaderboard live sync fallback to static:', err))
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+
+    return () => { isMounted = false; };
+  }, [ratingMode]);
+
   // Filter and Sort Players
   const filteredPlayers = useMemo(() => {
-    return LEADERBOARD_PLAYERS.filter(p => {
+    return players.filter(p => {
       const matchesSearch = 
         p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.rollNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -37,14 +59,16 @@ export default function LeaderboardView() {
       return matchesSearch && matchesDept;
     }).sort((a, b) => {
       if (sortBy === 'rating') {
-        return b.rating[ratingMode] - a.rating[ratingMode];
+        const aRat = a.rating?.[ratingMode] ?? 0;
+        const bRat = b.rating?.[ratingMode] ?? 0;
+        return bRat - aRat;
       }
       if (sortBy === 'winRate') {
-        return b.stats.winRate - a.stats.winRate;
+        return (b.stats?.winRate ?? 0) - (a.stats?.winRate ?? 0);
       }
-      return b.stats.matchesPlayed - a.stats.matchesPlayed;
+      return (b.stats?.matchesPlayed ?? 0) - (a.stats?.matchesPlayed ?? 0);
     });
-  }, [ratingMode, selectedDept, searchQuery, sortBy]);
+  }, [players, ratingMode, selectedDept, searchQuery, sortBy]);
 
   const topThree = useMemo(() => {
     return filteredPlayers.slice(0, 3);
@@ -424,7 +448,7 @@ export default function LeaderboardView() {
 
                           <td className="py-4 px-4 text-center">
                             <div className="inline-flex items-center gap-1">
-                              {player.recentForm.map((f, i) => (
+                              {(player.recentForm || []).map((f: string, i: number) => (
                                 <span
                                   key={i}
                                   className={`w-5 h-5 rounded text-[10px] font-black flex items-center justify-center font-mono ${

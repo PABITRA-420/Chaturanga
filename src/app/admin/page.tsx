@@ -49,8 +49,14 @@ import {
   Radio,
   Award,
   Settings,
-  HelpCircle
+  HelpCircle,
+  Crown,
+  Bell,
+  Zap
 } from 'lucide-react';
+import AdminLeaderboardTab from '@/components/admin/AdminLeaderboardTab';
+import AdminResultsTab from '@/components/admin/AdminResultsTab';
+import AdminAnnouncementsTab from '@/components/admin/AdminAnnouncementsTab';
 
 interface Participant {
   id: string;
@@ -161,7 +167,7 @@ export default function AdminDashboardPage() {
 
   const [loading, setLoading] = useState(true);
   const [adminUser, setAdminUser] = useState<{ username: string; role: string } | null>(null);
-  const [activeTab, setActiveTab] = useState<'tournaments' | 'roster' | 'settings'>('tournaments');
+  const [activeTab, setActiveTab] = useState<'tournaments' | 'roster' | 'results' | 'leaderboard' | 'announcements' | 'settings'>('tournaments');
 
   // Tournaments state
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
@@ -1010,11 +1016,11 @@ export default function AdminDashboardPage() {
           </div>
         </section>
 
-        {/* Navigation Tabs */}
-        <div className="flex items-center gap-2 border-b border-white/10 pb-4">
+        {/* Navigation Tabs (Scrollable on mobile) */}
+        <div className="flex items-center gap-2 border-b border-white/10 pb-4 overflow-x-auto no-scrollbar">
           <button
             onClick={() => setActiveTab('tournaments')}
-            className={`px-5 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 cursor-pointer ${
+            className={`px-4 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'tournaments'
                 ? 'bg-[#D4AF7C] text-[#0B0F14] shadow-md shadow-[#D4AF7C]/20'
                 : 'text-[#A0A6B0] hover:text-[#F5F5F5] bg-white/[0.03] hover:bg-white/[0.08] border border-white/10'
@@ -1026,7 +1032,7 @@ export default function AdminDashboardPage() {
 
           <button
             onClick={() => setActiveTab('roster')}
-            className={`px-5 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 cursor-pointer ${
+            className={`px-4 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'roster'
                 ? 'bg-[#D4AF7C] text-[#0B0F14] shadow-md shadow-[#D4AF7C]/20'
                 : 'text-[#A0A6B0] hover:text-[#F5F5F5] bg-white/[0.03] hover:bg-white/[0.08] border border-white/10'
@@ -1037,15 +1043,51 @@ export default function AdminDashboardPage() {
           </button>
 
           <button
+            onClick={() => setActiveTab('results')}
+            className={`px-4 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0 ${
+              activeTab === 'results'
+                ? 'bg-[#D4AF7C] text-[#0B0F14] shadow-md shadow-[#D4AF7C]/20'
+                : 'text-[#A0A6B0] hover:text-[#F5F5F5] bg-white/[0.03] hover:bg-white/[0.08] border border-white/10'
+            }`}
+          >
+            <Award className="w-4 h-4" />
+            <span>Prizes &amp; Podiums</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('leaderboard')}
+            className={`px-4 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0 ${
+              activeTab === 'leaderboard'
+                ? 'bg-[#D4AF7C] text-[#0B0F14] shadow-md shadow-[#D4AF7C]/20'
+                : 'text-[#A0A6B0] hover:text-[#F5F5F5] bg-white/[0.03] hover:bg-white/[0.08] border border-white/10'
+            }`}
+          >
+            <Crown className="w-4 h-4" />
+            <span>Leaderboard &amp; Chess.com</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('announcements')}
+            className={`px-4 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0 ${
+              activeTab === 'announcements'
+                ? 'bg-[#D4AF7C] text-[#0B0F14] shadow-md shadow-[#D4AF7C]/20'
+                : 'text-[#A0A6B0] hover:text-[#F5F5F5] bg-white/[0.03] hover:bg-white/[0.08] border border-white/10'
+            }`}
+          >
+            <Bell className="w-4 h-4" />
+            <span>Notice Board CMS</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('settings')}
-            className={`px-5 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 cursor-pointer ${
+            className={`px-4 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'settings'
                 ? 'bg-[#D4AF7C] text-[#0B0F14] shadow-md shadow-[#D4AF7C]/20'
                 : 'text-[#A0A6B0] hover:text-[#F5F5F5] bg-white/[0.03] hover:bg-white/[0.08] border border-white/10'
             }`}
           >
             <Database className="w-4 h-4" />
-            <span>Firebase & Integrations</span>
+            <span>Supabase Hub</span>
           </button>
         </div>
 
@@ -1786,28 +1828,59 @@ export default function AdminDashboardPage() {
           </div>
         )}
 
-        {/* TAB 3: SETTINGS & BACKEND ARCHITECTURE */}
+        {/* TAB 3: RESULTS & PODIUM STANDINGS PUBLISHER */}
+        {activeTab === 'results' && (
+          <AdminResultsTab 
+            tournaments={tournaments} 
+            onTournamentUpdated={(updated) => setTournaments(prev => prev.map(t => t.id === updated.id ? updated : t))} 
+          />
+        )}
+
+        {/* TAB 4: COLLEGIATE LEADERBOARD & CHESS.COM LIVE RATINGS */}
+        {activeTab === 'leaderboard' && (
+          <AdminLeaderboardTab />
+        )}
+
+        {/* TAB 5: NOTICE BOARD & ANNOUNCEMENTS CMS */}
+        {activeTab === 'announcements' && (
+          <AdminAnnouncementsTab />
+        )}
+
+        {/* TAB 6: SETTINGS & SUPABASE POSTGRESQL ARCHITECTURE */}
         {activeTab === 'settings' && (
           <div className="space-y-6 max-w-4xl">
             
-            <div className="p-6 rounded-3xl bg-[#10141C] border border-white/10 space-y-4">
+            <div className="p-6 rounded-3xl bg-[#10141C] border border-white/10 space-y-4 shadow-xl">
               <h3 className="font-['Montserrat',sans-serif] text-base font-bold text-[#F5F5F5] flex items-center gap-2">
                 <Database className="w-4 h-4 text-[#D4AF7C]" />
-                <span>Backend Architecture & Storage Status</span>
+                <span>Supabase PostgreSQL Architecture Status</span>
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
-                {/* JSON Data Store */}
+                {/* Supabase Live DB */}
                 <div className="p-4 rounded-2xl bg-[#080B0F] border border-white/10 space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-[#F5F5F5]">Tournaments Database</span>
+                    <span className="text-xs font-bold text-[#F5F5F5]">Supabase PostgreSQL</span>
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                      Persistent (JSON)
+                      Live &amp; Connected
                     </span>
                   </div>
                   <p className="text-xs text-[#A0A6B0]">
-                    Saved directly to <code className="text-[#D4AF7C]">src/data/tournaments.json</code>. All tournament edits, custom registration forms, and open/close dates persist permanently.
+                    Managed tables: <code className="text-[#D4AF7C]">tournaments</code>, <code className="text-[#D4AF7C]">registrations</code>, <code className="text-[#D4AF7C]">leaderboard_players</code>, <code className="text-[#D4AF7C]">announcements</code>.
+                  </p>
+                </div>
+
+                {/* Chess.com API Integration */}
+                <div className="p-4 rounded-2xl bg-[#080B0F] border border-white/10 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-[#F5F5F5]">Chess.com Public API</span>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+                      REST Live
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#A0A6B0]">
+                    Endpoint <code className="text-[#D4AF7C]">/api/leaderboard/sync-chess</code> automatically queries official Chess.com stats and updates collegiate player ratings.
                   </p>
                 </div>
 
@@ -1815,34 +1888,44 @@ export default function AdminDashboardPage() {
                 <div className="p-4 rounded-2xl bg-[#080B0F] border border-white/10 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-[#F5F5F5]">Google Sheet Sync</span>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/10 text-purple-400 border border-purple-500/30">
                       Live Webhook
                     </span>
                   </div>
                   <p className="text-xs text-[#A0A6B0]">
-                    Webhook URL active in <code className="text-[#D4AF7C]">.env.local</code>. Registrations automatically post to your Google Spreadsheet.
+                    Active registration webhook running in parallel with Supabase for multi-arbiter redundancy.
+                  </p>
+                </div>
+
+                {/* Real-time Listeners */}
+                <div className="p-4 rounded-2xl bg-[#080B0F] border border-white/10 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-[#F5F5F5]">Real-time Listeners</span>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                      Active
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#A0A6B0]">
+                    Websockets push registration and tournament status changes immediately across admin browsers.
                   </p>
                 </div>
 
               </div>
             </div>
 
-            {/* How to initialize Firebase */}
-            <div className="p-6 rounded-3xl bg-[#10141C] border border-white/10 space-y-4 font-['Inter',sans-serif]">
+            {/* Database Migration Command */}
+            <div className="p-6 rounded-3xl bg-[#10141C] border border-white/10 space-y-3 font-['Inter',sans-serif]">
               <h3 className="font-['Montserrat',sans-serif] text-base font-bold text-[#F5F5F5] flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-[#D4AF7C]" />
-                <span>Future Firebase Transition Roadmap</span>
+                <span>One-Click Schema Synchronization</span>
               </h3>
 
               <p className="text-xs text-[#A0A6B0] leading-relaxed">
-                The architecture uses the repository pattern in <code className="text-[#D4AF7C]">src/lib/tournamentStore.ts</code>. When you are ready to connect Firebase Firestore and Firebase Authentication, the API contract remains identical:
+                If you ever want to re-seed or run a clean migration on Supabase, execute the built-in migration script:
               </p>
 
               <pre className="p-4 rounded-2xl bg-[#080B0F] border border-white/10 text-xs font-mono text-[#D4AF7C] overflow-x-auto">
-{`# Add to .env.local when Firebase project is created:
-NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSy...
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=chaturanga-jgec.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=chaturanga-jgec`}
+{`npm run db:migrate`}
               </pre>
             </div>
 

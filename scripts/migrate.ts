@@ -21,7 +21,7 @@ if (fs.existsSync(envLocalPath)) {
   });
 }
 
-const connectionString = process.env.DATABASE_URL || 'postgresql://postgres@db.gwceeuyenweuszxzmewp.supabase.co:5432/postgres';
+const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:Chaturanga.jgec@db.gwceeuyenweuszxzmewp.supabase.co:5432/postgres';
 
 async function runMigration(): Promise<void> {
   console.log('Connecting to Supabase PostgreSQL database...');
@@ -42,11 +42,17 @@ async function runMigration(): Promise<void> {
     await client.query(sql);
     console.log('Successfully executed schema.sql! All tables, indexes, triggers, and seed data created!');
 
-    const res = await client.query('SELECT count(*) FROM public.tournaments;');
-    console.log(`Verified public.tournaments count: ${res.rows[0].count}`);
+    const resT = await client.query('SELECT count(*) FROM public.tournaments;');
+    console.log(`Verified public.tournaments count: ${resT.rows[0].count}`);
 
     const resReg = await client.query('SELECT count(*) FROM public.registrations;');
     console.log(`Verified public.registrations count: ${resReg.rows[0].count}`);
+
+    const resL = await client.query('SELECT count(*) FROM public.leaderboard_players;');
+    console.log(`Verified public.leaderboard_players count: ${resL.rows[0].count}`);
+
+    const resA = await client.query('SELECT count(*) FROM public.announcements;');
+    console.log(`Verified public.announcements count: ${resA.rows[0].count}`);
 
     console.log('MIGRATION COMPLETED SUCCESSFULLY!');
   } catch (err: any) {

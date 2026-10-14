@@ -160,6 +160,49 @@ const MONTH_NAMES = [
 const WEEKDAY_NAMES = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
 export default function TournamentCalendar() {
+  const [eventsList, setEventsList] = useState<CalendarEvent[]>(ALL_CALENDAR_EVENTS);
+
+  // Fetch live tournaments from Supabase / API
+  React.useEffect(() => {
+    fetch('/api/tournaments')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && Array.isArray(data.tournaments) && data.tournaments.length > 0) {
+          const mapped: CalendarEvent[] = data.tournaments.map((t: any) => {
+            const d = new Date(t.targetDate || t.date);
+            const isValid = !isNaN(d.getTime());
+            const year = isValid ? d.getFullYear() : 2026;
+            const month = isValid ? d.getMonth() : 10;
+            const day = isValid ? d.getDate() : 7;
+            const isPast = Boolean(t.isPast || t.status === 'completed');
+            const formatLower = (t.format || '').toLowerCase();
+            const category = formatLower.includes('blitz') ? 'Blitz' : formatLower.includes('rapid') ? 'Rapid' : 'Classical';
+
+            return {
+              id: t.id,
+              title: t.title,
+              dateStr: isValid ? d.toISOString().slice(0, 10) : '2026-11-07',
+              dateFormatted: t.date || 'TBD',
+              year,
+              month,
+              day,
+              time: t.time || '10:00 AM – 05:00 PM',
+              venue: t.venue || 'JGEC Campus',
+              format: t.format || 'Swiss System',
+              prizePool: t.prizePool || 'Trophies & Prizes',
+              slots: t.slots || `${t.maxSlots || 100} Slots`,
+              description: t.description || '',
+              isUpcoming: !isPast,
+              category,
+              badgeColor: isPast ? 'bg-slate-300 text-[#0B0F14]' : category === 'Rapid' ? 'bg-[#D4AF7C] text-[#0B0F14]' : 'bg-amber-400 text-[#0B0F14]'
+            };
+          });
+          setEventsList(mapped);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   // Navigation State
   const [currentYear, setCurrentYear] = useState<number>(2026);
   const [currentMonth, setCurrentMonth] = useState<number>(10); // November (0-indexed)
@@ -191,13 +234,13 @@ export default function TournamentCalendar() {
     setCurrentYear(today.getFullYear());
     setCurrentMonth(today.getMonth());
     setSelectedDay(today.getDate());
-    const match = ALL_CALENDAR_EVENTS.find(e => e.year === today.getFullYear() && e.month === today.getMonth() && e.day === today.getDate());
+    const match = eventsList.find(e => e.year === today.getFullYear() && e.month === today.getMonth() && e.day === today.getDate());
     setSelectedEvent(match || null);
   };
 
   const handleNextEventJump = () => {
     // Jump directly to the Flagship Nearest Championship month
-    const nearest = ALL_CALENDAR_EVENTS[0];
+    const nearest = eventsList[0] || ALL_CALENDAR_EVENTS[0];
     setCurrentYear(nearest.year);
     setCurrentMonth(nearest.month);
     setSelectedDay(nearest.day);
@@ -218,12 +261,12 @@ export default function TournamentCalendar() {
 
   // Filtered event pool
   const filteredEvents = useMemo(() => {
-    return ALL_CALENDAR_EVENTS.filter((e) => {
+    return eventsList.filter((e) => {
       if (filterMode === 'upcoming') return e.isUpcoming;
       if (filterMode === 'past') return !e.isUpcoming;
       return true;
     });
-  }, [filterMode]);
+  }, [eventsList, filterMode]);
 
   // Events occurring in current viewed month
   const eventsInThisMonth = useMemo(() => {
@@ -244,15 +287,15 @@ export default function TournamentCalendar() {
 
   // Find next/prev event for quick arrows in inspector
   const currentEventIndex = selectedEvent 
-    ? ALL_CALENDAR_EVENTS.findIndex(e => e.id === selectedEvent.id) 
+    ? eventsList.findIndex(e => e.id === selectedEvent.id) 
     : -1;
 
   const handleCycleEvent = (direction: 'prev' | 'next') => {
-    if (ALL_CALENDAR_EVENTS.length === 0) return;
+    if (eventsList.length === 0) return;
     let nextIdx = direction === 'next' ? currentEventIndex + 1 : currentEventIndex - 1;
-    if (nextIdx < 0) nextIdx = ALL_CALENDAR_EVENTS.length - 1;
-    if (nextIdx >= ALL_CALENDAR_EVENTS.length) nextIdx = 0;
-    jumpToEvent(ALL_CALENDAR_EVENTS[nextIdx]);
+    if (nextIdx < 0) nextIdx = eventsList.length - 1;
+    if (nextIdx >= eventsList.length) nextIdx = 0;
+    jumpToEvent(eventsList[nextIdx]);
   };
 
   return (

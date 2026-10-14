@@ -6,7 +6,19 @@ import { Megaphone, Calendar, ChevronRight, X, ArrowUpRight, AlertCircle, Bell }
 import { CLUB_ANNOUNCEMENTS, ClubAnnouncement } from '@/data/announcementsData';
 
 export default function AnnouncementsBanner() {
+  const [announcements, setAnnouncements] = useState<ClubAnnouncement[]>(CLUB_ANNOUNCEMENTS);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState<ClubAnnouncement | null>(null);
+
+  React.useEffect(() => {
+    fetch('/api/announcements')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && Array.isArray(data.announcements) && data.announcements.length > 0) {
+          setAnnouncements(data.announcements);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <section id="announcements" className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -38,7 +50,7 @@ export default function AnnouncementsBanner() {
 
         {/* Announcements List */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {CLUB_ANNOUNCEMENTS.map((ann) => (
+          {announcements.map((ann) => (
             <div
               key={ann.id}
               onClick={() => setSelectedAnnouncement(ann)}
