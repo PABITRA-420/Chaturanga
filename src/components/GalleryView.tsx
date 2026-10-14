@@ -162,7 +162,7 @@ export default function GalleryView() {
               <button
                 type="button"
                 onClick={() => setSelectedPhotoIndex(null)}
-                className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-black/60 hover:bg-white/20 border border-white/20 text-[#F5F5F5] flex items-center justify-center transition cursor-pointer"
+                className="absolute top-4 right-4 z-20 min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-black/60 hover:bg-white/20 border border-white/20 text-[#F5F5F5] flex items-center justify-center transition cursor-pointer active:scale-95"
                 aria-label="Close photo preview"
               >
                 <X className="w-5 h-5" />

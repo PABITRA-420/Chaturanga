@@ -267,7 +267,7 @@ export default function TournamentCalendar() {
             <button
               type="button"
               onClick={handleRealTodayJump}
-              className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/15 border border-white/15 hover:border-[#D4AF7C]/40 text-xs font-semibold text-[#F5F5F5] transition cursor-pointer active:scale-95 shadow-sm"
+              className="min-h-[44px] sm:min-h-[36px] px-3.5 py-2 sm:py-1.5 rounded-xl bg-white/5 hover:bg-white/15 border border-white/15 hover:border-[#D4AF7C]/40 text-xs font-semibold text-[#F5F5F5] transition cursor-pointer active:scale-95 shadow-sm flex items-center justify-center"
               title="Jump to Current Month and Date"
               aria-label="Jump to Current Date"
             >
@@ -277,7 +277,7 @@ export default function TournamentCalendar() {
             <button
               type="button"
               onClick={handleNextEventJump}
-              className="px-3 py-1.5 rounded-xl bg-[#D4AF7C]/15 hover:bg-[#D4AF7C]/25 border border-[#D4AF7C]/30 text-xs font-bold text-[#D4AF7C] transition cursor-pointer active:scale-95 shadow-sm"
+              className="min-h-[44px] sm:min-h-[36px] px-3.5 py-2 sm:py-1.5 rounded-xl bg-[#D4AF7C]/15 hover:bg-[#D4AF7C]/25 border border-[#D4AF7C]/30 text-xs font-bold text-[#D4AF7C] transition cursor-pointer active:scale-95 shadow-sm flex items-center justify-center"
               title="Jump to Nearest Upcoming Championship"
               aria-label="Jump to Nearest Upcoming Tournament"
             >
@@ -287,19 +287,19 @@ export default function TournamentCalendar() {
             <button
               type="button"
               onClick={handlePrevMonth}
-              className="w-9 h-9 sm:w-8 sm:h-8 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-[#A0A6B0] hover:text-[#F5F5F5] flex items-center justify-center transition cursor-pointer active:scale-95"
+              className="min-w-[44px] min-h-[44px] w-11 h-11 sm:w-9 sm:h-9 sm:min-w-[36px] sm:min-h-[36px] rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-[#A0A6B0] hover:text-[#F5F5F5] flex items-center justify-center transition cursor-pointer active:scale-95"
               aria-label="Previous month"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="w-5 h-5 sm:w-4 sm:h-4" />
             </button>
 
             <button
               type="button"
               onClick={handleNextMonth}
-              className="w-9 h-9 sm:w-8 sm:h-8 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-[#A0A6B0] hover:text-[#F5F5F5] flex items-center justify-center transition cursor-pointer active:scale-95"
+              className="min-w-[44px] min-h-[44px] w-11 h-11 sm:w-9 sm:h-9 sm:min-w-[36px] sm:min-h-[36px] rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-[#A0A6B0] hover:text-[#F5F5F5] flex items-center justify-center transition cursor-pointer active:scale-95"
               aria-label="Next month"
             >
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-5 h-5 sm:w-4 sm:h-4" />
             </button>
           </div>
 
@@ -530,22 +530,24 @@ export default function TournamentCalendar() {
                 </div>
 
                 {/* Next / Prev Event Mini Switcher */}
-                <div className="flex items-center gap-1 shrink-0">
+                <div className="flex items-center gap-1.5 shrink-0">
                   <button
                     type="button"
                     onClick={() => handleCycleEvent('prev')}
-                    className="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/15 text-[#A0A6B0] hover:text-[#F5F5F5] flex items-center justify-center transition cursor-pointer"
+                    className="min-w-[44px] min-h-[44px] w-11 h-11 sm:w-8 sm:h-8 sm:min-w-[32px] sm:min-h-[32px] rounded-lg bg-white/5 hover:bg-white/15 text-[#A0A6B0] hover:text-[#F5F5F5] flex items-center justify-center transition cursor-pointer active:scale-95"
                     title="Previous Tournament"
+                    aria-label="Previous Tournament"
                   >
-                    <ChevronLeft className="w-3.5 h-3.5" />
+                    <ChevronLeft className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                   </button>
                   <button
                     type="button"
                     onClick={() => handleCycleEvent('next')}
-                    className="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/15 text-[#A0A6B0] hover:text-[#F5F5F5] flex items-center justify-center transition cursor-pointer"
+                    className="min-w-[44px] min-h-[44px] w-11 h-11 sm:w-8 sm:h-8 sm:min-w-[32px] sm:min-h-[32px] rounded-lg bg-white/5 hover:bg-white/15 text-[#A0A6B0] hover:text-[#F5F5F5] flex items-center justify-center transition cursor-pointer active:scale-95"
                     title="Next Tournament"
+                    aria-label="Next Tournament"
                   >
-                    <ChevronRight className="w-3.5 h-3.5" />
+                    <ChevronRight className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                   </button>
                 </div>
               </div>

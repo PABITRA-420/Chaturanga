@@ -87,10 +87,10 @@ export default function AnnouncementsBanner() {
             <button
               type="button"
               onClick={() => setSelectedAnnouncement(null)}
-              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/5 hover:bg-white/15 text-[#F5F5F5] flex items-center justify-center transition cursor-pointer"
+              className="absolute top-4 right-4 min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-white/5 hover:bg-white/15 text-[#F5F5F5] flex items-center justify-center transition cursor-pointer active:scale-95 border border-white/10"
               aria-label="Close notice"
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5" />
             </button>
 
             <div className="flex items-center gap-2">

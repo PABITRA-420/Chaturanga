@@ -134,10 +134,10 @@ export default function PastEventCard({ event }: PastEventCardProps) {
               <button
                 type="button"
                 onClick={() => setShowResultsModal(false)}
-                className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/15 text-[#A0A6B0] hover:text-[#F5F5F5] flex items-center justify-center transition cursor-pointer shrink-0 border border-white/10"
+                className="min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-white/5 hover:bg-white/15 text-[#A0A6B0] hover:text-[#F5F5F5] flex items-center justify-center transition cursor-pointer shrink-0 border border-white/10 active:scale-95"
                 aria-label="Close modal"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
