@@ -52,11 +52,14 @@ import {
   HelpCircle,
   Crown,
   Bell,
-  Zap
+  Zap,
+  Cloud,
+  Image as ImageIcon
 } from 'lucide-react';
 import AdminLeaderboardTab from '@/components/admin/AdminLeaderboardTab';
 import AdminResultsTab from '@/components/admin/AdminResultsTab';
 import AdminAnnouncementsTab from '@/components/admin/AdminAnnouncementsTab';
+import AdminMediaManager from '@/components/admin/AdminMediaManager';
 
 interface Participant {
   id: string;
@@ -173,7 +176,7 @@ export default function AdminDashboardPage() {
     fullName?: string; 
     authMethod?: string;
   } | null>(null);
-  const [activeTab, setActiveTab] = useState<'tournaments' | 'roster' | 'results' | 'leaderboard' | 'announcements' | 'settings'>('tournaments');
+  const [activeTab, setActiveTab] = useState<'tournaments' | 'roster' | 'results' | 'leaderboard' | 'announcements' | 'media' | 'settings'>('tournaments');
 
   // Tournaments state
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
@@ -1095,6 +1098,18 @@ export default function AdminDashboardPage() {
           </button>
 
           <button
+            onClick={() => setActiveTab('media')}
+            className={`px-4 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0 ${
+              activeTab === 'media'
+                ? 'bg-[#D4AF7C] text-[#0B0F14] shadow-md shadow-[#D4AF7C]/20'
+                : 'text-[#A0A6B0] hover:text-[#F5F5F5] bg-white/[0.03] hover:bg-white/[0.08] border border-white/10'
+            }`}
+          >
+            <Cloud className="w-4 h-4 text-emerald-400" />
+            <span>Netlify Blobs Media</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('settings')}
             className={`px-4 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'settings'
@@ -1862,7 +1877,29 @@ export default function AdminDashboardPage() {
           <AdminAnnouncementsTab />
         )}
 
-        {/* TAB 6: SETTINGS & SUPABASE POSTGRESQL ARCHITECTURE */}
+        {/* TAB 6: NETLIFY BLOBS MEDIA & IMAGE STORAGE */}
+        {activeTab === 'media' && (
+          <div className="p-6 sm:p-8 rounded-3xl bg-[#10141C] border border-white/10 space-y-6 shadow-2xl">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30">
+                  <Cloud className="w-3.5 h-3.5" />
+                  <span>Netlify Blobs Object Storage</span>
+                </div>
+                <h2 className="font-['Montserrat',sans-serif] text-xl font-bold text-[#F5F5F5]">
+                  Media &amp; Tournament Image Manager
+                </h2>
+                <p className="text-xs text-[#A0A6B0] max-w-2xl font-['Poppins',sans-serif]">
+                  Upload official event banners, tournament posters, and winner graphics directly to Netlify Blobs with permanent caching.
+                </p>
+              </div>
+            </div>
+
+            <AdminMediaManager />
+          </div>
+        )}
+
+        {/* TAB 7: SETTINGS & SUPABASE POSTGRESQL ARCHITECTURE */}
         {activeTab === 'settings' && (
           <div className="space-y-6 max-w-4xl">
             
@@ -2168,6 +2205,44 @@ export default function AdminDashboardPage() {
                       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                       className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B0F] border border-white/10 text-white focus:outline-none focus:border-[#D4AF7C] text-xs"
                     />
+                  </div>
+
+                  {/* Tournament Poster / Banner Image (Netlify Blobs) */}
+                  <div className="space-y-1.5 p-3.5 rounded-2xl bg-[#080B0F] border border-white/10">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-semibold text-[#D4AF7C] flex items-center gap-1.5">
+                        <ImageIcon className="w-3.5 h-3.5" />
+                        <span>Tournament Poster / Banner Image</span>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsEditorModalOpen(false);
+                          setActiveTab('media');
+                        }}
+                        className="text-[11px] text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer"
+                      >
+                        <Cloud className="w-3 h-3" />
+                        <span>Open Netlify Blobs Uploader</span>
+                      </button>
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="e.g. /api/media/filename.jpg or https://..."
+                      value={(formData as any).bannerUrl || ''}
+                      onChange={(e) => setFormData({ ...formData, ...({ bannerUrl: e.target.value } as any) })}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#0C1017] border border-white/10 text-white focus:outline-none focus:border-[#D4AF7C] text-xs font-mono"
+                    />
+                    {(formData as any).bannerUrl && (
+                      <div className="mt-2 relative aspect-video max-h-32 rounded-xl overflow-hidden border border-white/10 bg-black/60">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img 
+                          src={(formData as any).bannerUrl} 
+                          alt="Banner Preview" 
+                          className="w-full h-full object-cover" 
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-2 pt-2">

@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     let resolvedEmail = rawIdentifier;
     if (!rawIdentifier.includes('@')) {
       if (rawIdentifier.toLowerCase() === 'admin') {
-        resolvedEmail = process.env.ADMIN_EMAIL || 'chaturanga.jgec@gmail.com';
+        resolvedEmail = process.env.ADMIN_EMAIL || 'admin@jgec.ac.in';
       } else {
         resolvedEmail = `${rawIdentifier.toLowerCase()}@chaturanga-jgec.ac.in`;
       }
@@ -34,6 +34,8 @@ export async function POST(request: Request) {
       password: trimmedPass,
     });
 
+    const adminSessionToken = process.env.ADMIN_SESSION_TOKEN || 'chaturanga_arbiter_session_key';
+
     if (authData?.user && !authError) {
       // Cross-verify user role in public.admin_profiles
       const { data: profile } = await supabaseServer
@@ -43,9 +45,9 @@ export async function POST(request: Request) {
         .eq('is_active', true)
         .maybeSingle();
 
+      const configuredAdminEmail = (process.env.ADMIN_EMAIL || '').toLowerCase();
       const isPrimaryAdmin = 
-        resolvedEmail.toLowerCase() === (process.env.ADMIN_EMAIL || 'chaturanga.jgec@gmail.com').toLowerCase() ||
-        resolvedEmail.toLowerCase() === 'admin@jgec.ac.in';
+        configuredAdminEmail !== '' && resolvedEmail.toLowerCase() === configuredAdminEmail;
 
       if (!profile && !isPrimaryAdmin) {
         // Sign out unauthorized user
@@ -66,7 +68,7 @@ export async function POST(request: Request) {
 
       // Set fallback session cookie for maximum compatibility across older sub-systems
       const cookieStore = await cookies();
-      cookieStore.set('chaturanga_admin_session', 'authenticated_arbiter_session_2026', {
+      cookieStore.set('chaturanga_admin_session', adminSessionToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
@@ -91,17 +93,18 @@ export async function POST(request: Request) {
 
     // 2. Fallback: Check environment credentials for bootstrap / emergency access
     const envUser = process.env.ADMIN_USERNAME || 'admin';
-    const envPass = process.env.ADMIN_PASSWORD || '1234';
+    const envPass = process.env.ADMIN_PASSWORD;
 
+    const configuredAdminEmail = (process.env.ADMIN_EMAIL || '').toLowerCase();
     const isEnvUserMatch =
       rawIdentifier.toLowerCase() === envUser.toLowerCase() ||
-      resolvedEmail.toLowerCase() === (process.env.ADMIN_EMAIL || 'chaturanga.jgec@gmail.com').toLowerCase();
+      (configuredAdminEmail !== '' && resolvedEmail.toLowerCase() === configuredAdminEmail);
 
-    const isEnvPassMatch = trimmedPass === envPass;
+    const isEnvPassMatch = Boolean(envPass && trimmedPass === envPass);
 
     if (isEnvUserMatch && isEnvPassMatch) {
       const cookieStore = await cookies();
-      cookieStore.set('chaturanga_admin_session', 'authenticated_arbiter_session_2026', {
+      cookieStore.set('chaturanga_admin_session', adminSessionToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
@@ -115,7 +118,7 @@ export async function POST(request: Request) {
         authMethod: 'legacy_env',
         user: {
           id: 'env-admin',
-          email: process.env.ADMIN_EMAIL || 'chaturanga.jgec@gmail.com',
+          email: process.env.ADMIN_EMAIL || 'admin@jgec.ac.in',
           username: envUser,
           fullName: 'Chief Arbiter & Tournament Admin (Emergency Access)',
           role: 'superadmin',

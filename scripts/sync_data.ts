@@ -21,7 +21,11 @@ if (fs.existsSync(envLocalPath)) {
   });
 }
 
-const connectionString = process.env.DATABASE_URL || 'postgresql://postgres@db.gwceeuyenweuszxzmewp.supabase.co:5432/postgres';
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) {
+  console.error('Error: DATABASE_URL environment variable is required to sync data.');
+  process.exit(1);
+}
 
 async function syncAllData(): Promise<void> {
   const client = new Client({ connectionString, ssl: { rejectUnauthorized: false } });

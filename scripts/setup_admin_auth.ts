@@ -21,7 +21,11 @@ if (fs.existsSync(envLocalPath)) {
   });
 }
 
-const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:Chaturanga.jgec@db.gwceeuyenweuszxzmewp.supabase.co:5432/postgres';
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) {
+  console.error('Error: DATABASE_URL environment variable is required to run setup_admin_auth.');
+  process.exit(1);
+}
 
 async function setupAdminAuth(): Promise<void> {
   console.log('--- Setting up Supabase Admin Authentication & Hardened RLS ---');
@@ -44,13 +48,15 @@ async function setupAdminAuth(): Promise<void> {
     await client.query(sql);
     console.log('Successfully applied schema.sql!');
 
+    const targetAdminEmail = process.env.ADMIN_EMAIL || 'admin@jgec.ac.in';
+
     // 2. Locate or ensure admin in auth.users
     const userRes = await client.query(`
       SELECT id, email, email_confirmed_at 
       FROM auth.users 
-      WHERE email = 'chaturanga.jgec@gmail.com'
+      WHERE email = $1
       LIMIT 1;
-    `);
+    `, [targetAdminEmail]);
 
     if (userRes.rows.length === 0) {
       console.log('Admin user not found in auth.users yet. Please run test_auth.ts or sign up once.');
