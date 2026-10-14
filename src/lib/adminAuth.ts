@@ -41,8 +41,8 @@ export async function getAuthenticatedAdmin(): Promise<AdminUser | null> {
       }
 
       // Check if user email matches primary administrator
-      const primaryAdminEmail = (process.env.ADMIN_EMAIL || 'chaturanga.jgec@gmail.com').toLowerCase();
-      if (user.email && (user.email.toLowerCase() === primaryAdminEmail || user.email.toLowerCase() === 'admin@jgec.ac.in')) {
+      const primaryAdminEmail = (process.env.ADMIN_EMAIL || '').toLowerCase();
+      if (user.email && primaryAdminEmail && user.email.toLowerCase() === primaryAdminEmail) {
         return {
           id: user.id,
           email: user.email,
@@ -56,10 +56,11 @@ export async function getAuthenticatedAdmin(): Promise<AdminUser | null> {
     // 2. Fallback Session Cookie Check
     const cookieStore = await cookies();
     const session = cookieStore.get('chaturanga_admin_session');
-    if (session && session.value === 'authenticated_arbiter_session_2026') {
+    const adminSessionToken = process.env.ADMIN_SESSION_TOKEN || 'chaturanga_arbiter_session_key';
+    if (session && session.value === adminSessionToken) {
       return {
         id: 'env-admin-fallback',
-        email: process.env.ADMIN_EMAIL || 'chaturanga.jgec@gmail.com',
+        email: process.env.ADMIN_EMAIL || 'admin@jgec.ac.in',
         fullName: 'Chief Arbiter & Tournament Admin',
         role: 'superadmin',
         authMethod: 'legacy_env'

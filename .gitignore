@@ -18,6 +18,13 @@ pnpm-debug.log*
 # Environment variables
 .env*.local
 .env
+.env.production
+.env.development
+!.env.example
+
+# Netlify
+.netlify/
+.netlify_blobs_fallback/
 
 # Editor
 .vscode/*

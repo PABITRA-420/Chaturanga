@@ -21,8 +21,8 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://gwceeuyenweuszxzmewp.supabase.co';
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_94kWHRyoKPPlJ77l01RvQg_yEwhnNsy';
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key';
 
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
@@ -57,7 +57,8 @@ export async function middleware(request: NextRequest) {
   // Also check transitional session cookie
   if (!isAuthenticated) {
     const legacySession = request.cookies.get('chaturanga_admin_session');
-    if (legacySession && legacySession.value === 'authenticated_arbiter_session_2026') {
+    const adminSessionToken = process.env.ADMIN_SESSION_TOKEN || 'chaturanga_arbiter_session_key';
+    if (legacySession && legacySession.value === adminSessionToken) {
       isAuthenticated = true;
     }
   }

@@ -52,11 +52,14 @@ import {
   HelpCircle,
   Crown,
   Bell,
-  Zap
+  Zap,
+  Cloud,
+  Image as ImageIcon
 } from 'lucide-react';
 import AdminLeaderboardTab from '@/components/admin/AdminLeaderboardTab';
 import AdminResultsTab from '@/components/admin/AdminResultsTab';
 import AdminAnnouncementsTab from '@/components/admin/AdminAnnouncementsTab';
+import AdminMediaManager from '@/components/admin/AdminMediaManager';
 
 interface Participant {
   id: string;
@@ -173,7 +176,7 @@ export default function AdminDashboardPage() {
     fullName?: string; 
     authMethod?: string;
   } | null>(null);
-  const [activeTab, setActiveTab] = useState<'tournaments' | 'roster' | 'results' | 'leaderboard' | 'announcements' | 'settings'>('tournaments');
+  const [activeTab, setActiveTab] = useState<'tournaments' | 'roster' | 'results' | 'leaderboard' | 'announcements' | 'media' | 'settings'>('tournaments');
 
   // Tournaments state
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
@@ -187,6 +190,13 @@ export default function AdminDashboardPage() {
   const [editorActiveTab, setEditorActiveTab] = useState<'basics' | 'registration' | 'form' | 'rules'>('basics');
   const [savingTournament, setSavingTournament] = useState(false);
   const [editorError, setEditorError] = useState('');
+
+  // In-progress editor draft state (preserves form changes when navigating to media uploader or reopening)
+  const [editorDraft, setEditorDraft] = useState<{
+    formData: Partial<Tournament>;
+    editingTournamentId: string | null;
+    editorActiveTab: 'basics' | 'registration' | 'form' | 'rules';
+  } | null>(null);
 
   // Form builder editor state
   const [formData, setFormData] = useState<Partial<Tournament>>({
@@ -445,8 +455,21 @@ export default function AdminDashboardPage() {
     }
   };
 
-  // Open Create Tournament Modal
-  const handleOpenCreateModal = () => {
+  // Open Create Tournament Modal (restores in-progress create draft if available)
+  const handleOpenCreateModal = (forceReset: boolean = false) => {
+    // If an in-progress create draft exists and not forcing reset, restore it!
+    if (!forceReset && editorDraft && editorDraft.editingTournamentId === null) {
+      setEditingTournamentId(null);
+      setFormData(editorDraft.formData);
+      setEditorActiveTab(editorDraft.editorActiveTab || 'basics');
+      setEditorError('');
+      setIsEditorModalOpen(true);
+      return;
+    }
+
+    if (forceReset && editorDraft && editorDraft.editingTournamentId === null) {
+      setEditorDraft(null);
+    }
     setEditingTournamentId(null);
     setEditorError('');
     setEditorActiveTab('basics');
@@ -477,16 +500,75 @@ export default function AdminDashboardPage() {
     setIsEditorModalOpen(true);
   };
 
-  // Open Edit Tournament Modal
-  const handleOpenEditModal = (t: Tournament, defaultTab: 'basics' | 'form' = 'basics') => {
+  // Open Edit Tournament Modal (restores in-progress edit draft if available for this event)
+  const handleOpenEditModal = (
+    t: Tournament, 
+    defaultTab: 'basics' | 'registration' | 'form' | 'rules' = 'basics', 
+    forceReset: boolean = false
+  ) => {
     setEditingTournamentId(t.id);
     setEditorError('');
+
+    // If an in-progress draft for this specific tournament exists and not forcing reset, restore in-progress formData!
+    if (!forceReset && editorDraft && editorDraft.editingTournamentId === t.id) {
+      setFormData(editorDraft.formData);
+      setEditorActiveTab(defaultTab || editorDraft.editorActiveTab || 'basics');
+      setIsEditorModalOpen(true);
+      return;
+    }
+
+    if (forceReset && editorDraft && editorDraft.editingTournamentId === t.id) {
+      setEditorDraft(null);
+    }
+
     setEditorActiveTab(defaultTab);
     setFormData({
       ...t,
       formConfig: t.formConfig && t.formConfig.length > 0 ? t.formConfig : JSON.parse(JSON.stringify(DEFAULT_FORM_FIELDS)),
       customFields: t.customFields || []
     });
+    setIsEditorModalOpen(true);
+  };
+
+  // Close tournament editor modal and preserve in-progress changes in editorDraft
+  const handleCloseEditorModal = () => {
+    setEditorDraft({
+      formData: { ...formData },
+      editingTournamentId,
+      editorActiveTab,
+    });
+    setIsEditorModalOpen(false);
+  };
+
+  // Shortcut to preserve editor draft when opening the Netlify Blobs media uploader
+  const handleOpenMediaFromEditor = () => {
+    setEditorDraft({
+      formData: { ...formData },
+      editingTournamentId,
+      editorActiveTab,
+    });
+    setIsEditorModalOpen(false);
+    setActiveTab('media');
+  };
+
+  // Return to tournament editor from media uploader, optionally applying selected image URL
+  const handleReturnToEditor = (bannerUrlToApply?: string) => {
+    if (editorDraft) {
+      const nextFormData = {
+        ...editorDraft.formData,
+        ...(bannerUrlToApply ? { bannerUrl: bannerUrlToApply } : {})
+      };
+      setFormData(nextFormData);
+      setEditingTournamentId(editorDraft.editingTournamentId);
+      setEditorActiveTab(editorDraft.editorActiveTab || 'basics');
+      setEditorDraft({
+        ...editorDraft,
+        formData: nextFormData
+      });
+    } else if (bannerUrlToApply) {
+      setFormData(prev => ({ ...prev, ...({ bannerUrl: bannerUrlToApply } as any) }));
+    }
+    setActiveTab('tournaments');
     setIsEditorModalOpen(true);
   };
 
@@ -524,6 +606,7 @@ export default function AdminDashboardPage() {
         if (!res.ok || !data.success) throw new Error(data.error || 'Failed to create tournament.');
         setTournaments(prev => [data.tournament, ...prev]);
       }
+      setEditorDraft(null);
       setIsEditorModalOpen(false);
     } catch (err: any) {
       setEditorError(err.message || 'Error saving tournament.');
@@ -960,7 +1043,7 @@ export default function AdminDashboardPage() {
 
             <div className="flex flex-wrap items-center gap-3 z-10">
               <button
-                onClick={handleOpenCreateModal}
+                onClick={() => handleOpenCreateModal()}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold text-[#0B0F14] bg-[#D4AF7C] hover:bg-[#E6C98A] transition shadow-lg shadow-[#D4AF7C]/25 cursor-pointer active:scale-95"
               >
                 <Plus className="w-4 h-4" />
@@ -1092,6 +1175,18 @@ export default function AdminDashboardPage() {
           >
             <Bell className="w-4 h-4" />
             <span>Notice Board CMS</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('media')}
+            className={`px-4 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0 ${
+              activeTab === 'media'
+                ? 'bg-[#D4AF7C] text-[#0B0F14] shadow-md shadow-[#D4AF7C]/20'
+                : 'text-[#A0A6B0] hover:text-[#F5F5F5] bg-white/[0.03] hover:bg-white/[0.08] border border-white/10'
+            }`}
+          >
+            <Cloud className="w-4 h-4 text-emerald-400" />
+            <span>Netlify Blobs Media</span>
           </button>
 
           <button
@@ -1862,7 +1957,71 @@ export default function AdminDashboardPage() {
           <AdminAnnouncementsTab />
         )}
 
-        {/* TAB 6: SETTINGS & SUPABASE POSTGRESQL ARCHITECTURE */}
+        {/* TAB 6: NETLIFY BLOBS MEDIA & IMAGE STORAGE */}
+        {activeTab === 'media' && (
+          <div className="p-6 sm:p-8 rounded-3xl bg-[#10141C] border border-white/10 space-y-6 shadow-2xl">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30">
+                  <Cloud className="w-3.5 h-3.5" />
+                  <span>Netlify Blobs Object Storage</span>
+                </div>
+                <h2 className="font-['Montserrat',sans-serif] text-xl font-bold text-[#F5F5F5]">
+                  Media &amp; Tournament Image Manager
+                </h2>
+                <p className="text-xs text-[#A0A6B0] max-w-2xl font-['Poppins',sans-serif]">
+                  Upload official event banners, tournament posters, and winner graphics directly to Netlify Blobs with permanent caching.
+                </p>
+              </div>
+
+              {editorDraft && (
+                <button
+                  type="button"
+                  onClick={() => handleReturnToEditor()}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold text-[#0B0F14] bg-[#D4AF7C] hover:bg-[#E6C98A] transition shadow-lg shadow-[#D4AF7C]/20 cursor-pointer self-start sm:self-center"
+                >
+                  <span>Return to Editor</span>
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
+            {/* In-Progress Editor Draft Notice */}
+            {editorDraft && (
+              <div className="p-4 rounded-2xl bg-[#D4AF7C]/15 border border-[#D4AF7C]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-200">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-[#D4AF7C]/20 border border-[#D4AF7C]/40 flex items-center justify-center text-[#D4AF7C] shrink-0">
+                    <ImageIcon className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-[#F5F5F5]">
+                      Tournament Editor In Progress: {editorDraft.formData.title ? `"${editorDraft.formData.title}"` : '(Untitled Tournament)'}
+                    </p>
+                    <p className="text-[11px] text-[#A0A6B0]">
+                      Click &quot;Use Image&quot; below to insert an asset into your tournament banner and return to the editor.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleReturnToEditor()}
+                  className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-[#D4AF7C] hover:text-white bg-white/5 hover:bg-white/10 transition cursor-pointer self-start sm:self-auto"
+                >
+                  Resume Editor
+                </button>
+              </div>
+            )}
+
+            <AdminMediaManager 
+              selectedUrl={(formData as any).bannerUrl || (editorDraft?.formData as any)?.bannerUrl}
+              onSelectImage={(url) => {
+                handleReturnToEditor(url);
+              }}
+            />
+          </div>
+        )}
+
+        {/* TAB 7: SETTINGS & SUPABASE POSTGRESQL ARCHITECTURE */}
         {activeTab === 'settings' && (
           <div className="space-y-6 max-w-4xl">
             
@@ -1954,7 +2113,7 @@ export default function AdminDashboardPage() {
       {isEditorModalOpen && (
         <div 
           className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
-          onClick={() => setIsEditorModalOpen(false)}
+          onClick={handleCloseEditorModal}
         >
           <div 
             className="w-full max-w-3xl bg-[#12161E] rounded-3xl border border-white/15 p-6 sm:p-8 space-y-6 shadow-2xl my-auto max-h-[92vh] flex flex-col overflow-hidden"
@@ -1968,9 +2127,16 @@ export default function AdminDashboardPage() {
                   {editingTournamentId ? <Edit className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
                 </div>
                 <div>
-                  <h3 className="font-['Montserrat',sans-serif] text-lg font-bold text-[#F5F5F5]">
-                    {editingTournamentId ? `Edit Tournament: ${formData.title}` : 'Create New Tournament'}
-                  </h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-['Montserrat',sans-serif] text-lg font-bold text-[#F5F5F5]">
+                      {editingTournamentId ? `Edit Tournament: ${formData.title}` : 'Create New Tournament'}
+                    </h3>
+                    {editorDraft && (editorDraft.editingTournamentId === editingTournamentId) && (
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#D4AF7C]/15 border border-[#D4AF7C]/30 text-[#D4AF7C]">
+                        Draft Active
+                      </span>
+                    )}
+                  </div>
                   <p className="text-xs text-[#A0A6B0]">
                     {editingTournamentId ? 'Modify schedule, capacity, registration window, and custom form fields.' : 'Configure official tournament details, timetable, and registration schema.'}
                   </p>
@@ -1978,7 +2144,7 @@ export default function AdminDashboardPage() {
               </div>
               
               <button 
-                onClick={() => setIsEditorModalOpen(false)}
+                onClick={handleCloseEditorModal}
                 className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-[#A0A6B0] hover:text-[#F5F5F5] flex items-center justify-center cursor-pointer"
               >
                 ✕
@@ -2168,6 +2334,42 @@ export default function AdminDashboardPage() {
                       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                       className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B0F] border border-white/10 text-white focus:outline-none focus:border-[#D4AF7C] text-xs"
                     />
+                  </div>
+
+                  {/* Tournament Poster / Banner Image (Netlify Blobs) */}
+                  <div className="space-y-1.5 p-3.5 rounded-2xl bg-[#080B0F] border border-white/10">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-semibold text-[#D4AF7C] flex items-center gap-1.5">
+                        <ImageIcon className="w-3.5 h-3.5" />
+                        <span>Tournament Poster / Banner Image</span>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={handleOpenMediaFromEditor}
+                        className="text-[11px] text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer"
+                        title="Preserve editor draft and browse Netlify Blobs"
+                      >
+                        <Cloud className="w-3 h-3" />
+                        <span>Open Netlify Blobs Uploader</span>
+                      </button>
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="e.g. /api/media/filename.jpg or https://..."
+                      value={(formData as any).bannerUrl || ''}
+                      onChange={(e) => setFormData({ ...formData, ...({ bannerUrl: e.target.value } as any) })}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#0C1017] border border-white/10 text-white focus:outline-none focus:border-[#D4AF7C] text-xs font-mono"
+                    />
+                    {(formData as any).bannerUrl && (
+                      <div className="mt-2 relative aspect-video max-h-32 rounded-xl overflow-hidden border border-white/10 bg-black/60">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img 
+                          src={(formData as any).bannerUrl} 
+                          alt="Banner Preview" 
+                          className="w-full h-full object-cover" 
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-2 pt-2">
@@ -2493,13 +2695,32 @@ export default function AdminDashboardPage() {
 
               {/* Bottom modal actions */}
               <div className="pt-4 border-t border-white/10 flex items-center justify-between shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setIsEditorModalOpen(false)}
-                  className="px-5 py-2.5 rounded-full text-xs font-semibold text-[#A0A6B0] hover:text-white cursor-pointer"
-                >
-                  Cancel
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={handleCloseEditorModal}
+                    className="px-5 py-2.5 rounded-full text-xs font-semibold text-[#A0A6B0] hover:text-white cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  {editorDraft && (editorDraft.editingTournamentId === editingTournamentId) && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (editingTournamentId) {
+                          const orig = tournaments.find(t => t.id === editingTournamentId);
+                          if (orig) handleOpenEditModal(orig, editorActiveTab, true);
+                        } else {
+                          handleOpenCreateModal(true);
+                        }
+                      }}
+                      className="text-xs text-rose-400/80 hover:text-rose-300 underline underline-offset-2 cursor-pointer"
+                      title="Discard in-progress draft and reset to saved/default values"
+                    >
+                      {editingTournamentId ? 'Discard unsaved changes' : 'Reset form'}
+                    </button>
+                  )}
+                </div>
 
                 <button
                   type="submit"

@@ -21,7 +21,11 @@ if (fs.existsSync(envLocalPath)) {
   });
 }
 
-const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:Chaturanga.jgec@db.gwceeuyenweuszxzmewp.supabase.co:5432/postgres';
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) {
+  console.error('Error: DATABASE_URL environment variable is required to run migrations.');
+  process.exit(1);
+}
 
 async function runMigration(): Promise<void> {
   console.log('Connecting to Supabase PostgreSQL database...');

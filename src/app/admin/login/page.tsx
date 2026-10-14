@@ -91,15 +91,9 @@ export default function AdminLoginPage() {
     }
   };
 
-  const handleUseSupabaseAdmin = () => {
-    setUsername('chaturanga.jgec@gmail.com');
-    setPassword('Chaturanga@2026');
-    setErrorMessage('');
-  };
-
   const handleUseQuickCredentials = () => {
     setUsername('admin');
-    setPassword('1234');
+    setPassword('');
     setErrorMessage('');
   };
 
@@ -201,7 +195,7 @@ export default function AdminLoginPage() {
                       id="admin-username"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      placeholder="chaturanga.jgec@gmail.com or admin"
+                      placeholder="admin@jgec.ac.in or admin"
                       autoComplete="username"
                       required
                       className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#090D12] border border-white/10 text-sm text-[#F5F5F5] placeholder-[#A0A6B0]/40 focus:outline-none focus:border-[#D4AF7C] focus:ring-1 focus:ring-[#D4AF7C]/40 transition"
@@ -290,37 +284,26 @@ export default function AdminLoginPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5 font-semibold text-[#D4AF7C]">
                     <KeyRound className="w-3.5 h-3.5" />
-                    <span>Quick Access (Supabase Auth & Dev)</span>
+                    <span>Access Configuration</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={handleUseSupabaseAdmin}
-                      className="text-[11px] font-semibold text-emerald-400 hover:underline cursor-pointer"
-                      title="Use Supabase Auth Credentials"
-                    >
-                      Supabase Superadmin
-                    </button>
-                    <span className="text-white/20">•</span>
-                    <button
-                      type="button"
-                      onClick={handleUseQuickCredentials}
-                      className="text-[11px] font-semibold text-[#D4AF7C] hover:underline cursor-pointer"
-                      title="Use Arbiter Dev Credentials"
-                    >
-                      Dev Quick-fill
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={handleUseQuickCredentials}
+                    className="text-[11px] font-semibold text-[#D4AF7C] hover:underline cursor-pointer"
+                    title="Fill default admin username"
+                  >
+                    Quick Fill User
+                  </button>
                 </div>
                 
                 <p className="text-[11px] text-[#A0A6B0] leading-relaxed">
-                  Secured with PostgreSQL Row Level Security (RLS) & Supabase Identity.
+                  Enter your credentials configured in <code className="text-[#D4AF7C]">.env.local</code> or Supabase Auth. All logins are verified via cryptographic JWTs and protected by PostgreSQL RLS.
                 </p>
 
                 <div className="grid grid-cols-2 gap-2 pt-0.5 font-mono text-[11px]">
                   <div className="px-2.5 py-1.5 rounded-lg bg-[#090D12] border border-white/5 flex flex-col">
-                    <span className="text-[9px] uppercase tracking-wider text-[#A0A6B0]">Supabase User</span>
-                    <span className="text-[#F5F5F5] font-semibold truncate text-[10px]">chaturanga.jgec@gmail.com</span>
+                    <span className="text-[9px] uppercase tracking-wider text-[#A0A6B0]">Authentication</span>
+                    <span className="text-[#F5F5F5] font-semibold">Supabase Auth</span>
                   </div>
                   <div className="px-2.5 py-1.5 rounded-lg bg-[#090D12] border border-white/5 flex flex-col">
                     <span className="text-[9px] uppercase tracking-wider text-[#A0A6B0]">Security Level</span>
