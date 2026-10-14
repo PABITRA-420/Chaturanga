@@ -794,7 +794,7 @@ function RegisterForm() {
               </div>
 
               {/* Responsive Multi-Card Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-4 gap-3">
                 {events.map((event: any) => {
                   const isSelected = event.id === selectedEventId;
                   const isOpen = event.status === 'open';

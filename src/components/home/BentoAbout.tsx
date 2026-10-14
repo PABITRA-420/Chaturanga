@@ -34,10 +34,10 @@ export default function BentoAbout() {
       </div>
 
       {/* Differentiated Bento Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
         
-        {/* CARD 1: HERITAGE & ORIGINS (Spans 8 columns, Wide Hero Card) */}
-        <div className="lg:col-span-8 p-8 sm:p-10 rounded-3xl bg-gradient-to-br from-[#161B22] via-[#12161D] to-[#0D1016] border border-white/10 hover:border-[#D4AF7C]/40 transition relative overflow-hidden group shadow-2xl flex flex-col justify-between">
+        {/* CARD 1: HERITAGE & ORIGINS (Spans full width on tablet, 8 cols on desktop) */}
+        <div className="md:col-span-2 lg:col-span-8 p-8 sm:p-10 rounded-3xl bg-gradient-to-br from-[#161B22] via-[#12161D] to-[#0D1016] border border-white/10 hover:border-[#D4AF7C]/40 transition relative overflow-hidden group shadow-2xl flex flex-col justify-between">
           <div className="absolute right-4 -bottom-6 text-9xl font-serif text-[#D4AF7C]/5 pointer-events-none select-none group-hover:text-[#D4AF7C]/10 transition-colors">
             ♔
           </div>
@@ -88,8 +88,8 @@ export default function BentoAbout() {
           </div>
         </div>
 
-        {/* CARD 2: CLUB TIMINGS & SAC ROOM 204 (Spans 4 columns) */}
-        <div className="lg:col-span-4 p-8 rounded-3xl bg-[#12161D] border border-white/10 hover:border-emerald-500/40 transition flex flex-col justify-between shadow-xl group">
+        {/* CARD 2: CLUB TIMINGS & SAC ROOM 204 (Spans 1 col on tablet, 4 on desktop) */}
+        <div className="md:col-span-1 lg:col-span-4 p-8 rounded-3xl bg-[#12161D] border border-white/10 hover:border-emerald-500/40 transition flex flex-col justify-between shadow-xl group">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
@@ -131,8 +131,8 @@ export default function BentoAbout() {
           </div>
         </div>
 
-        {/* CARD 3: FIDE SWISS REGULATIONS (Spans 4 columns) */}
-        <div className="lg:col-span-4 p-8 rounded-3xl bg-[#12161D] border border-white/10 hover:border-blue-500/40 transition flex flex-col justify-between shadow-xl">
+        {/* CARD 3: FIDE SWISS REGULATIONS (Spans 1 col on tablet, 4 on desktop) */}
+        <div className="md:col-span-1 lg:col-span-4 p-8 rounded-3xl bg-[#12161D] border border-white/10 hover:border-blue-500/40 transition flex flex-col justify-between shadow-xl">
           <div className="space-y-4">
             <span className="w-10 h-10 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
               <ShieldCheck className="w-5 h-5" />
@@ -160,8 +160,8 @@ export default function BentoAbout() {
           </div>
         </div>
 
-        {/* CARD 4: MASTERCLASSES & STOCKFISH ANALYSIS (Spans 4 columns) */}
-        <div className="lg:col-span-4 p-8 rounded-3xl bg-[#12161D] border border-white/10 hover:border-purple-500/40 transition flex flex-col justify-between shadow-xl">
+        {/* CARD 4: MASTERCLASSES & STOCKFISH ANALYSIS (Spans 1 col on tablet, 4 on desktop) */}
+        <div className="md:col-span-1 lg:col-span-4 p-8 rounded-3xl bg-[#12161D] border border-white/10 hover:border-purple-500/40 transition flex flex-col justify-between shadow-xl">
           <div className="space-y-4">
             <span className="w-10 h-10 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
               <BrainCircuit className="w-5 h-5" />
@@ -189,8 +189,8 @@ export default function BentoAbout() {
           </div>
         </div>
 
-        {/* CARD 5: TROPHY PURSE & HONORS (Spans 4 columns) */}
-        <div className="lg:col-span-4 p-8 rounded-3xl bg-[#12161D] border border-white/10 hover:border-[#D4AF7C]/40 transition flex flex-col justify-between shadow-xl">
+        {/* CARD 5: TROPHY PURSE & HONORS (Spans 1 col on tablet, 4 on desktop) */}
+        <div className="md:col-span-1 lg:col-span-4 p-8 rounded-3xl bg-[#12161D] border border-white/10 hover:border-[#D4AF7C]/40 transition flex flex-col justify-between shadow-xl">
           <div className="space-y-4">
             <span className="w-10 h-10 rounded-2xl bg-[#D4AF7C]/15 border border-[#D4AF7C]/30 flex items-center justify-center text-[#D4AF7C]">
               <Trophy className="w-5 h-5" />

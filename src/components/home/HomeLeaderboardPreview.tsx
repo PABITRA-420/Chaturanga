@@ -40,7 +40,7 @@ export default function HomeLeaderboardPreview() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
           
           {/* Silver #2 */}
-          <div className="p-6 rounded-2xl bg-black/40 border border-slate-400/20 hover:border-slate-300/40 transition flex flex-col justify-between">
+          <div className="order-2 md:order-1 p-6 rounded-2xl bg-black/40 border border-slate-400/20 hover:border-slate-300/40 transition flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-bold text-slate-300 px-2.5 py-0.5 rounded-full bg-slate-300/10 border border-slate-300/30">
@@ -58,7 +58,7 @@ export default function HomeLeaderboardPreview() {
           </div>
 
           {/* Gold #1 */}
-          <div className="p-6 rounded-2xl bg-gradient-to-b from-[#1C1710] to-[#12161D] border-2 border-[#D4AF7C] shadow-lg shadow-[#D4AF7C]/15 flex flex-col justify-between relative">
+          <div className="order-1 md:order-2 p-6 rounded-2xl bg-gradient-to-b from-[#1C1710] to-[#12161D] border-2 border-[#D4AF7C] shadow-lg shadow-[#D4AF7C]/15 flex flex-col justify-between relative transform md:-translate-y-2">
             <div className="absolute -top-3 right-6 px-3 py-0.5 rounded-full bg-[#D4AF7C] text-[#0B0F14] font-black text-[10px] tracking-wider uppercase">
               REIGNING CHAMPION
             </div>
@@ -79,7 +79,7 @@ export default function HomeLeaderboardPreview() {
           </div>
 
           {/* Bronze #3 */}
-          <div className="p-6 rounded-2xl bg-black/40 border border-amber-700/30 hover:border-amber-600/40 transition flex flex-col justify-between">
+          <div className="order-3 md:order-3 p-6 rounded-2xl bg-black/40 border border-amber-700/30 hover:border-amber-600/40 transition flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-bold text-amber-500 px-2.5 py-0.5 rounded-full bg-amber-700/20 border border-amber-700/40">

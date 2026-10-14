@@ -134,8 +134,8 @@ export default function Navbar({ onRegisterClick }: NavbarProps) {
             })}
           </nav>
 
-          {/* RIGHT SIDE: JOIN US BUTTON */}
-          <div className="hidden sm:flex items-center">
+          {/* RIGHT SIDE: JOIN US BUTTON (Desktop only, mobile/tablet button is inside lg:hidden below) */}
+          <div className="hidden lg:flex items-center">
             <button
               type="button"
               onClick={handleJoinClick}
