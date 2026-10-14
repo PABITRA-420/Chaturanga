@@ -27,10 +27,14 @@ export async function getAuthenticatedAdmin(): Promise<AdminUser | null> {
         .from('admin_profiles')
         .select('id, email, full_name, role, is_active')
         .eq('id', user.id)
-        .eq('is_active', true)
         .maybeSingle();
 
-      if (profile) {
+      // Enforce active-status rule: If an administrator profile exists and is inactive, deny access immediately
+      if (profile && !profile.is_active) {
+        return null;
+      }
+
+      if (profile && profile.is_active) {
         return {
           id: profile.id,
           email: profile.email || user.email || '',
@@ -40,16 +44,16 @@ export async function getAuthenticatedAdmin(): Promise<AdminUser | null> {
         };
       }
 
-      // Check if user email matches primary administrator
-      const primaryAdminEmail = (process.env.ADMIN_EMAIL || 'admin.jgechelper@gmail.com').toLowerCase();
-      const isKnownSuperadmin = 
-        Boolean(user.email) && 
-        (user.email?.toLowerCase() === 'admin.jgechelper@gmail.com' || user.email?.toLowerCase() === primaryAdminEmail);
-
-      if (isKnownSuperadmin) {
+      // If no profile exists, derive primary-admin identity strictly from configuration
+      const primaryAdminEmail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
+      if (
+        user.email &&
+        primaryAdminEmail !== '' &&
+        user.email.toLowerCase() === primaryAdminEmail
+      ) {
         return {
           id: user.id,
-          email: user.email || 'admin.jgechelper@gmail.com',
+          email: user.email,
           fullName: 'Chief Arbiter & Tournament Admin',
           role: 'superadmin',
           authMethod: 'supabase_auth'
@@ -62,9 +66,10 @@ export async function getAuthenticatedAdmin(): Promise<AdminUser | null> {
     const session = cookieStore.get('chaturanga_admin_session');
     const adminSessionToken = process.env.ADMIN_SESSION_TOKEN || 'chaturanga_arbiter_session_key_2026';
     if (session && (session.value === adminSessionToken || session.value === 'chaturanga_arbiter_session_key' || session.value === 'chaturanga_arbiter_session_key_2026')) {
+      const primaryAdminEmail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
       return {
         id: 'env-admin-fallback',
-        email: process.env.ADMIN_EMAIL || 'admin.jgechelper@gmail.com',
+        email: primaryAdminEmail || 'admin@chaturanga-jgec.ac.in',
         fullName: 'Chief Arbiter & Tournament Admin',
         role: 'superadmin',
         authMethod: 'legacy_env'

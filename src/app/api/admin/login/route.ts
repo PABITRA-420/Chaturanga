@@ -17,13 +17,13 @@ export async function POST(request: Request) {
       );
     }
 
-    const configuredAdminEmail = (process.env.ADMIN_EMAIL || 'admin.jgechelper@gmail.com').toLowerCase();
+    const configuredAdminEmail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
 
     // Resolve identifier to an email address
     let resolvedEmail = rawIdentifier;
     if (!rawIdentifier.includes('@')) {
       if (rawIdentifier.toLowerCase() === 'admin') {
-        resolvedEmail = configuredAdminEmail;
+        resolvedEmail = configuredAdminEmail || `${rawIdentifier.toLowerCase()}@chaturanga-jgec.ac.in`;
       } else {
         resolvedEmail = `${rawIdentifier.toLowerCase()}@chaturanga-jgec.ac.in`;
       }
@@ -63,14 +63,27 @@ export async function POST(request: Request) {
           .from('admin_profiles')
           .select('id, email, full_name, role, is_active')
           .eq('id', authData.user.id)
-          .eq('is_active', true)
           .maybeSingle();
         profile = data;
       } catch (profileErr) {
         console.warn('Could not query admin_profiles:', profileErr);
       }
 
-      const isPrimaryAdmin = resolvedEmail.toLowerCase() === configuredAdminEmail;
+      // Enforce active-status rule: Inactive accounts must be rejected immediately
+      if (profile && !profile.is_active) {
+        try {
+          const supabase = await createSupabaseServerClient();
+          await supabase.auth.signOut();
+        } catch {}
+        return NextResponse.json(
+          { success: false, error: 'Access denied. Administrator account has been deactivated.' },
+          { status: 403 }
+        );
+      }
+
+      // Derive primary-admin identity strictly from configuration
+      const isPrimaryAdmin =
+        configuredAdminEmail !== '' && resolvedEmail.toLowerCase() === configuredAdminEmail;
 
       if (!profile && !isPrimaryAdmin) {
         // Sign out unauthorized user
