@@ -146,20 +146,12 @@ export default function Navbar({ onRegisterClick }: NavbarProps) {
             </button>
           </div>
 
-          {/* MOBILE TOGGLE & JOIN US */}
-          <div className="flex items-center gap-2 lg:hidden">
-            <button
-              type="button"
-              onClick={handleJoinClick}
-              className="px-3.5 py-1.5 rounded-full text-xs font-bold text-[#0B0F14] bg-[#D4AF7C] hover:bg-[#E6C98A] transition cursor-pointer"
-            >
-              Join Us
-            </button>
-
+          {/* MOBILE TOGGLE MENU BUTTON */}
+          <div className="flex items-center lg:hidden">
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2.5 rounded-xl text-[#F5F5F5] hover:text-[#D4AF7C] hover:bg-white/5 transition cursor-pointer"
+              className="min-w-[44px] min-h-[44px] p-2.5 rounded-xl text-[#F5F5F5] hover:text-[#D4AF7C] hover:bg-white/5 transition cursor-pointer flex items-center justify-center active:scale-95"
               aria-label="Toggle Navigation"
             >
               {mobileMenuOpen ? (
