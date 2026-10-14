@@ -1,24 +1,5 @@
 [
   {
-    "ticketId": "CHTR-2026-WLK4708",
-    "tournament": "Spring Blitz Arena 2026",
-    "fullName": "Grandmaster Test Player",
-    "rollNumber": "TEST_WALKIN_1791895244281",
-    "institution": "Jalpaiguri Government Engineering College",
-    "department": "Computer Science",
-    "year": "3rd Year",
-    "email": "gm_test@jgec.ac.in",
-    "phone": "+91 9876543210",
-    "ratingCategory": "FIDE Rated (1800+)",
-    "chessUsername": "gm_blitz_test",
-    "fideId": "FIDE-998877",
-    "customAnswers": {
-      "Lichess Blitz Rating": "2100"
-    },
-    "registeredAt": "2026-10-13T12:40:44.355Z",
-    "checkInStatus": "checked_in"
-  },
-  {
     "ticketId": "CHTR-2026-AR94K1",
     "tournament": "Chaturanga Annual Inter-College Chess Championship 2026",
     "fullName": "Aritra Sen",

@@ -60,12 +60,13 @@ export async function uploadImageBlob(
 ): Promise<BlobUploadResult> {
   const extMatch = originalFilename.match(/\.([a-zA-Z0-9]+)$/);
   const ext = extMatch ? extMatch[1].toLowerCase() : 'jpg';
-  const cleanName = originalFilename
+  const baseName = originalFilename.replace(/\.[^/.]+$/, "");
+  const cleanName = baseName
     .replace(/[^a-zA-Z0-9_-]/g, '_')
     .substring(0, 30);
   const timestamp = Date.now();
   const randomSuffix = Math.random().toString(36).substring(2, 8);
-  const key = `${timestamp}_${randomSuffix}_${cleanName}.${ext}`;
+  const key = `${timestamp}_${randomSuffix}_${cleanName || 'image'}.${ext}`;
   const uploadedAt = new Date().toISOString();
 
   const store = getMediaStore();

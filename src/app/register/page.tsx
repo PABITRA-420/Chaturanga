@@ -3,8 +3,6 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-
-export const dynamic = 'force-dynamic';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { UPCOMING_EVENTS } from '@/data/tournamentData';
