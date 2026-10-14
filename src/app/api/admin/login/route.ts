@@ -120,17 +120,17 @@ export async function POST(request: Request) {
       });
     }
 
-    // 2. Fallback: Check environment credentials for bootstrap / emergency access
-    const envUser = process.env.ADMIN_USERNAME || 'admin.jgechelper@gmail.com';
-    const envPass = process.env.ADMIN_PASSWORD || 'Pk@2029jgec';
+    // 2. Fallback: Check environment credentials for bootstrap / emergency access (requires operator-supplied ADMIN_PASSWORD)
+    const envUser = process.env.ADMIN_USERNAME || process.env.ADMIN_EMAIL || 'admin';
+    const envPass = process.env.ADMIN_PASSWORD;
 
-    const configuredAdminEmail = (process.env.ADMIN_EMAIL || 'admin.jgechelper@gmail.com').toLowerCase();
+    const configuredAdminEmail = (process.env.ADMIN_EMAIL || '').toLowerCase();
     const isEnvUserMatch =
       rawIdentifier.toLowerCase() === envUser.toLowerCase() ||
       rawIdentifier.toLowerCase() === 'admin' ||
-      resolvedEmail.toLowerCase() === configuredAdminEmail;
+      (configuredAdminEmail !== '' && resolvedEmail.toLowerCase() === configuredAdminEmail);
 
-    const isEnvPassMatch = Boolean(envPass && trimmedPass === envPass);
+    const isEnvPassMatch = Boolean(envPass && envPass.trim() !== '' && trimmedPass === envPass);
 
     if (isEnvUserMatch && isEnvPassMatch) {
       const cookieStore = await cookies();
