@@ -56,17 +56,14 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Also check transitional session cookie
+  // Also check transitional session cookie against securely configured ADMIN_SESSION_TOKEN
   if (!isAuthenticated) {
-    const legacySession = request.cookies.get('chaturanga_admin_session');
-    const adminSessionToken = process.env.ADMIN_SESSION_TOKEN || 'chaturanga_arbiter_session_key_2026';
-    if (
-      legacySession && 
-      (legacySession.value === adminSessionToken || 
-       legacySession.value === 'chaturanga_arbiter_session_key' || 
-       legacySession.value === 'chaturanga_arbiter_session_key_2026')
-    ) {
-      isAuthenticated = true;
+    const adminSessionToken = (process.env.ADMIN_SESSION_TOKEN || '').trim();
+    if (adminSessionToken !== '') {
+      const legacySession = request.cookies.get('chaturanga_admin_session');
+      if (legacySession && legacySession.value === adminSessionToken) {
+        isAuthenticated = true;
+      }
     }
   }
 

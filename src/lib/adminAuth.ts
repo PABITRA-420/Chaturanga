@@ -65,18 +65,20 @@ export async function getAuthenticatedAdmin(): Promise<AdminUser | null> {
     }
 
     // 2. Fallback Session Cookie Check
-    const cookieStore = await cookies();
-    const session = cookieStore.get('chaturanga_admin_session');
-    const adminSessionToken = process.env.ADMIN_SESSION_TOKEN || 'chaturanga_arbiter_session_key_2026';
-    if (session && (session.value === adminSessionToken || session.value === 'chaturanga_arbiter_session_key' || session.value === 'chaturanga_arbiter_session_key_2026')) {
-      const primaryAdminEmail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
-      return {
-        id: 'env-admin-fallback',
-        email: primaryAdminEmail || 'admin@chaturanga-jgec.ac.in',
-        fullName: 'Chief Arbiter & Tournament Admin',
-        role: 'superadmin',
-        authMethod: 'legacy_env'
-      };
+    const adminSessionToken = (process.env.ADMIN_SESSION_TOKEN || '').trim();
+    if (adminSessionToken !== '') {
+      const cookieStore = await cookies();
+      const session = cookieStore.get('chaturanga_admin_session');
+      if (session && session.value === adminSessionToken) {
+        const primaryAdminEmail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
+        return {
+          id: 'env-admin-fallback',
+          email: primaryAdminEmail || 'admin@chaturanga-jgec.ac.in',
+          fullName: 'Chief Arbiter & Tournament Admin',
+          role: 'superadmin',
+          authMethod: 'legacy_env'
+        };
+      }
     }
 
     return null;

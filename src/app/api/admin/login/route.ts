@@ -53,7 +53,7 @@ export async function POST(request: Request) {
       };
     }
 
-    const adminSessionToken = process.env.ADMIN_SESSION_TOKEN || 'chaturanga_arbiter_session_key_2026';
+    const adminSessionToken = (process.env.ADMIN_SESSION_TOKEN || '').trim();
 
     if (authData?.user && !authError) {
       // Cross-verify user role in public.admin_profiles
@@ -113,15 +113,17 @@ export async function POST(request: Request) {
         } catch {}
       }
 
-      // Set session cookie for maximum compatibility across older sub-systems
-      const cookieStore = await cookies();
-      cookieStore.set('chaturanga_admin_session', adminSessionToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/',
-        maxAge: 60 * 60 * 24 * 7,
-      });
+      // Set session cookie for maximum compatibility across older sub-systems if ADMIN_SESSION_TOKEN is configured
+      if (adminSessionToken !== '') {
+        const cookieStore = await cookies();
+        cookieStore.set('chaturanga_admin_session', adminSessionToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          path: '/',
+          maxAge: 60 * 60 * 24 * 7,
+        });
+      }
 
       return NextResponse.json({
         success: true,
@@ -150,14 +152,16 @@ export async function POST(request: Request) {
     const isEnvPassMatch = Boolean(envPass && envPass.trim() !== '' && trimmedPass === envPass);
 
     if (isEnvUserMatch && isEnvPassMatch) {
-      const cookieStore = await cookies();
-      cookieStore.set('chaturanga_admin_session', adminSessionToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/',
-        maxAge: 60 * 60 * 24 * 7,
-      });
+      if (adminSessionToken !== '') {
+        const cookieStore = await cookies();
+        cookieStore.set('chaturanga_admin_session', adminSessionToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          path: '/',
+          maxAge: 60 * 60 * 24 * 7,
+        });
+      }
 
       return NextResponse.json({
         success: true,
