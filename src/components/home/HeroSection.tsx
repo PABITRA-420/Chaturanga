@@ -52,12 +52,12 @@ export default function HeroSection({
         <div className="max-w-2xl lg:max-w-3xl space-y-6 sm:space-y-8">
           
           {/* Top Badge: Featured Tournament or Active Season */}
-          <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-black/60 border border-[#D4AF7C]/30 backdrop-blur-md shadow-lg">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#D4AF7C]">
+          <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-black/60 border border-[#D4AF7C]/30 backdrop-blur-md shadow-lg max-w-full overflow-hidden">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#D4AF7C] truncate max-w-[200px] sm:max-w-none">
               {featuredEvent?.title ? `Next Up: ${featuredEvent.title}` : 'Spring Season 2026 Live'}
             </span>
-            <span className="text-[#A0A6B0] text-xs">• FIDE Rules</span>
+            <span className="text-[#A0A6B0] text-xs shrink-0">• FIDE Rules</span>
           </div>
 
           {/* Main Headline */}

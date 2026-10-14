@@ -47,13 +47,13 @@ export default function RegisterCta() {
             </Link>
           </div>
 
-          <div className="pt-4 flex items-center gap-6 text-xs text-[#A0A6B0]">
+          <div className="pt-4 flex flex-wrap items-center gap-4 sm:gap-6 text-xs text-[#A0A6B0]">
             <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-[#D4AF7C]" />
+              <ShieldCheck className="w-4 h-4 text-[#D4AF7C] shrink-0" />
               <span>Official FIDE Regulations</span>
             </div>
             <div className="flex items-center gap-2">
-              <Trophy className="w-4 h-4 text-[#D4AF7C]" />
+              <Trophy className="w-4 h-4 text-[#D4AF7C] shrink-0" />
               <span>₹25,000+ Prize Purses</span>
             </div>
           </div>

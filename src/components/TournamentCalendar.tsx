@@ -287,7 +287,7 @@ export default function TournamentCalendar() {
             <button
               type="button"
               onClick={handlePrevMonth}
-              className="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-[#A0A6B0] hover:text-[#F5F5F5] flex items-center justify-center transition cursor-pointer"
+              className="w-9 h-9 sm:w-8 sm:h-8 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-[#A0A6B0] hover:text-[#F5F5F5] flex items-center justify-center transition cursor-pointer active:scale-95"
               aria-label="Previous month"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -296,7 +296,7 @@ export default function TournamentCalendar() {
             <button
               type="button"
               onClick={handleNextMonth}
-              className="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-[#A0A6B0] hover:text-[#F5F5F5] flex items-center justify-center transition cursor-pointer"
+              className="w-9 h-9 sm:w-8 sm:h-8 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-[#A0A6B0] hover:text-[#F5F5F5] flex items-center justify-center transition cursor-pointer active:scale-95"
               aria-label="Next month"
             >
               <ChevronRight className="w-4 h-4" />
@@ -317,7 +317,7 @@ export default function TournamentCalendar() {
         </div>
 
         {/* Right: Event Filters (All / Upcoming / Past) */}
-        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-black/40 border border-white/10 text-xs">
+        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-black/40 border border-white/10 text-xs w-full sm:w-auto overflow-x-auto scrollbar-none whitespace-nowrap">
           {[
             { id: 'all', label: 'All Events (6)' },
             { id: 'upcoming', label: 'Upcoming (3)' },
@@ -327,7 +327,7 @@ export default function TournamentCalendar() {
               key={tab.id}
               type="button"
               onClick={() => setFilterMode(tab.id as any)}
-              className={`px-3 py-1.5 rounded-xl font-medium transition cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl font-medium transition cursor-pointer whitespace-nowrap shrink-0 ${
                 filterMode === tab.id
                   ? 'bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] text-[#0B0F14] font-bold shadow-sm'
                   : 'text-[#A0A6B0] hover:text-[#F5F5F5] hover:bg-white/5'
@@ -399,9 +399,9 @@ export default function TournamentCalendar() {
               return (
                 <div
                   key={`prev-${idx}`}
-                  className="min-h-[72px] sm:min-h-[88px] p-2 bg-[#0B0F14]/70 text-[#A0A6B0]/25 text-xs flex flex-col justify-between select-none cursor-default"
+                  className="min-h-[52px] sm:min-h-[88px] p-1.5 sm:p-2 bg-[#0B0F14]/70 text-[#A0A6B0]/25 text-xs flex flex-col justify-between select-none cursor-default"
                 >
-                  <span className="font-mono text-[11px]">{prevDayNum}</span>
+                  <span className="font-mono text-[10px] sm:text-[11px]">{prevDayNum}</span>
                 </div>
               );
             })}
@@ -416,7 +416,7 @@ export default function TournamentCalendar() {
                 <div
                   key={`day-${dayNum}`}
                   onClick={() => handleDaySelect(dayNum)}
-                  className={`min-h-[72px] sm:min-h-[88px] p-1.5 sm:p-2 bg-[#0E1218] hover:bg-[#161B24] text-xs flex flex-col justify-between transition-colors duration-150 cursor-pointer relative group select-none ${
+                  className={`min-h-[52px] sm:min-h-[88px] p-1 sm:p-2 bg-[#0E1218] hover:bg-[#161B24] text-xs flex flex-col justify-between transition-colors duration-150 cursor-pointer relative group select-none ${
                     isSelected
                       ? 'ring-2 ring-inset ring-[#D4AF7C] bg-[#161B24] z-10'
                       : ''
@@ -437,14 +437,19 @@ export default function TournamentCalendar() {
                     </span>
 
                     {evt && (
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping shrink-0" title="Live / Scheduled Tournament" />
+                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-400 animate-ping shrink-0" title="Live / Scheduled Tournament" />
                     )}
                   </div>
 
                   {/* Google Calendar Event Pill */}
                   {evt ? (
                     <div className="mt-1 space-y-1">
-                      <div className={`px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold truncate shadow-sm ${evt.badgeColor}`}>
+                      {/* Mobile compact glowing dot indicator */}
+                      <div className="sm:hidden flex items-center justify-center pt-0.5">
+                        <span className="w-2 h-2 rounded-full bg-[#D4AF7C] shadow-[0_0_8px_#D4AF7C]" />
+                      </div>
+                      {/* Tablet / Desktop text pill */}
+                      <div className={`hidden sm:block px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold truncate shadow-sm ${evt.badgeColor}`}>
                         {evt.title.split(' ')[0]} {evt.title.split(' ')[1] || ''}
                       </div>
                       <div className="text-[8px] sm:text-[9px] text-[#A0A6B0] hidden sm:block truncate font-mono">
@@ -467,9 +472,9 @@ export default function TournamentCalendar() {
               return Array.from({ length: remainingCells }).map((_, idx) => (
                 <div
                   key={`next-${idx}`}
-                  className="min-h-[72px] sm:min-h-[88px] p-2 bg-[#0B0F14]/70 text-[#A0A6B0]/25 text-xs flex flex-col justify-between select-none cursor-default"
+                  className="min-h-[52px] sm:min-h-[88px] p-1.5 sm:p-2 bg-[#0B0F14]/70 text-[#A0A6B0]/25 text-xs flex flex-col justify-between select-none cursor-default"
                 >
-                  <span className="font-mono text-[11px]">{idx + 1}</span>
+                  <span className="font-mono text-[10px] sm:text-[11px]">{idx + 1}</span>
                 </div>
               ));
             })()}

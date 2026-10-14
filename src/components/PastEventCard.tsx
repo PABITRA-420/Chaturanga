@@ -191,7 +191,11 @@ export default function PastEventCard({ event }: PastEventCardProps) {
                 <span className="text-[10px] text-[#A0A6B0] font-normal font-mono">FIDE Swiss Tiebreaks</span>
               </h4>
               <div className="overflow-x-auto rounded-xl border border-white/10 shadow-inner">
-                <table className="w-full text-left text-xs">
+                {/* Mobile Horizontal Scroll Hint */}
+                <div className="sm:hidden flex items-center justify-between px-3 py-1.5 bg-black/60 border-b border-white/5 text-[10px] text-[#A0A6B0]">
+                  <span className="text-[#D4AF7C] font-medium">← Swipe table to see Buchholz tiebreaks →</span>
+                </div>
+                <table className="w-full min-w-[560px] text-left text-xs">
                   <thead className="bg-white/[0.04] text-[11px] uppercase tracking-wider text-[#D4AF7C] font-semibold border-b border-white/10">
                     <tr>
                       <th className="py-2.5 px-3">#</th>

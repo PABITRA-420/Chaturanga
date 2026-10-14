@@ -1602,8 +1602,13 @@ export default function AdminDashboardPage() {
 
             {/* Players Table */}
             <div className="rounded-2xl bg-[#10141C] border border-white/10 overflow-hidden shadow-xl">
+              {/* Mobile Horizontal Scroll Hint */}
+              <div className="sm:hidden flex items-center justify-between px-4 py-2 bg-black/40 border-b border-white/5 text-[11px] text-[#A0A6B0]">
+                <span className="text-[#D4AF7C] font-medium">← Swipe to view arbiter actions & details →</span>
+                <span className="font-mono text-[10px] text-white/50">{filteredParticipants.length} entries</span>
+              </div>
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full min-w-[880px] text-left text-xs">
                   <thead className="bg-[#090D12] text-[#A0A6B0] font-semibold border-b border-white/10 uppercase tracking-wider text-[10px]">
                     <tr>
                       <th className="py-3.5 px-4">Ticket ID</th>

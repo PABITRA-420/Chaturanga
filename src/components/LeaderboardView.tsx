@@ -311,8 +311,16 @@ export default function LeaderboardView() {
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="rounded-3xl bg-[#12161D] border border-white/10 shadow-2xl overflow-hidden">
             
+            {/* Mobile Horizontal Scroll Hint */}
+            <div className="sm:hidden flex items-center justify-between px-4 py-2 bg-black/40 border-b border-white/5 text-[11px] text-[#A0A6B0]">
+              <span className="flex items-center gap-1.5 text-[#D4AF7C] font-medium">
+                <span>← Swipe table horizontally →</span>
+              </span>
+              <span className="font-mono text-[10px] text-white/50">8 Columns</span>
+            </div>
+
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+              <table className="w-full min-w-[720px] text-left border-collapse">
                 <thead>
                   <tr className="border-b border-white/10 bg-black/40 text-[11px] uppercase tracking-wider text-[#A0A6B0] font-semibold">
                     <th scope="col" className="py-4 px-4 sm:px-6 text-center w-16">Rank</th>
