@@ -59,7 +59,10 @@ export async function POST(request: Request) {
       // Cross-verify user role in public.admin_profiles
       let profile: any = null;
       try {
-        const { data } = await supabaseServer
+        const { hasServiceRoleKey } = getSupabaseConfig();
+        const supabaseAuthClient = await createSupabaseServerClient();
+        const profileClient = hasServiceRoleKey ? supabaseServer : supabaseAuthClient;
+        const { data } = await profileClient
           .from('admin_profiles')
           .select('id, email, full_name, role, is_active')
           .eq('id', authData.user.id)
@@ -100,7 +103,10 @@ export async function POST(request: Request) {
       // Update last_login timestamp
       if (profile) {
         try {
-          await supabaseServer
+          const { hasServiceRoleKey } = getSupabaseConfig();
+          const supabaseAuthClient = await createSupabaseServerClient();
+          const profileClient = hasServiceRoleKey ? supabaseServer : supabaseAuthClient;
+          await profileClient
             .from('admin_profiles')
             .update({ last_login: new Date().toISOString() })
             .eq('id', profile.id);

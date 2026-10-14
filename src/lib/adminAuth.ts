@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers';
-import { createSupabaseServerClient, supabaseServer } from '@/lib/supabase/server';
+import { createSupabaseServerClient, supabaseServer, getSupabaseConfig } from '@/lib/supabase/server';
 
 export interface AdminUser {
   id: string;
@@ -23,7 +23,10 @@ export async function getAuthenticatedAdmin(): Promise<AdminUser | null> {
 
     if (user && !error) {
       // Query admin profile to verify role and active status
-      const { data: profile } = await supabaseServer
+      // Use service-role client if configured; otherwise perform role check through authenticated client
+      const { hasServiceRoleKey } = getSupabaseConfig();
+      const profileClient = hasServiceRoleKey ? supabaseServer : supabase;
+      const { data: profile } = await profileClient
         .from('admin_profiles')
         .select('id, email, full_name, role, is_active')
         .eq('id', user.id)
