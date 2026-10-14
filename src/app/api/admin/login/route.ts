@@ -17,11 +17,13 @@ export async function POST(request: Request) {
       );
     }
 
+    const configuredAdminEmail = (process.env.ADMIN_EMAIL || 'admin.jgechelper@gmail.com').toLowerCase();
+
     // Resolve identifier to an email address
     let resolvedEmail = rawIdentifier;
     if (!rawIdentifier.includes('@')) {
       if (rawIdentifier.toLowerCase() === 'admin') {
-        resolvedEmail = process.env.ADMIN_EMAIL || 'admin@jgec.ac.in';
+        resolvedEmail = configuredAdminEmail;
       } else {
         resolvedEmail = `${rawIdentifier.toLowerCase()}@chaturanga-jgec.ac.in`;
       }
@@ -68,10 +70,7 @@ export async function POST(request: Request) {
         console.warn('Could not query admin_profiles:', profileErr);
       }
 
-      const configuredAdminEmail = (process.env.ADMIN_EMAIL || '').toLowerCase();
-      const isPrimaryAdmin = 
-        resolvedEmail.toLowerCase() === 'admin.jgechelper@gmail.com' ||
-        (configuredAdminEmail !== '' && resolvedEmail.toLowerCase() === configuredAdminEmail);
+      const isPrimaryAdmin = resolvedEmail.toLowerCase() === configuredAdminEmail;
 
       if (!profile && !isPrimaryAdmin) {
         // Sign out unauthorized user
@@ -124,11 +123,10 @@ export async function POST(request: Request) {
     const envUser = process.env.ADMIN_USERNAME || process.env.ADMIN_EMAIL || 'admin';
     const envPass = process.env.ADMIN_PASSWORD;
 
-    const configuredAdminEmail = (process.env.ADMIN_EMAIL || '').toLowerCase();
     const isEnvUserMatch =
       rawIdentifier.toLowerCase() === envUser.toLowerCase() ||
       rawIdentifier.toLowerCase() === 'admin' ||
-      (configuredAdminEmail !== '' && resolvedEmail.toLowerCase() === configuredAdminEmail);
+      resolvedEmail.toLowerCase() === configuredAdminEmail;
 
     const isEnvPassMatch = Boolean(envPass && envPass.trim() !== '' && trimmedPass === envPass);
 
@@ -148,7 +146,7 @@ export async function POST(request: Request) {
         authMethod: 'legacy_env',
         user: {
           id: 'env-admin',
-          email: process.env.ADMIN_EMAIL || 'admin.jgechelper@gmail.com',
+          email: configuredAdminEmail,
           username: envUser,
           fullName: 'Chief Arbiter & Tournament Admin (Emergency Access)',
           role: 'superadmin',
