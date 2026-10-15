@@ -18,12 +18,20 @@ export async function GET(request: Request) {
       });
 
       if (!chessRes.ok) {
+        if (chessRes.status === 404) {
+          return NextResponse.json({
+            success: true,
+            exists: false,
+            platform: 'Chess.com',
+            message: `Player "${username}" not found on Chess.com. Please check your ID carefully.`
+          });
+        }
+
+        const errStatus = chessRes.status === 503 || chessRes.status === 429 ? 503 : 502;
         return NextResponse.json({
-          success: true,
-          exists: false,
-          platform: 'Chess.com',
-          message: `Player "${username}" not found on Chess.com. Please check your ID carefully.`
-        });
+          success: false,
+          error: `Chess.com verification service unavailable (HTTP ${chessRes.status}). Please retry in a moment.`
+        }, { status: errStatus });
       }
 
       const profile = await chessRes.json();
@@ -60,12 +68,20 @@ export async function GET(request: Request) {
       });
 
       if (!lichessRes.ok) {
+        if (lichessRes.status === 404) {
+          return NextResponse.json({
+            success: true,
+            exists: false,
+            platform: 'Lichess',
+            message: `Player "${username}" not found on Lichess. Please check your ID carefully.`
+          });
+        }
+
+        const errStatus = lichessRes.status === 503 || lichessRes.status === 429 ? 503 : 502;
         return NextResponse.json({
-          success: true,
-          exists: false,
-          platform: 'Lichess',
-          message: `Player "${username}" not found on Lichess. Please check your ID carefully.`
-        });
+          success: false,
+          error: `Lichess verification service unavailable (HTTP ${lichessRes.status}). Please retry in a moment.`
+        }, { status: errStatus });
       }
 
       const u = await lichessRes.json();
@@ -152,11 +168,25 @@ export async function GET(request: Request) {
       }
     }
 
+    // Both did not return an active profile.
+    // Check if both failed with 404 (or 404 and disabled/tosViolation)
+    const chessIsNotFound = chessRes.status === 404;
+    const lichessIsNotFound = lichessRes.status === 404 || lichessRes.ok;
+
+    if (chessIsNotFound && lichessIsNotFound) {
+      return NextResponse.json({
+        success: true,
+        exists: false,
+        message: `Account "${username}" not found on Chess.com or Lichess. Please check your ID carefully.`
+      });
+    }
+
+    // Otherwise, an upstream service returned a non-404 error (e.g. 429, 500, 502, 503)
+    const errStatus = (chessRes.status === 503 || lichessRes.status === 503 || chessRes.status === 429 || lichessRes.status === 429) ? 503 : 502;
     return NextResponse.json({
-      success: true,
-      exists: false,
-      message: `Account "${username}" not found on Chess.com or Lichess. Please check your ID carefully.`
-    });
+      success: false,
+      error: 'Upstream chess verification services temporarily unavailable. Please retry in a moment.'
+    }, { status: errStatus });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }

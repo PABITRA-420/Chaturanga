@@ -90,6 +90,7 @@ function RegisterForm() {
       title?: string | null;
       ratings?: { rapid?: number | null; blitz?: number | null; bullet?: number | null; classical?: number | null };
       message?: string;
+      unavailable?: boolean;
     } | null;
   }>({
     checking: false,
@@ -133,12 +134,21 @@ function RegisterForm() {
         }
         return data;
       } else {
-        const failed = { exists: false, message: 'Verification service error' };
-        setChessVerification({ checking: false, hasChecked: true, lastCheckedHandle: handle, lastCheckedPlatform: platform, result: failed });
-        return failed;
+        const errJson = await res.json().catch(() => null);
+        const unavailable = {
+          exists: false,
+          unavailable: true,
+          message: errJson?.error || 'Verification service temporarily unavailable. Please retry.'
+        };
+        setChessVerification({ checking: false, hasChecked: true, lastCheckedHandle: handle, lastCheckedPlatform: platform, result: unavailable });
+        return unavailable;
       }
     } catch (err: any) {
-      const failed = { exists: false, message: err.message || 'Network error' };
+      const failed = {
+        exists: false,
+        unavailable: true,
+        message: err.message || 'Network error while contacting verification service. Please retry.'
+      };
       setChessVerification({ checking: false, hasChecked: true, lastCheckedHandle: handle, lastCheckedPlatform: platform, result: failed });
       return failed;
     }
@@ -265,6 +275,13 @@ function RegisterForm() {
         setIsSubmitting(true);
         verResult = await verifyChessAccount(formData.chessPlatform, handle);
         setIsSubmitting(false);
+      }
+
+      if (verResult?.unavailable) {
+        setErrorMsg(verResult.message || 'Verification service is temporarily unavailable. Please retry verification before submitting.');
+        const el = document.getElementById('chess-handle-input');
+        if (el) el.focus();
+        return;
       }
 
       if (!verResult || !verResult.exists) {
@@ -1558,6 +1575,27 @@ function RegisterForm() {
                                     />
                                   )}
                                 </div>
+                              ) : chessVerification.result.unavailable ? (
+                                <div className="p-3.5 rounded-2xl bg-amber-500/10 border-2 border-amber-500/30 text-amber-300 text-xs flex items-start justify-between gap-3 shadow-lg animate-in fade-in duration-200">
+                                  <div className="flex items-start gap-3 min-w-0">
+                                    <AlertTriangle className="w-5 h-5 shrink-0 text-amber-400 mt-0.5" />
+                                    <div className="space-y-1 min-w-0">
+                                      <div className="font-bold text-amber-200 text-xs">
+                                        Verification Service Unavailable
+                                      </div>
+                                      <p className="text-[11px] text-amber-300/90 leading-relaxed">
+                                        {chessVerification.result.message || 'Unable to contact verification service. Please retry in a few moments.'}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => verifyChessAccount(formData.chessPlatform, formData.chessUsername)}
+                                    className="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 text-[11px] font-semibold shrink-0 transition-colors"
+                                  >
+                                    Retry
+                                  </button>
+                                </div>
                               ) : (
                                 <div className="p-3.5 rounded-2xl bg-red-500/10 border-2 border-red-500/40 text-red-300 text-xs flex items-start gap-3 shadow-lg animate-in fade-in duration-200">
                                   <AlertTriangle className="w-5 h-5 shrink-0 text-red-400 mt-0.5" />
@@ -1672,6 +1710,11 @@ function RegisterForm() {
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       <span>Player ID Verified &bull; Free Registration</span>
                     </div>
+                  ) : chessVerification.result?.unavailable ? (
+                    <div className="flex items-center gap-1.5 text-amber-400 font-medium">
+                      <AlertTriangle className="w-3.5 h-3.5" />
+                      <span>Verification service unavailable &bull; Retry required</span>
+                    </div>
                   ) : chessVerification.result?.exists === false ? (
                     <div className="flex items-center gap-1.5 text-red-400 font-medium">
                       <AlertTriangle className="w-3.5 h-3.5" />
@@ -1687,7 +1730,7 @@ function RegisterForm() {
 
                 <button
                   type="submit"
-                  disabled={isSubmitting || chessVerification.checking || (Boolean(formData.chessUsername) && chessVerification.result?.exists === false)}
+                  disabled={isSubmitting || chessVerification.checking || (Boolean(formData.chessUsername) && chessVerification.result?.exists === false && !chessVerification.result?.unavailable)}
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full font-bold text-xs text-[#0B0F14] bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] hover:brightness-110 transition-all duration-200 shadow-xl shadow-[#D4AF7C]/30 hover:scale-[1.02] active:scale-[0.98] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
