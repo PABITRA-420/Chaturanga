@@ -88,26 +88,26 @@ async function syncLichessClub() {
   });
 
   // 1. Update / Seed Leaderboard Players in Supabase
-  console.log('\nSyncing top rated players to Supabase leaderboard_players...');
-  const topLeaderboard = parsed.slice(0, 20); // Top 20 for full leaderboard depth
+  console.log('\nSyncing all rated Lichess club members to Supabase leaderboard_players...');
+  const topLeaderboard = parsed; // Sync all club members
 
   for (let i = 0; i < topLeaderboard.length; i++) {
     const p = topLeaderboard[i];
     const rank = i + 1;
     const id = `player-lichess-${p.username.toLowerCase()}`;
-    const rollNumber = `JGEC-CHESS-${(100 + rank).toString()}`;
+    const rollNumber = `@${p.username}`;
 
     const playerRecord = {
       id,
       rank,
       name: p.username,
       roll_number: rollNumber,
-      department: rank <= 3 ? 'Competitive Team' : 'Computer Science & Engineering',
-      year: rank === 1 ? '4th Year' : rank === 2 ? '3rd Year' : rank === 3 ? '2nd Year' : 'Collegiate',
-      fide_id: `Lichess ID: @${p.username}`,
+      department: 'JGEC Lichess Club',
+      year: 'Collegiate Squad',
+      fide_id: p.title ? `${p.title} (${p.username})` : `@${p.username}`,
       chess_username: p.username,
       lichess_username: p.username,
-      title: rank === 1 ? 'Club Grandmaster' : rank === 2 ? 'Master Candidate' : rank === 3 ? 'Blitz Specialist' : 'Squad Contender',
+      title: p.title ? p.title : (rank === 1 ? 'Club Grandmaster' : rank === 2 ? 'Master Candidate' : rank === 3 ? 'Blitz Specialist' : 'Club Member'),
       rapid_elo: p.rapid,
       blitz_elo: p.blitz,
       classical_elo: p.classical,

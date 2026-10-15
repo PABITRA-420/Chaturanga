@@ -202,13 +202,13 @@ export default function LeaderboardView() {
                       {topThree[1].name}
                     </h3>
                     <p className="text-xs text-[#A0A6B0] mb-4">
-                      {topThree[1].year || 'Collegiate Squad'} • {topThree[1].title || 'Candidate Master'}
+                      Official JGEC Lichess Squad • {topThree[1].title || 'Candidate Master'}
                     </p>
 
                     <div className="p-3 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-between">
                       <div>
                         <div className="text-[11px] text-[#A0A6B0] uppercase font-bold tracking-wider">
-                          {plat?.platform || 'Club'} {ratingMode} Elo
+                          {plat?.platform || 'Lichess'} {ratingMode} Elo
                         </div>
                         <div className="text-xl font-black font-mono text-slate-200">{topThree[1].rating[ratingMode]}</div>
                       </div>
@@ -237,7 +237,7 @@ export default function LeaderboardView() {
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <div className="text-xs font-bold text-[#D4AF7C] uppercase tracking-widest flex items-center gap-1.5">
                         <Sparkles className="w-3.5 h-3.5" />
-                        <span>Reigning College Champion</span>
+                        <span>Reigning Lichess Club Champion</span>
                       </div>
                       {plat && (
                         <a
@@ -256,13 +256,13 @@ export default function LeaderboardView() {
                       {topThree[0].name}
                     </h3>
                     <p className="text-xs text-[#A0A6B0] mb-4">
-                      {topThree[0].year || 'Collegiate Squad'} • Official JGEC Top Board
+                      Official JGEC Lichess #1 Board • Reigning Champion
                     </p>
 
                     <div className="p-4 rounded-2xl bg-black/50 border border-[#D4AF7C]/20 grid grid-cols-2 gap-4">
                       <div>
                         <div className="text-xs text-[#A0A6B0] uppercase font-bold tracking-wider">
-                          {plat?.platform || 'Club'} {ratingMode} Elo
+                          {plat?.platform || 'Lichess'} {ratingMode} Elo
                         </div>
                         <div className="text-2xl font-black font-mono text-[#D4AF7C]">{topThree[0].rating[ratingMode]}</div>
                       </div>
@@ -308,7 +308,7 @@ export default function LeaderboardView() {
                       {topThree[2].name}
                     </h3>
                     <p className="text-xs text-[#A0A6B0] mb-4">
-                      {topThree[2].year || 'Collegiate Squad'} • {topThree[2].title || 'Collegiate Master'}
+                      Official JGEC Lichess Squad • {topThree[2].title || 'Collegiate Master'}
                     </p>
 
                     <div className="p-3 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-between">
@@ -418,7 +418,7 @@ export default function LeaderboardView() {
               <span className="flex items-center gap-1.5 text-[#D4AF7C] font-medium">
                 <span>← Swipe table horizontally →</span>
               </span>
-              <span className="font-mono text-[10px] text-white/50">8 Columns</span>
+              <span className="font-mono text-[10px] text-white/50">7 Columns</span>
             </div>
 
             <div className="overflow-x-auto">
@@ -426,13 +426,12 @@ export default function LeaderboardView() {
                 <thead>
                   <tr className="border-b border-white/10 bg-black/40 text-[11px] uppercase tracking-wider text-[#A0A6B0] font-semibold">
                     <th scope="col" className="py-4 px-4 sm:px-6 text-center w-16">Rank</th>
-                    <th scope="col" className="py-4 px-4 sm:px-6">Player & Title</th>
-                    <th scope="col" className="py-4 px-4 text-center">Academic Year</th>
+                    <th scope="col" className="py-4 px-4 sm:px-6">Lichess Player &amp; ID</th>
                     <th scope="col" className="py-4 px-4 text-right">Active Elo</th>
-                    <th scope="col" className="py-4 px-4 text-center">Peak</th>
+                    <th scope="col" className="py-4 px-4 text-center">Peak Rating</th>
                     <th scope="col" className="py-4 px-4 text-center">Win Rate</th>
-                    <th scope="col" className="py-4 px-4 text-center">Form (Last 5)</th>
-                    <th scope="col" className="py-4 px-4 sm:px-6 text-center">Trophies</th>
+                    <th scope="col" className="py-4 px-4 text-center">Recent Form</th>
+                    <th scope="col" className="py-4 px-4 sm:px-6 text-center">Achievements</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5 text-xs sm:text-sm">
@@ -450,9 +449,6 @@ export default function LeaderboardView() {
                               <div className="h-3 w-20 bg-white/5 rounded" />
                             </div>
                           </div>
-                        </td>
-                        <td className="py-4 px-4 text-center">
-                          <div className="h-5 w-16 bg-white/5 rounded mx-auto" />
                         </td>
                         <td className="py-4 px-4 text-right">
                           <div className="h-5 w-12 bg-white/10 rounded ml-auto" />
@@ -473,7 +469,7 @@ export default function LeaderboardView() {
                     ))
                   ) : filteredPlayers.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="py-12 text-center text-[#A0A6B0]">
+                      <td colSpan={7} className="py-12 text-center text-[#A0A6B0]">
                         <div className="max-w-sm mx-auto space-y-2">
                           <p className="text-base font-semibold text-[#F5F5F5]">No players found</p>
                           <p className="text-xs">No active club ratings matching your current search.</p>
@@ -487,6 +483,7 @@ export default function LeaderboardView() {
                       const isTop2 = displayRank === 2;
                       const isTop3 = displayRank === 3;
                       const plat = getPlayerPlatform(player);
+                      const profileUrl = plat?.url || `https://lichess.org/@/${player.name}`;
 
                       return (
                         <tr 
@@ -514,9 +511,15 @@ export default function LeaderboardView() {
                               </div>
                               <div>
                                 <div className="flex items-center gap-2">
-                                  <span className="font-bold text-[#F5F5F5] group-hover:text-[#D4AF7C] transition">
-                                    {player.name}
-                                  </span>
+                                  <a
+                                    href={profileUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="font-bold text-[#F5F5F5] group-hover:text-[#D4AF7C] transition inline-flex items-center gap-1.5"
+                                  >
+                                    <span>{player.name}</span>
+                                    <span className="text-[10px] text-[#A0A6B0] opacity-60">↗</span>
+                                  </a>
                                   {player.title && (
                                     <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#D4AF7C]/15 text-[#D4AF7C] border border-[#D4AF7C]/30">
                                       {player.title}
@@ -524,27 +527,18 @@ export default function LeaderboardView() {
                                   )}
                                 </div>
                                 <div className="text-xs text-[#A0A6B0] font-mono flex items-center gap-2 mt-0.5 flex-wrap">
-                                  {plat && (
-                                    <a
-                                      href={plat.url}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border transition hover:brightness-125 ${plat.color}`}
-                                    >
-                                      <span>{plat.platform}:</span>
-                                      <span className="font-semibold">@{plat.username}</span>
-                                      <span>↗</span>
-                                    </a>
-                                  )}
+                                  <a
+                                    href={profileUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border border-sky-500/30 bg-sky-500/10 text-sky-300 font-mono transition hover:brightness-125"
+                                  >
+                                    <span>Lichess:</span>
+                                    <span className="font-semibold">@{player.lichessUsername || player.name}</span>
+                                  </a>
                                 </div>
                               </div>
                             </div>
-                          </td>
-
-                          <td className="py-4 px-4 text-center">
-                            <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/5 text-xs font-semibold text-[#F5F5F5]">
-                              {player.year || 'Collegiate'}
-                            </span>
                           </td>
 
                           <td className="py-4 px-4 text-right">
