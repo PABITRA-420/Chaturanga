@@ -195,7 +195,16 @@ export default function MyTicketView() {
                   <div>
                     <div className="text-[11px] text-[#A0A6B0] uppercase">CHESS IDENTIFIERS</div>
                     <div className="text-sm font-mono text-[#F5F5F5] mt-0.5">
-                      FIDE: {record.fideId || 'Unrated'} • @{record.chessUsername || 'N/A'}
+                      FIDE: {record.fideId || 'Unrated'} • {record.chessUsername && record.chessUsername !== 'N/A' ? (
+                        <>
+                          @{record.chessUsername}
+                          {record.chessPlatform && !record.chessUsername.includes('(')
+                            ? ` (${record.chessPlatform === 'chesscom' ? 'Chess.com' : 'Lichess'})`
+                            : ''}
+                        </>
+                      ) : (
+                        'N/A'
+                      )}
                     </div>
                   </div>
                   <div>

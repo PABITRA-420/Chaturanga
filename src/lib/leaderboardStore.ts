@@ -32,7 +32,7 @@ function dbToPlayer(row: any): LeaderboardPlayer {
       winRate: Number(row.win_rate ?? 0),
       tournamentsWon: Number(row.tournaments_won ?? 0),
     },
-    recentForm: Array.isArray(row.recent_form) ? row.recent_form : ['W'],
+    recentForm: Array.isArray(row.recent_form) ? row.recent_form : [],
     avatarColor: row.avatar_color || 'from-[#D4AF7C] to-[#E6C98A]',
     chessPiece: (row.chess_piece as any) || 'Knight',
     chessComUsername: row.chess_com_username || row.chess_username,
@@ -117,19 +117,21 @@ export async function getAllLeaderboardPlayers(sortBy: 'rapid' | 'blitz' | 'clas
     }
 
     const { data, error } = await query;
-    if (!error && data && data.length > 0) {
+    if (!error && data !== null) {
       // Re-assign dynamic ranking 1..N based on active sort
       return data.map((row: any, idx: number) => ({
         ...dbToPlayer(row),
         rank: idx + 1
       }));
     }
+    if (error) {
+      console.warn('Supabase fetch leaderboard error:', error.message);
+    }
   } catch (err) {
-    console.warn('Supabase fetch leaderboard failed, using local fallback:', err);
+    console.warn('Supabase fetch leaderboard failed:', err);
   }
 
-  // Graceful static fallback
-  return LEADERBOARD_PLAYERS as LeaderboardPlayer[];
+  return [];
 }
 
 /**
@@ -141,15 +143,16 @@ export async function getLeaderboardPlayerById(id: string): Promise<LeaderboardP
       .from('leaderboard_players')
       .select('*')
       .eq('id', id)
-      .single();
+      .maybeSingle();
 
-    if (!error && data) {
-      return dbToPlayer(data);
+    if (!error) {
+      return data ? dbToPlayer(data) : null;
     }
-  } catch {}
+  } catch (err) {
+    console.warn('Supabase getLeaderboardPlayerById error:', err);
+  }
 
-  const fallback = LEADERBOARD_PLAYERS.find(p => p.id === id);
-  return (fallback as LeaderboardPlayer) || null;
+  return null;
 }
 
 /**

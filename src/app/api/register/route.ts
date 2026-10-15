@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { incrementTournamentRegistrations } from '@/lib/tournamentStore';
-import { findDuplicateRegistration, addRegistration } from '@/lib/registrationStore';
+import { findDuplicateRegistration, addRegistration, RegistrationRecord } from '@/lib/registrationStore';
+import { verifyPlayerAccount } from '@/lib/playerVerification';
 
 export async function POST(request: Request) {
   try {
@@ -14,6 +15,7 @@ export async function POST(request: Request) {
       year,
       email,
       phone,
+      chessPlatform,
       chessUsername,
       fideId,
       ratingCategory,
@@ -48,6 +50,55 @@ export async function POST(request: Request) {
       );
     }
 
+    // Chess account validation & verification using shared verification logic
+    const cleanUsername = typeof chessUsername === 'string'
+      ? chessUsername.replace(/\s*\(.*?\)\s*$/, '').trim()
+      : '';
+    let validatedPlatform: 'chesscom' | 'lichess' | null = null;
+    let verifiedChessUsername = 'N/A';
+
+    if (cleanUsername) {
+      const rawPlatform = typeof chessPlatform === 'string' ? chessPlatform.trim().toLowerCase() : '';
+      const normPlatform = rawPlatform === 'chess.com' ? 'chesscom' : rawPlatform;
+
+      if (normPlatform !== 'chesscom' && normPlatform !== 'lichess') {
+        return NextResponse.json(
+          { success: false, error: 'Invalid chess platform. Only chesscom or lichess are accepted.' },
+          { status: 400 }
+        );
+      }
+
+      validatedPlatform = normPlatform;
+
+      const verification = await verifyPlayerAccount(validatedPlatform, cleanUsername);
+
+      if (!verification.success) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: verification.error || 'Chess account verification service is currently unavailable. Please retry.'
+          },
+          { status: verification.status || 502 }
+        );
+      }
+
+      if (!verification.exists) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: verification.message || `Player "${cleanUsername}" does not exist on ${validatedPlatform === 'chesscom' ? 'Chess.com' : 'Lichess'}. Please check your ID carefully.`
+          },
+          { status: 400 }
+        );
+      }
+
+      // Store only the trimmed handle; keep platform labels out because chessPlatform is stored separately
+      verifiedChessUsername = verification.username || cleanUsername;
+    } else {
+      validatedPlatform = null;
+      verifiedChessUsername = 'N/A';
+    }
+
     // Increment count in persistent tournament store
     try {
       await incrementTournamentRegistrations(tournamentName);
@@ -55,7 +106,7 @@ export async function POST(request: Request) {
       // Non-blocking
     }
 
-    const registrationRecord = {
+    const registrationRecord: RegistrationRecord = {
       ticketId,
       tournament: tournamentName,
       fullName,
@@ -66,14 +117,15 @@ export async function POST(request: Request) {
       email,
       phone,
       ratingCategory: ratingCategory || 'Club Player (1200 - 1600)',
-      chessUsername: chessUsername || 'N/A',
+      chessPlatform: validatedPlatform,
+      chessUsername: verifiedChessUsername,
       fideId: fideId || 'Unrated',
       customAnswers: customAnswers || {},
       registeredAt: new Date().toISOString(),
       checkInStatus: 'confirmed' as const,
     };
 
-    // Save to persistent registrations store
+    // Save to persistent registrations store only after verification succeeds
     await addRegistration(registrationRecord);
 
     const registrationPayload = {

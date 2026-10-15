@@ -13,6 +13,7 @@ export interface RegistrationRecord {
   email: string;
   phone: string;
   ratingCategory: string;
+  chessPlatform?: string | null;
   chessUsername?: string;
   fideId?: string;
   customAnswers?: Record<string, string>;
@@ -34,6 +35,7 @@ function dbToRegistration(row: any): RegistrationRecord {
     email: row.email,
     phone: row.phone,
     ratingCategory: row.rating_category,
+    chessPlatform: row.chess_platform || null,
     chessUsername: row.chess_username || 'N/A',
     fideId: row.fide_id || 'Unrated',
     customAnswers: row.custom_answers || {},

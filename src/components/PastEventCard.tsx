@@ -78,7 +78,6 @@ export default function PastEventCard({ event }: PastEventCardProps) {
                     <span className="flex items-center gap-1.5 truncate">
                       <span className="text-sm select-none">{medalIcon}</span>
                       <strong className={`${medalText} font-semibold truncate`}>{p.name}</strong>
-                      <span className="text-[#A0A6B0] text-[10px]">({p.dept})</span>
                     </span>
                     <span className="font-mono text-[#D4AF7C] font-bold ml-2 shrink-0">{p.score}</span>
                   </div>
@@ -170,9 +169,6 @@ export default function PastEventCard({ event }: PastEventCardProps) {
                     <div className="font-['Montserrat',sans-serif] font-bold text-sm text-[#F5F5F5] truncate">
                       {p.name}
                     </div>
-                    <div className="text-[10px] text-[#A0A6B0]">
-                      {p.dept}
-                    </div>
                     <div className="font-mono text-sm text-[#F3E2B8] font-bold pt-1">
                       {p.score}
                     </div>
@@ -195,13 +191,11 @@ export default function PastEventCard({ event }: PastEventCardProps) {
                 <div className="sm:hidden flex items-center justify-between px-3 py-1.5 bg-black/60 border-b border-white/5 text-[10px] text-[#A0A6B0]">
                   <span className="text-[#D4AF7C] font-medium">← Swipe table to see Buchholz tiebreaks →</span>
                 </div>
-                <table className="w-full min-w-[560px] text-left text-xs">
+                <table className="w-full min-w-[500px] text-left text-xs">
                   <thead className="bg-white/[0.04] text-[11px] uppercase tracking-wider text-[#D4AF7C] font-semibold border-b border-white/10">
                     <tr>
                       <th className="py-2.5 px-3">#</th>
                       <th className="py-2.5 px-3">Player</th>
-                      <th className="py-2.5 px-3">Roll / ID</th>
-                      <th className="py-2.5 px-3">Dept</th>
                       <th className="py-2.5 px-3">Score</th>
                       <th className="py-2.5 px-3">Buchholz</th>
                     </tr>
@@ -211,8 +205,6 @@ export default function PastEventCard({ event }: PastEventCardProps) {
                       <tr key={row.rank} className="hover:bg-white/[0.03] transition-colors">
                         <td className="py-2.5 px-3 font-bold text-[#D4AF7C]">{row.rank}</td>
                         <td className="py-2.5 px-3 font-semibold text-[#F5F5F5]">{row.name}</td>
-                        <td className="py-2.5 px-3 text-[#A0A6B0] font-mono">{row.idNumber}</td>
-                        <td className="py-2.5 px-3 text-[#A0A6B0]">{row.dept}</td>
                         <td className="py-2.5 px-3 font-bold text-[#F3E2B8] font-mono">{row.score}</td>
                         <td className="py-2.5 px-3 text-[#A0A6B0] font-mono">{row.tieBreak}</td>
                       </tr>

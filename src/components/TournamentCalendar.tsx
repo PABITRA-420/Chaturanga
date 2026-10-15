@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import { UPCOMING_EVENTS, PAST_EVENTS, UpcomingEvent, PastEvent } from '@/data/tournamentData';
 import { 
   Calendar as CalendarIcon, 
   ChevronLeft, 
@@ -40,118 +39,6 @@ export interface CalendarEvent {
   badgeColor: string;
 }
 
-// Full normalized list of all club tournaments
-const ALL_CALENDAR_EVENTS: CalendarEvent[] = [
-  {
-    id: "inter-college-2026",
-    title: "Inter-College Chess Tournament 2026",
-    dateStr: "2026-11-07",
-    dateFormatted: "Saturday, November 7, 2026",
-    year: 2026,
-    month: 10, // November
-    day: 7,
-    time: "09:30 AM – 06:00 PM IST",
-    venue: "Main Auditorium, JGEC Campus",
-    format: "7 Rounds Swiss System • Rapid (15m + 10s)",
-    prizePool: "₹25,000 + Trophies",
-    slots: "128 Max (42 Registered)",
-    description: "The premier collegiate chess championship of North Bengal. FIDE standard digital clocks, live broadcast boards, and arbiter supervision.",
-    isUpcoming: true,
-    category: "Rapid",
-    badgeColor: "bg-[#D4AF7C] text-[#0B0F14]"
-  },
-  {
-    id: "state-rapid-2026",
-    title: "State Rapid Chess Championship Leg",
-    dateStr: "2026-12-12",
-    dateFormatted: "Saturday, December 12, 2026",
-    year: 2026,
-    month: 11, // December
-    day: 12,
-    time: "10:00 AM – 07:00 PM IST",
-    venue: "Indoor Sports Complex, JGEC",
-    format: "6 Rounds Rapid (25m + 10s) • FIDE Rated",
-    prizePool: "₹40,000 Cash Pool",
-    slots: "64 Slots (Filling Fast)",
-    description: "Official FIDE-rated Rapid circuit leg organized in association with the North Bengal Chess Federation. Standard electronic clocks and international arbiters.",
-    isUpcoming: true,
-    category: "Rapid",
-    badgeColor: "bg-emerald-400 text-[#0B0F14]"
-  },
-  {
-    id: "annual-blitz-2027",
-    title: "Annual Blitz Knockout Derby",
-    dateStr: "2027-01-15",
-    dateFormatted: "Friday, January 15, 2027",
-    year: 2027,
-    month: 0, // January 2027
-    day: 15,
-    time: "03:00 PM – 08:30 PM IST",
-    venue: "Student Activity Centre (SAC) Hall 1",
-    format: "9 Double-Rounds (3m + 2s Blitz Arena)",
-    prizePool: "₹15,000 + Medals",
-    slots: "Open for all batches",
-    description: "Fast-paced blitz derby open to beginner, intermediate, and advanced players. Sudden death playoffs for top 4 finishers.",
-    isUpcoming: true,
-    category: "Blitz",
-    badgeColor: "bg-amber-400 text-[#0B0F14]"
-  },
-  {
-    id: "autumn-swiss-2025",
-    title: "Autumn Swiss Cup 2025",
-    dateStr: "2025-09-18",
-    dateFormatted: "Thursday, September 18, 2025",
-    year: 2025,
-    month: 8, // September
-    day: 18,
-    time: "10:00 AM – 06:30 PM",
-    venue: "Main Auditorium, JGEC Campus",
-    format: "7 Rounds Swiss (15m + 10s)",
-    prizePool: "₹20,000 Total Disbursed",
-    slots: "84 Participants",
-    description: "Aniket Roy secured tournament victory undefeated after a decisive tactical rook sacrifice in round 7 against Ritwick Paul.",
-    isUpcoming: false,
-    category: "Swiss",
-    badgeColor: "bg-slate-300 text-[#0B0F14]"
-  },
-  {
-    id: "grand-blitz-2025",
-    title: "Grand Blitz Summer Derby 2025",
-    dateStr: "2025-06-22",
-    dateFormatted: "Sunday, June 22, 2025",
-    year: 2025,
-    month: 5, // June
-    day: 22,
-    time: "02:00 PM – 07:30 PM",
-    venue: "Student Activity Centre (Room 204)",
-    format: "Arena Knockout (3m + 2s)",
-    prizePool: "₹14,500 Total Disbursed",
-    slots: "64 Participants",
-    description: "Over 190 intense blitz games played in 5 hours. Suman Sen capitalized on time pressure in endgame scramble to win the finals 3-1.",
-    isUpcoming: false,
-    category: "Blitz",
-    badgeColor: "bg-slate-300 text-[#0B0F14]"
-  },
-  {
-    id: "north-bengal-2025",
-    title: "North Bengal Inter-Tech Cup",
-    dateStr: "2025-02-10",
-    dateFormatted: "Monday, February 10, 2025",
-    year: 2025,
-    month: 1, // February
-    day: 10,
-    time: "09:00 AM – 08:00 PM",
-    venue: "Indoor Sports Complex & Gymnasium",
-    format: "Team Classical 4 Boards (45m + 30s)",
-    prizePool: "₹35,000 Total Disbursed",
-    slots: "48 Participants (12 Teams)",
-    description: "Host team JGEC swept the collegiate championship without dropping a single round, defending their title for the second consecutive year.",
-    isUpcoming: false,
-    category: "Classical",
-    badgeColor: "bg-slate-300 text-[#0B0F14]"
-  }
-];
-
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
@@ -160,20 +47,29 @@ const MONTH_NAMES = [
 const WEEKDAY_NAMES = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
 export default function TournamentCalendar() {
-  const [eventsList, setEventsList] = useState<CalendarEvent[]>(ALL_CALENDAR_EVENTS);
+  const [eventsList, setEventsList] = useState<CalendarEvent[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  // Navigation State
+  const today = new Date();
+  const [currentYear, setCurrentYear] = useState<number>(today.getFullYear());
+  const [currentMonth, setCurrentMonth] = useState<number>(today.getMonth());
+  const [selectedDay, setSelectedDay] = useState<number>(today.getDate());
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+  const [filterMode, setFilterMode] = useState<'all' | 'upcoming' | 'past'>('all');
 
   // Fetch live tournaments from Supabase / API
-  React.useEffect(() => {
+  useEffect(() => {
     fetch('/api/tournaments')
       .then(res => res.json())
       .then(data => {
-        if (data.success && Array.isArray(data.tournaments) && data.tournaments.length > 0) {
+        if (data.success && Array.isArray(data.tournaments)) {
           const mapped: CalendarEvent[] = data.tournaments.map((t: any) => {
             const d = new Date(t.targetDate || t.date);
             const isValid = !isNaN(d.getTime());
             const year = isValid ? d.getFullYear() : 2026;
             const month = isValid ? d.getMonth() : 10;
-            const day = isValid ? d.getDate() : 7;
+            const day = isValid ? d.getDate() : 1;
             const isPast = Boolean(t.isPast || t.status === 'completed');
             const formatLower = (t.format || '').toLowerCase();
             const category = formatLower.includes('blitz') ? 'Blitz' : formatLower.includes('rapid') ? 'Rapid' : 'Classical';
@@ -198,17 +94,18 @@ export default function TournamentCalendar() {
             };
           });
           setEventsList(mapped);
+          if (mapped.length > 0) {
+            const nextUpcoming = mapped.find(e => e.isUpcoming) || mapped[0];
+            setSelectedEvent(nextUpcoming);
+            setCurrentYear(nextUpcoming.year);
+            setCurrentMonth(nextUpcoming.month);
+            setSelectedDay(nextUpcoming.day);
+          }
         }
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
-
-  // Navigation State
-  const [currentYear, setCurrentYear] = useState<number>(2026);
-  const [currentMonth, setCurrentMonth] = useState<number>(10); // November (0-indexed)
-  const [selectedDay, setSelectedDay] = useState<number>(7);
-  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(ALL_CALENDAR_EVENTS[0]);
-  const [filterMode, setFilterMode] = useState<'all' | 'upcoming' | 'past'>('all');
 
   // Month navigation
   const handlePrevMonth = () => {
@@ -230,21 +127,25 @@ export default function TournamentCalendar() {
   };
 
   const handleRealTodayJump = () => {
-    const today = new Date();
-    setCurrentYear(today.getFullYear());
-    setCurrentMonth(today.getMonth());
-    setSelectedDay(today.getDate());
-    const match = eventsList.find(e => e.year === today.getFullYear() && e.month === today.getMonth() && e.day === today.getDate());
+    const t = new Date();
+    setCurrentYear(t.getFullYear());
+    setCurrentMonth(t.getMonth());
+    setSelectedDay(t.getDate());
+    const match = eventsList.find(e => e.year === t.getFullYear() && e.month === t.getMonth() && e.day === t.getDate());
     setSelectedEvent(match || null);
   };
 
+  const nearestEvent = useMemo(() => {
+    return eventsList.find((e) => e.isUpcoming) || eventsList[0] || null;
+  }, [eventsList]);
+
   const handleNextEventJump = () => {
-    // Jump directly to the Flagship Nearest Championship month
-    const nearest = eventsList[0] || ALL_CALENDAR_EVENTS[0];
-    setCurrentYear(nearest.year);
-    setCurrentMonth(nearest.month);
-    setSelectedDay(nearest.day);
-    setSelectedEvent(nearest);
+    if (nearestEvent) {
+      setCurrentYear(nearestEvent.year);
+      setCurrentMonth(nearestEvent.month);
+      setSelectedDay(nearestEvent.day);
+      setSelectedEvent(nearestEvent);
+    }
   };
 
   const jumpToEvent = (evt: CalendarEvent) => {
@@ -362,9 +263,9 @@ export default function TournamentCalendar() {
         {/* Right: Event Filters (All / Upcoming / Past) */}
         <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-black/40 border border-white/10 text-xs w-full sm:w-auto overflow-x-auto scrollbar-none whitespace-nowrap">
           {[
-            { id: 'all', label: 'All Events (6)' },
-            { id: 'upcoming', label: 'Upcoming (3)' },
-            { id: 'past', label: 'Past Archives (3)' },
+            { id: 'all', label: `All Events (${eventsList.length})` },
+            { id: 'upcoming', label: `Upcoming (${eventsList.filter(e => e.isUpcoming).length})` },
+            { id: 'past', label: `Past Archives (${eventsList.filter(e => !e.isUpcoming).length})` },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -391,27 +292,33 @@ export default function TournamentCalendar() {
             <span>Tournament Roster:</span>
           </span>
 
-          {filteredEvents.map((evt) => {
-            const isMatch = currentYear === evt.year && currentMonth === evt.month && selectedDay === evt.day;
-            return (
-              <button
-                key={evt.id}
-                type="button"
-                onClick={() => jumpToEvent(evt)}
-                className={`px-3.5 py-1.5 rounded-full text-xs transition cursor-pointer flex items-center gap-2 shrink-0 ${
-                  isMatch
-                    ? 'bg-[#D4AF7C] text-[#0B0F14] font-bold shadow-md shadow-[#D4AF7C]/30 scale-[1.02]'
-                    : evt.isUpcoming
-                    ? 'bg-white/5 hover:bg-white/15 text-[#F5F5F5] border border-white/10 hover:border-[#D4AF7C]/40'
-                    : 'bg-black/40 hover:bg-white/5 text-[#A0A6B0] border border-white/5'
-                }`}
-              >
-                <span className={`w-2 h-2 rounded-full ${evt.isUpcoming ? 'bg-emerald-400' : 'bg-slate-400'}`} />
-                <span>{MONTH_NAMES[evt.month].slice(0, 3)} {evt.day}, {evt.year}</span>
-                <span className="opacity-70 font-mono text-[11px]">({evt.title.split(' ')[0]})</span>
-              </button>
-            );
-          })}
+          {filteredEvents.length === 0 ? (
+            <span className="text-xs text-[#A0A6B0] italic py-1">
+              No tournaments scheduled matching this view
+            </span>
+          ) : (
+            filteredEvents.map((evt) => {
+              const isMatch = currentYear === evt.year && currentMonth === evt.month && selectedDay === evt.day;
+              return (
+                <button
+                  key={evt.id}
+                  type="button"
+                  onClick={() => jumpToEvent(evt)}
+                  className={`px-3.5 py-1.5 rounded-full text-xs transition cursor-pointer flex items-center gap-2 shrink-0 ${
+                    isMatch
+                      ? 'bg-[#D4AF7C] text-[#0B0F14] font-bold shadow-md shadow-[#D4AF7C]/30 scale-[1.02]'
+                      : evt.isUpcoming
+                      ? 'bg-white/5 hover:bg-white/15 text-[#F5F5F5] border border-white/10 hover:border-[#D4AF7C]/40'
+                      : 'bg-black/40 hover:bg-white/5 text-[#A0A6B0] border border-white/5'
+                  }`}
+                >
+                  <span className={`w-2 h-2 rounded-full ${evt.isUpcoming ? 'bg-emerald-400' : 'bg-slate-400'}`} />
+                  <span>{MONTH_NAMES[evt.month].slice(0, 3)} {evt.day}, {evt.year}</span>
+                  <span className="opacity-70 font-mono text-[11px]">({evt.title.split(' ')[0]})</span>
+                </button>
+              );
+            })
+          )}
         </div>
       </div>
 
@@ -687,13 +594,17 @@ export default function TournamentCalendar() {
                 <p>Casual practice matches, engine analysis, and blitz arenas run every weekday in SAC Room 204 from 5:00 PM – 8:30 PM.</p>
               </div>
 
-              <button
-                type="button"
-                onClick={handleNextEventJump}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#D4AF7C] hover:underline cursor-pointer pt-2"
-              >
-                <span>Jump to Flagship Championship (Nov 07, 2026) &rarr;</span>
-              </button>
+              {nearestEvent && (
+                <button
+                  type="button"
+                  onClick={handleNextEventJump}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#D4AF7C] hover:underline cursor-pointer pt-2"
+                >
+                  <span>
+                    Jump to {nearestEvent.title} ({MONTH_NAMES[nearestEvent.month].slice(0, 3)} {String(nearestEvent.day).padStart(2, '0')}, {nearestEvent.year}) &rarr;
+                  </span>
+                </button>
+              )}
             </div>
           )}
 

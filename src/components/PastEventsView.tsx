@@ -4,11 +4,11 @@ import React, { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PastEventCard from '@/components/PastEventCard';
-import { PAST_EVENTS } from '@/data/tournamentData';
 import { Trophy, Search, Award, Sparkles, Filter } from 'lucide-react';
 
 export default function PastEventsView() {
-  const [pastEvents, setPastEvents] = useState<any[]>(PAST_EVENTS);
+  const [pastEvents, setPastEvents] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFormat, setSelectedFormat] = useState('ALL');
 
@@ -16,11 +16,12 @@ export default function PastEventsView() {
     fetch('/api/tournaments?type=past')
       .then(res => res.json())
       .then(data => {
-        if (data.success && data.tournaments && data.tournaments.length > 0) {
+        if (data.success && Array.isArray(data.tournaments)) {
           setPastEvents(data.tournaments);
         }
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   const filteredEvents = pastEvents.filter((event) => {
@@ -102,7 +103,25 @@ export default function PastEventsView() {
           </div>
 
           {/* Past Events Grid */}
-          {filteredEvents.length === 0 ? (
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="p-6 rounded-3xl bg-[#12161D] border border-white/5 animate-pulse space-y-4">
+                  <div className="h-6 w-36 bg-white/10 rounded-full" />
+                  <div className="h-10 w-full bg-white/5 rounded-xl" />
+                  <div className="h-20 bg-white/5 rounded-2xl" />
+                </div>
+              ))}
+            </div>
+          ) : pastEvents.length === 0 ? (
+            <div className="p-12 text-center rounded-3xl bg-[#12161D] border border-white/10 space-y-3">
+              <Trophy className="w-10 h-10 text-[#D4AF7C]/40 mx-auto" />
+              <h3 className="font-bold text-lg text-[#F5F5F5]">No archived tournaments yet</h3>
+              <p className="text-xs text-[#A0A6B0] max-w-sm mx-auto leading-relaxed">
+                Past championships, full crosstables, and podium records will be certified and permanently displayed here.
+              </p>
+            </div>
+          ) : filteredEvents.length === 0 ? (
             <div className="p-12 text-center rounded-3xl bg-[#12161D] border border-white/10 space-y-3">
               <Trophy className="w-8 h-8 text-[#D4AF7C]/40 mx-auto" />
               <h3 className="font-bold text-lg text-[#F5F5F5]">No archived events match your filter</h3>

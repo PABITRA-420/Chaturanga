@@ -1,17 +1,109 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Sparkles, Trophy, Clock, Users, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
+
+interface TickerItem {
+  label: string;
+  text: string;
+  link: string;
+  badge: string;
+}
+
+const DEFAULT_CLUB_MOTTOS: TickerItem[] = [
+  { 
+    label: 'CHATURANGA JGEC', 
+    text: 'Strategy • Mastery • Legacy — The Premier Competitive Chess Club of JGEC', 
+    link: '/upcoming', 
+    badge: 'EST. 2012' 
+  },
+  { 
+    label: 'CLUB MOTTO', 
+    text: 'Gens Una Sumus — We Are One Family Across 64 Squares', 
+    link: '/#about', 
+    badge: 'FIDE' 
+  },
+  { 
+    label: 'CAMPUS PRACTICE', 
+    text: 'Weekly Clock Sparring & Swiss Grandmaster Game Analysis in Room 204', 
+    link: '/upcoming', 
+    badge: 'COLLEGE' 
+  }
+];
 
 export default function TickerMarquee() {
-  const tickerItems = [
-    { label: 'NEXT TOURNAMENT', text: 'Chaturanga Spring Blitz Open 2026', link: '/register', badge: 'OPEN' },
-    { label: 'ACTIVE RANKING', text: 'Aritra Sen holds #1 Elo at 2185', link: '/leaderboard', badge: 'ELO' },
-    { label: 'WEEKLY PRACTICE', text: 'Clock Sparring Wednesdays & Fridays in Room 204', link: '/upcoming', badge: 'SAC 204' },
-    { label: 'STATE TRIALS', text: 'Inter-University Selection Rounds on May 10', link: '/#announcements', badge: 'TRIALS' },
-    { label: 'HALL OF FAME', text: 'Annual Championship 2025 Crosstable published', link: '/past-events', badge: 'RESULTS' },
-  ];
+  const [tickerItems, setTickerItems] = useState<TickerItem[]>(DEFAULT_CLUB_MOTTOS);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadTickerData() {
+      try {
+        const [tournRes, leaderRes, annRes] = await Promise.allSettled([
+          fetch('/api/tournaments?type=upcoming').then(r => r.json()),
+          fetch('/api/leaderboard?sortBy=rapid').then(r => r.json()),
+          fetch('/api/announcements').then(r => r.json())
+        ]);
+
+        const dynamicItems: TickerItem[] = [];
+
+        // 1. Next upcoming tournament
+        if (tournRes.status === 'fulfilled' && tournRes.value?.success && Array.isArray(tournRes.value.tournaments)) {
+          const upcoming = tournRes.value.tournaments.find((t: any) => !t.isPast && t.status !== 'completed');
+          if (upcoming) {
+            dynamicItems.push({
+              label: 'NEXT TOURNAMENT',
+              text: `${upcoming.title} (${upcoming.date})`,
+              link: `/register?event=${upcoming.id}`,
+              badge: (upcoming.status || 'OPEN').toUpperCase().replace('_', ' ')
+            });
+          }
+        }
+
+        // 2. Top-ranked player (#1 Elo)
+        if (leaderRes.status === 'fulfilled' && leaderRes.value?.success && Array.isArray(leaderRes.value.players)) {
+          const topPlayer = leaderRes.value.players[0];
+          if (topPlayer) {
+            dynamicItems.push({
+              label: 'TOP BOARD',
+              text: `${topPlayer.name} leads active ranking with ${topPlayer.rating?.rapid ?? 1200} Rapid Elo`,
+              link: '/leaderboard',
+              badge: '#1 ELO'
+            });
+          }
+        }
+
+        // 3. Real active announcements
+        if (annRes.status === 'fulfilled' && annRes.value?.success && Array.isArray(annRes.value.announcements)) {
+          annRes.value.announcements.slice(0, 3).forEach((ann: any) => {
+            dynamicItems.push({
+              label: ann.category || 'NOTICE',
+              text: ann.title,
+              link: ann.linkUrl || '/#announcements',
+              badge: ann.isUrgent ? 'URGENT' : ann.category || 'CLUB'
+            });
+          });
+        }
+
+        if (isMounted) {
+          if (dynamicItems.length > 0) {
+            setTickerItems(dynamicItems);
+          } else {
+            setTickerItems(DEFAULT_CLUB_MOTTOS);
+          }
+        }
+      } catch (err) {
+        console.warn('Ticker data fetch error:', err);
+      }
+    }
+
+    loadTickerData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <div className="w-full bg-[#10141C] border-y border-white/10 py-3 overflow-hidden select-none">

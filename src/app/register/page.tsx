@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { UPCOMING_EVENTS } from '@/data/tournamentData';
 import { 
   Trophy, 
   CheckCircle2, 
@@ -26,43 +25,43 @@ import {
   Zap,
   Info,
   ChevronRight,
-  Printer
+  Printer,
+  AlertTriangle
 } from 'lucide-react';
 
 function RegisterForm() {
   const searchParams = useSearchParams();
   const eventParam = searchParams.get('event');
 
-  const [events, setEvents] = useState<any[]>(UPCOMING_EVENTS);
-  const [selectedEventId, setSelectedEventId] = useState<string>(
-    eventParam || UPCOMING_EVENTS[0].id
-  );
+  const [events, setEvents] = useState<any[]>([]);
+  const [loadingEvents, setLoadingEvents] = useState<boolean>(true);
+  const [selectedEventId, setSelectedEventId] = useState<string>(eventParam || '');
 
   useEffect(() => {
     fetch('/api/tournaments?type=upcoming')
       .then(res => res.json())
       .then(data => {
-        if (data.success && data.tournaments && data.tournaments.length > 0) {
+        if (data.success && Array.isArray(data.tournaments)) {
           setEvents(data.tournaments);
+          if (data.tournaments.length > 0) {
+            const matched = eventParam ? data.tournaments.find((e: any) => e.id === eventParam) : null;
+            setSelectedEventId(matched ? matched.id : data.tournaments[0].id);
+          }
         }
       })
-      .catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    if (eventParam && events.some((e: any) => e.id === eventParam)) {
-      setSelectedEventId(eventParam);
-    }
-  }, [eventParam, events]);
+      .catch(() => {})
+      .finally(() => setLoadingEvents(false));
+  }, [eventParam]);
 
   const [formData, setFormData] = useState({
     fullName: '',
     rollNumber: '',
-    institution: 'Jalpaiguri Government Engineering College',
-    department: 'Computer Science & Engineering',
+    institution: '',
+    department: '',
     year: '2nd Year',
     email: '',
     phone: '',
+    chessPlatform: '' as 'chesscom' | 'lichess' | '',
     chessUsername: '',
     fideId: '',
     ratingCategory: 'Club Player (1200 - 1600)',
@@ -77,6 +76,139 @@ function RegisterForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sheetStatus, setSheetStatus] = useState<{ synced: boolean; configured: boolean; message?: string } | null>(null);
   const [showSetupGuide, setShowSetupGuide] = useState(false);
+  const verifySequenceRef = useRef(0);
+  const [chessVerification, setChessVerification] = useState<{
+    checking: boolean;
+    hasChecked: boolean;
+    lastCheckedHandle: string;
+    lastCheckedPlatform: string;
+    result: {
+      exists: boolean;
+      platform?: string;
+      username?: string;
+      name?: string | null;
+      avatar?: string | null;
+      title?: string | null;
+      ratings?: { rapid?: number | null; blitz?: number | null; bullet?: number | null; classical?: number | null };
+      message?: string;
+      unavailable?: boolean;
+    } | null;
+  }>({
+    checking: false,
+    hasChecked: false,
+    lastCheckedHandle: '',
+    lastCheckedPlatform: '',
+    result: null
+  });
+
+  // Dedicated verification function
+  const verifyChessAccount = async (platform: string, username: string) => {
+    const handle = username.trim();
+    const seq = ++verifySequenceRef.current;
+
+    if (!platform || !handle) {
+      setChessVerification({ checking: false, hasChecked: false, lastCheckedHandle: '', lastCheckedPlatform: '', result: null });
+      return null;
+    }
+
+    setChessVerification(prev => {
+      const isDiff =
+        prev.lastCheckedHandle.toLowerCase() !== handle.toLowerCase() ||
+        prev.lastCheckedPlatform !== platform;
+      return {
+        ...prev,
+        checking: true,
+        lastCheckedHandle: handle,
+        lastCheckedPlatform: platform,
+        result: isDiff ? null : prev.result
+      };
+    });
+
+    try {
+      const res = await fetch(`/api/player/verify?platform=${encodeURIComponent(platform)}&username=${encodeURIComponent(handle)}`);
+      if (seq !== verifySequenceRef.current) return null;
+
+      if (res.ok) {
+        const data = await res.json();
+        if (seq !== verifySequenceRef.current) return null;
+
+        setChessVerification({
+          checking: false,
+          hasChecked: true,
+          lastCheckedHandle: handle,
+          lastCheckedPlatform: platform,
+          result: data
+        });
+
+        // Automatically align skill tier if ratings exist
+        if (data.exists && data.ratings) {
+          const rating = data.ratings.rapid || data.ratings.classical || data.ratings.blitz;
+          if (rating) {
+            let cat = 'Club Player (1200 - 1600)';
+            if (rating < 1200) cat = 'Beginner (< 1200)';
+            else if (rating >= 2000) cat = 'FIDE Rated / Master (2000+)';
+            else if (rating >= 1600) cat = 'Advanced (1600 - 2000)';
+            handleFieldChange('ratingCategory', cat);
+          }
+        }
+        return data;
+      } else {
+        const errJson = await res.json().catch(() => null);
+        if (seq !== verifySequenceRef.current) return null;
+
+        const unavailable = {
+          exists: false,
+          unavailable: true,
+          message: errJson?.error || 'Verification service temporarily unavailable. Please retry.'
+        };
+        setChessVerification({ checking: false, hasChecked: true, lastCheckedHandle: handle, lastCheckedPlatform: platform, result: unavailable });
+        return unavailable;
+      }
+    } catch (err: any) {
+      if (seq !== verifySequenceRef.current) return null;
+
+      const failed = {
+        exists: false,
+        unavailable: true,
+        message: err.message || 'Network error while contacting verification service. Please retry.'
+      };
+      setChessVerification({ checking: false, hasChecked: true, lastCheckedHandle: handle, lastCheckedPlatform: platform, result: failed });
+      return failed;
+    }
+  };
+
+  // Live account verification on Chess.com / Lichess
+  useEffect(() => {
+    const handle = formData.chessUsername.trim();
+    const platform = formData.chessPlatform;
+    if (!handle || !platform) {
+      verifySequenceRef.current++;
+      setChessVerification({ checking: false, hasChecked: false, lastCheckedHandle: '', lastCheckedPlatform: '', result: null });
+      return;
+    }
+
+    const isDifferent =
+      chessVerification.lastCheckedHandle.toLowerCase() !== handle.toLowerCase() ||
+      chessVerification.lastCheckedPlatform !== platform;
+
+    if (isDifferent) {
+      verifySequenceRef.current++;
+      setChessVerification(prev => ({
+        ...prev,
+        checking: false,
+        hasChecked: false,
+        result: null
+      }));
+    } else if (chessVerification.hasChecked || chessVerification.checking) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      verifyChessAccount(platform, handle);
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [formData.chessUsername, formData.chessPlatform]);
 
   // Auto-restore draft from localStorage
   useEffect(() => {
@@ -98,23 +230,40 @@ function RegisterForm() {
       } catch {}
       return updated;
     });
+
+    if (field === 'chessUsername' || field === 'chessPlatform') {
+      const nextUsername = field === 'chessUsername' ? String(val).trim() : formData.chessUsername.trim();
+      const nextPlatform = field === 'chessPlatform' ? val : formData.chessPlatform;
+      if (
+        nextUsername.toLowerCase() !== chessVerification.lastCheckedHandle.toLowerCase() ||
+        nextPlatform !== chessVerification.lastCheckedPlatform
+      ) {
+        verifySequenceRef.current++;
+        setChessVerification(prev => ({
+          ...prev,
+          checking: false,
+          hasChecked: false,
+          result: null
+        }));
+      }
+    }
   };
 
-  const currentEvent = events.find((e: any) => e.id === selectedEventId) || events[0] || UPCOMING_EVENTS[0];
+  const currentEvent = events.find((e: any) => e.id === selectedEventId) || events[0] || null;
 
   const isFieldEnabled = (fieldId: string) => {
-    if (!currentEvent.formConfig) return true;
+    if (!currentEvent?.formConfig) return true;
     const f = currentEvent.formConfig.find((item: any) => item.id === fieldId);
     return f ? f.enabled : true;
   };
 
   const isFieldRequired = (fieldId: string) => {
-    if (!currentEvent.formConfig) return true;
+    if (!currentEvent?.formConfig) return true;
     const f = currentEvent.formConfig.find((item: any) => item.id === fieldId);
     return f ? f.required : true;
   };
 
-  const isRegistrationOpen = currentEvent.status === 'open' || (!currentEvent.status && true);
+  const isRegistrationOpen = currentEvent ? (currentEvent.status === 'open' || !currentEvent.status) : false;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -141,10 +290,72 @@ function RegisterForm() {
       setErrorMsg('Please enter a valid 10-digit WhatsApp/mobile number.');
       return;
     }
-    if (isFieldEnabled('chessUsername') && isFieldRequired('chessUsername') && !formData.chessUsername.trim()) {
-      setErrorMsg('Please enter your Chess.com or Lichess username.');
-      return;
+    // Strict Chess Platform & Player ID Verification
+    if (isFieldEnabled('chessUsername')) {
+      const isRequired = isFieldRequired('chessUsername');
+      const handle = formData.chessUsername.trim();
+
+      if (isRequired) {
+        if (!formData.chessPlatform) {
+          setErrorMsg('Please select your chess platform: Chess.com or Lichess.');
+          const el = document.getElementById('chess-platform-selector');
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
+
+        if (!handle) {
+          const platformName = formData.chessPlatform === 'chesscom' ? 'Chess.com' : 'Lichess';
+          setErrorMsg(`Please enter your ${platformName} player ID / username.`);
+          const el = document.getElementById('chess-handle-input');
+          if (el) el.focus();
+          return;
+        }
+      } else {
+        // Optional: require platform only if a handle is entered
+        if (handle && !formData.chessPlatform) {
+          setErrorMsg('Please select your chess platform: Chess.com or Lichess.');
+          const el = document.getElementById('chess-platform-selector');
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
+      }
+
+      // If handle is present, verify it (both required and optional with entered handle)
+      if (handle) {
+        if (chessVerification.checking) {
+          setErrorMsg(`Verifying your player account on ${formData.chessPlatform === 'chesscom' ? 'Chess.com' : 'Lichess'}... Please wait a few seconds.`);
+          return;
+        }
+
+        let verResult = chessVerification.result;
+        if (
+          !chessVerification.hasChecked ||
+          chessVerification.lastCheckedHandle.toLowerCase() !== handle.toLowerCase() ||
+          chessVerification.lastCheckedPlatform !== formData.chessPlatform ||
+          !verResult
+        ) {
+          setIsSubmitting(true);
+          verResult = await verifyChessAccount(formData.chessPlatform, handle);
+          setIsSubmitting(false);
+        }
+
+        if (verResult?.unavailable) {
+          setErrorMsg(verResult.message || 'Verification service is temporarily unavailable. Please retry verification before submitting.');
+          const el = document.getElementById('chess-handle-input');
+          if (el) el.focus();
+          return;
+        }
+
+        if (!verResult || !verResult.exists) {
+          const platformName = formData.chessPlatform === 'chesscom' ? 'Chess.com' : 'Lichess';
+          setErrorMsg(`Registration unsuccessful: Player "@${handle}" does not exist on ${platformName}. Check your ID carefully!`);
+          const el = document.getElementById('chess-handle-input');
+          if (el) el.focus();
+          return;
+        }
+      }
     }
+
     if (isFieldEnabled('fideId') && isFieldRequired('fideId') && !formData.fideId.trim()) {
       setErrorMsg('Please enter your official FIDE ID.');
       return;
@@ -213,14 +424,22 @@ function RegisterForm() {
   const handleReset = () => {
     setFormSubmitted(false);
     setSheetStatus(null);
+    setChessVerification({
+      checking: false,
+      hasChecked: false,
+      lastCheckedHandle: '',
+      lastCheckedPlatform: '',
+      result: null
+    });
     setFormData({
       fullName: '',
       rollNumber: '',
-      institution: 'Jalpaiguri Government Engineering College',
-      department: 'Computer Science & Engineering',
+      institution: '',
+      department: '',
       year: '2nd Year',
       email: '',
       phone: '',
+      chessPlatform: '',
       chessUsername: '',
       fideId: '',
       ratingCategory: 'Club Player (1200 - 1600)',
@@ -364,8 +583,8 @@ function RegisterForm() {
 
       ctx.fillStyle = '#D4AF7C';
       ctx.font = 'bold 16px Arial, sans-serif';
-      ctx.fillText(formData.ratingCategory, 90, 768);
-      const chessIdText = formData.fideId ? `FIDE: ${formData.fideId}` : (formData.chessUsername ? `@${formData.chessUsername}` : 'Unrated');
+      const platformLabel = formData.chessPlatform === 'chesscom' ? 'Chess.com' : (formData.chessPlatform === 'lichess' ? 'Lichess' : '');
+      const chessIdText = formData.fideId ? `FIDE: ${formData.fideId}` : (formData.chessUsername ? `@${formData.chessUsername}${platformLabel ? ` (${platformLabel})` : ''}` : 'Unrated');
       ctx.fillStyle = '#FFFFFF';
       ctx.fillText(chessIdText, 500, 768);
 
@@ -621,7 +840,7 @@ function RegisterForm() {
                 </span>
                 {formData.chessUsername && (
                   <span className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-[#A0A6B0]">
-                    Handle: <strong className="text-[#F5F5F5] font-mono">{formData.chessUsername}</strong>
+                    Profile: <strong className="text-[#F5F5F5] font-mono">@{formData.chessUsername} ({formData.chessPlatform === 'chesscom' ? 'Chess.com' : 'Lichess'})</strong>
                   </span>
                 )}
                 {formData.fideId && (
@@ -735,6 +954,43 @@ function RegisterForm() {
           </button>
         </div>
 
+      </div>
+    );
+  }
+
+  if (loadingEvents) {
+    return (
+      <div className="p-12 rounded-3xl bg-[#12161D] border border-white/10 text-center space-y-4 max-w-xl mx-auto my-12 animate-pulse">
+        <div className="w-14 h-14 rounded-2xl bg-white/5 mx-auto" />
+        <div className="h-6 w-48 bg-white/10 rounded-full mx-auto" />
+        <div className="h-4 w-72 bg-white/5 rounded-full mx-auto" />
+      </div>
+    );
+  }
+
+  if (events.length === 0 || !currentEvent) {
+    return (
+      <div className="p-10 sm:p-14 rounded-3xl bg-[#12161D] border border-white/10 text-center space-y-4 max-w-xl mx-auto my-12 shadow-xl">
+        <div className="w-16 h-16 rounded-2xl bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 flex items-center justify-center mx-auto text-[#D4AF7C]">
+          <Calendar className="w-8 h-8" />
+        </div>
+        <div className="space-y-2">
+          <h3 className="font-['Montserrat',sans-serif] font-bold text-xl text-[#F5F5F5]">
+            No Open Tournament Registrations
+          </h3>
+          <p className="text-xs sm:text-sm text-[#A0A6B0] leading-relaxed">
+            There are currently no scheduled tournaments accepting registrations. Please check back soon or browse our tournament calendar for upcoming announcements.
+          </p>
+        </div>
+        <div className="pt-2">
+          <Link
+            href="/upcoming"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-bold text-[#0B0F14] bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] hover:brightness-110 shadow-md transition"
+          >
+            <span>View Tournament Calendar</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
       </div>
     );
   }
@@ -1032,21 +1288,16 @@ function RegisterForm() {
                     {isFieldEnabled('department') && (
                       <div className="space-y-1.5">
                         <label className="text-[11px] font-medium text-[#A0A6B0]">
-                          Department {isFieldRequired('department') && '*'}
+                          Department / Branch {isFieldRequired('department') && '*'}
                         </label>
-                        <select
+                        <input
+                          type="text"
+                          required={isFieldRequired('department')}
+                          placeholder="e.g. Computer Science & Engineering"
                           value={formData.department}
                           onChange={(e) => handleFieldChange('department', e.target.value)}
-                          className="w-full px-3 py-2.5 rounded-xl bg-[#0B0F14] border border-white/10 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C] transition cursor-pointer"
-                        >
-                          <option value="Computer Science & Engineering">CSE</option>
-                          <option value="Electronics & Communication">ECE</option>
-                          <option value="Information Technology">IT</option>
-                          <option value="Electrical Engineering">EE</option>
-                          <option value="Mechanical Engineering">ME</option>
-                          <option value="Civil Engineering">CE</option>
-                          <option value="Other Affiliated College">Other Institution</option>
-                        </select>
+                          className="w-full px-4 py-2.5 rounded-xl bg-[#0B0F14] border border-white/10 text-xs text-[#F5F5F5] placeholder-[#A0A6B0]/40 focus:outline-none focus:border-[#D4AF7C] transition shadow-inner"
+                        />
                       </div>
                     )}
 
@@ -1072,14 +1323,15 @@ function RegisterForm() {
                     {isFieldEnabled('institution') && (
                       <div className="space-y-1.5">
                         <label className="text-[11px] font-medium text-[#A0A6B0]">
-                          Institution {isFieldRequired('institution') && '*'}
+                          Institution / College {isFieldRequired('institution') && '*'}
                         </label>
                         <input
                           type="text"
                           required={isFieldRequired('institution')}
+                          placeholder="e.g. Jalpaiguri Government Engineering College"
                           value={formData.institution}
                           onChange={(e) => handleFieldChange('institution', e.target.value)}
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#0B0F14] border border-white/10 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C] transition"
+                          className="w-full px-4 py-2.5 rounded-xl bg-[#0B0F14] border border-white/10 text-xs text-[#F5F5F5] placeholder-[#A0A6B0]/40 focus:outline-none focus:border-[#D4AF7C] transition shadow-inner"
                         />
                       </div>
                     )}
@@ -1132,21 +1384,25 @@ function RegisterForm() {
                   </div>
                 )}
 
-                {/* Part 3: Chess Experience & Rating */}
+                {/* Part 3: Chess Experience & Online Platform Verification */}
                 {(isFieldEnabled('ratingCategory') || isFieldEnabled('chessUsername') || isFieldEnabled('fideId')) && (
-                  <div className="space-y-4 pt-2">
+                  <div className="space-y-5 pt-2">
                     <div className="border-b border-white/10 pb-2">
                       <h3 className="text-xs font-bold uppercase tracking-wider text-[#F5F5F5] flex items-center gap-2">
                         <Trophy className="w-4 h-4 text-[#D4AF7C]" />
-                        <span>Chess Profiles &amp; Skill Tier</span>
+                        <span>Chess Skill &amp; Online Account Verification</span>
                       </h3>
+                      <p className="text-[11px] text-[#A0A6B0] mt-1">
+                        Select your platform (Chess.com or Lichess) and provide your authentic player ID for pairing &amp; rating checks.
+                      </p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {/* Skill Tier & Optional FIDE ID Row */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {isFieldEnabled('ratingCategory') && (
                         <div className="space-y-1.5">
                           <label className="text-[11px] font-medium text-[#A0A6B0]">
-                            Rating Category {isFieldRequired('ratingCategory') && '*'}
+                            Rating / Skill Category {isFieldRequired('ratingCategory') && '*'}
                           </label>
                           <select
                             value={formData.ratingCategory}
@@ -1161,22 +1417,6 @@ function RegisterForm() {
                         </div>
                       )}
 
-                      {isFieldEnabled('chessUsername') && (
-                        <div className="space-y-1.5">
-                          <label className="text-[11px] font-medium text-[#A0A6B0]">
-                            Chess.com / Lichess {isFieldRequired('chessUsername') ? '*' : '(Optional)'}
-                          </label>
-                          <input
-                            type="text"
-                            required={isFieldRequired('chessUsername')}
-                            placeholder="e.g. HikaruFan99"
-                            value={formData.chessUsername}
-                            onChange={(e) => handleFieldChange('chessUsername', e.target.value)}
-                            className="w-full px-4 py-2.5 rounded-xl bg-[#0B0F14] border border-white/10 text-xs text-[#F5F5F5] placeholder-[#A0A6B0]/40 focus:outline-none focus:border-[#D4AF7C] transition shadow-inner"
-                          />
-                        </div>
-                      )}
-
                       {isFieldEnabled('fideId') && (
                         <div className="space-y-1.5">
                           <label className="text-[11px] font-medium text-[#A0A6B0]">
@@ -1185,7 +1425,7 @@ function RegisterForm() {
                           <input
                             type="text"
                             required={isFieldRequired('fideId')}
-                            placeholder="e.g. 25012345"
+                            placeholder="e.g. 25012345 (Leave empty if unrated)"
                             value={formData.fideId}
                             onChange={(e) => handleFieldChange('fideId', e.target.value)}
                             className="w-full px-4 py-2.5 rounded-xl bg-[#0B0F14] border border-white/10 text-xs text-[#F5F5F5] placeholder-[#A0A6B0]/40 font-mono focus:outline-none focus:border-[#D4AF7C] transition shadow-inner"
@@ -1193,6 +1433,256 @@ function RegisterForm() {
                         </div>
                       )}
                     </div>
+
+                    {/* Radio Button Selector for Chess.com or Lichess */}
+                    {isFieldEnabled('chessUsername') && (
+                      <div id="chess-platform-selector" className="space-y-3 pt-1">
+                        <div className="flex items-center justify-between">
+                          <label className="text-xs font-bold uppercase tracking-wider text-[#D4AF7C] flex items-center gap-2">
+                            <ShieldCheck className="w-4 h-4 text-[#D4AF7C]" />
+                            <span>Select Chess Platform {isFieldRequired('chessUsername') && '*'}</span>
+                          </label>
+                          <span className="text-[10px] text-[#A0A6B0]">Choose Chess.com or Lichess</span>
+                        </div>
+
+                        {/* Interactive Radio Cards */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {/* Chess.com Radio Card */}
+                          <div
+                            onClick={() => {
+                              handleFieldChange('chessPlatform', 'chesscom');
+                              if (formData.chessUsername) {
+                                verifyChessAccount('chesscom', formData.chessUsername);
+                              }
+                            }}
+                            className={`p-4 rounded-2xl border cursor-pointer transition-all duration-200 flex items-center gap-3.5 select-none ${
+                              formData.chessPlatform === 'chesscom'
+                                ? 'bg-gradient-to-r from-emerald-500/20 via-[#161B22] to-[#12161D] border-emerald-500 shadow-lg shadow-emerald-500/10 ring-1 ring-emerald-500/50'
+                                : 'bg-[#0B0F14] border-white/10 hover:border-white/20 hover:bg-white/[0.02]'
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name="chessPlatform"
+                              value="chesscom"
+                              checked={formData.chessPlatform === 'chesscom'}
+                              onChange={() => {}}
+                              className="w-4 h-4 accent-emerald-500 cursor-pointer shrink-0"
+                            />
+                            <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0 shadow-inner">
+                              <span className="text-lg">♟</span>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="font-['Montserrat',sans-serif] font-bold text-sm text-[#F5F5F5]">Chess.com</span>
+                                {formData.chessPlatform === 'chesscom' && (
+                                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40">
+                                    Selected
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-[11px] text-[#A0A6B0] truncate mt-0.5">
+                                Verify via official Chess.com profile
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Lichess Radio Card */}
+                          <div
+                            onClick={() => {
+                              handleFieldChange('chessPlatform', 'lichess');
+                              if (formData.chessUsername) {
+                                verifyChessAccount('lichess', formData.chessUsername);
+                              }
+                            }}
+                            className={`p-4 rounded-2xl border cursor-pointer transition-all duration-200 flex items-center gap-3.5 select-none ${
+                              formData.chessPlatform === 'lichess'
+                                ? 'bg-gradient-to-r from-[#D4AF7C]/20 via-[#161B22] to-[#12161D] border-[#D4AF7C] shadow-lg shadow-[#D4AF7C]/10 ring-1 ring-[#D4AF7C]/50'
+                                : 'bg-[#0B0F14] border-white/10 hover:border-white/20 hover:bg-white/[0.02]'
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name="chessPlatform"
+                              value="lichess"
+                              checked={formData.chessPlatform === 'lichess'}
+                              onChange={() => {}}
+                              className="w-4 h-4 accent-[#D4AF7C] cursor-pointer shrink-0"
+                            />
+                            <div className="w-9 h-9 rounded-xl bg-[#D4AF7C]/20 border border-[#D4AF7C]/40 flex items-center justify-center shrink-0 shadow-inner">
+                              <span className="text-lg">♞</span>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="font-['Montserrat',sans-serif] font-bold text-sm text-[#F5F5F5]">Lichess.org</span>
+                                {formData.chessPlatform === 'lichess' && (
+                                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-[#D4AF7C]/20 text-[#D4AF7C] font-bold border border-[#D4AF7C]/40">
+                                    Selected
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-[11px] text-[#A0A6B0] truncate mt-0.5">
+                                Verify via official Lichess.org profile
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Conditional ID Input Field (Only shows when player selects Chess.com or Lichess) */}
+                        {formData.chessPlatform ? (
+                          <div className="space-y-2.5 pt-2 animate-in fade-in slide-in-from-top-3 duration-300">
+                            <div className="flex items-center justify-between">
+                              <label className="text-[11px] font-medium text-[#A0A6B0] flex items-center gap-1.5">
+                                <span>
+                                  Type your {formData.chessPlatform === 'chesscom' ? 'Chess.com' : 'Lichess'} Username / ID
+                                </span>
+                                {isFieldRequired('chessUsername') && (
+                                  <span className="text-red-400 font-bold">*</span>
+                                )}
+                              </label>
+                              <span className="text-[10px] text-[#D4AF7C]">
+                                Checked when you go to another field
+                              </span>
+                            </div>
+
+                            <div className="relative">
+                              <input
+                                type="text"
+                                id="chess-handle-input"
+                                required={isFieldRequired('chessUsername')}
+                                placeholder={
+                                  formData.chessPlatform === 'chesscom'
+                                    ? 'e.g. Hikaru or MagnusCarlsen'
+                                    : 'e.g. thibault or DrNykterstein'
+                                }
+                                value={formData.chessUsername}
+                                onChange={(e) => handleFieldChange('chessUsername', e.target.value)}
+                                onBlur={() => {
+                                  if (formData.chessUsername.trim()) {
+                                    verifyChessAccount(formData.chessPlatform, formData.chessUsername);
+                                  }
+                                }}
+                                className={`w-full px-4 py-3 pr-28 rounded-xl bg-[#0B0F14] border text-xs text-[#F5F5F5] placeholder-[#A0A6B0]/40 font-mono transition shadow-inner focus:outline-none ${
+                                  chessVerification.result?.exists === true
+                                    ? 'border-emerald-500/70 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-500'
+                                    : chessVerification.result?.exists === false
+                                    ? 'border-red-500/70 focus:border-red-500 focus:ring-1 focus:ring-red-500'
+                                    : 'border-white/10 focus:border-[#D4AF7C] focus:ring-1 focus:ring-[#D4AF7C]'
+                                }`}
+                              />
+
+                              {/* Right Inline Action Button / Status Badge */}
+                              <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                                {chessVerification.checking ? (
+                                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 text-[10px] text-[#D4AF7C] font-semibold border border-white/10">
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin text-[#D4AF7C]" />
+                                    <span>Checking...</span>
+                                  </div>
+                                ) : chessVerification.result?.exists === true ? (
+                                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/20 text-[10px] text-emerald-400 font-bold border border-emerald-500/40">
+                                    <CheckCircle2 className="w-3.5 h-3.5" />
+                                    <span>Verified</span>
+                                  </div>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => verifyChessAccount(formData.chessPlatform, formData.chessUsername)}
+                                    disabled={!formData.chessUsername.trim() || chessVerification.checking}
+                                    className="px-3 py-1 rounded-lg bg-[#D4AF7C]/20 hover:bg-[#D4AF7C]/30 text-[#D4AF7C] font-bold text-[10px] transition cursor-pointer border border-[#D4AF7C]/30 disabled:opacity-40 disabled:cursor-not-allowed"
+                                  >
+                                    Verify ID
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Live Verification Status Cards */}
+                            {chessVerification.checking && (
+                              <div className="p-3 rounded-xl bg-white/5 border border-white/10 text-xs text-[#A0A6B0] flex items-center gap-2.5 animate-pulse">
+                                <Loader2 className="w-4 h-4 animate-spin text-[#D4AF7C] shrink-0" />
+                                <span>
+                                  Checking official existence of &ldquo;<strong className="text-white font-mono">@{formData.chessUsername}</strong>&rdquo; on {formData.chessPlatform === 'chesscom' ? 'Chess.com' : 'Lichess'}...
+                                </span>
+                              </div>
+                            )}
+
+                            {!chessVerification.checking && chessVerification.result && (
+                              chessVerification.result.exists ? (
+                                <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-center justify-between gap-3 shadow-sm animate-in fade-in duration-200">
+                                  <div className="flex items-center gap-3 min-w-0">
+                                    <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0 text-emerald-400">
+                                      <CheckCircle2 className="w-5 h-5" />
+                                    </div>
+                                    <div className="min-w-0">
+                                      <div className="font-bold flex items-center gap-1.5 truncate">
+                                        <span className="text-white">Genuine {chessVerification.result.platform} Player:</span>
+                                        <span className="font-mono text-emerald-300 font-bold">@{chessVerification.result.username}</span>
+                                        {chessVerification.result.title && (
+                                          <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 text-[9px] font-black border border-amber-500/30">
+                                            {chessVerification.result.title}
+                                          </span>
+                                        )}
+                                      </div>
+                                      <div className="text-[10px] text-emerald-300/80 font-mono mt-0.5 truncate">
+                                        {chessVerification.result.ratings?.rapid ? `Rapid: ${chessVerification.result.ratings.rapid} • ` : ''}
+                                        {chessVerification.result.ratings?.blitz ? `Blitz: ${chessVerification.result.ratings.blitz} • ` : ''}
+                                        {chessVerification.result.ratings?.classical ? `Classical: ${chessVerification.result.ratings.classical} • ` : ''}
+                                        {chessVerification.result.name ? `Name: ${chessVerification.result.name} • ` : ''}
+                                        Account Verified &amp; Eligible
+                                      </div>
+                                    </div>
+                                  </div>
+                                  {chessVerification.result.avatar && (
+                                    <img
+                                      src={chessVerification.result.avatar}
+                                      alt="Player Avatar"
+                                      className="w-9 h-9 rounded-full border border-emerald-400/40 object-cover shrink-0"
+                                    />
+                                  )}
+                                </div>
+                              ) : chessVerification.result.unavailable ? (
+                                <div className="p-3.5 rounded-2xl bg-amber-500/10 border-2 border-amber-500/30 text-amber-300 text-xs flex items-start justify-between gap-3 shadow-lg animate-in fade-in duration-200">
+                                  <div className="flex items-start gap-3 min-w-0">
+                                    <AlertTriangle className="w-5 h-5 shrink-0 text-amber-400 mt-0.5" />
+                                    <div className="space-y-1 min-w-0">
+                                      <div className="font-bold text-amber-200 text-xs">
+                                        Verification Service Unavailable
+                                      </div>
+                                      <p className="text-[11px] text-amber-300/90 leading-relaxed">
+                                        {chessVerification.result.message || 'Unable to contact verification service. Please retry in a few moments.'}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => verifyChessAccount(formData.chessPlatform, formData.chessUsername)}
+                                    className="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 text-[11px] font-semibold shrink-0 transition-colors"
+                                  >
+                                    Retry
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="p-3.5 rounded-2xl bg-red-500/10 border-2 border-red-500/40 text-red-300 text-xs flex items-start gap-3 shadow-lg animate-in fade-in duration-200">
+                                  <AlertTriangle className="w-5 h-5 shrink-0 text-red-400 mt-0.5" />
+                                  <div className="space-y-1">
+                                    <div className="font-bold text-red-200 text-xs">
+                                      Check your ID carefully!
+                                    </div>
+                                    <p className="text-[11px] text-red-300/90 leading-relaxed">
+                                      No active player found with username &ldquo;<strong className="font-mono text-white">@{formData.chessUsername}</strong>&rdquo; on {formData.chessPlatform === 'chesscom' ? 'Chess.com' : 'Lichess'}. Please recheck your spelling. Without a correct ID, registration cannot be successful.
+                                    </p>
+                                  </div>
+                                </div>
+                              )
+                            )}
+                          </div>
+                        ) : (
+                          <div className="p-3.5 rounded-2xl bg-[#0B0F14]/70 border border-dashed border-white/10 text-center text-xs text-[#A0A6B0]">
+                            <span>Please select <strong>Chess.com</strong> or <strong>Lichess</strong> above to enter your ID.</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -1275,14 +1765,38 @@ function RegisterForm() {
               {/* Submit CTA Bar */}
               <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-2 text-xs text-[#A0A6B0]">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                  <span>100% Free Entry &bull; Instant Confirmation</span>
+                  {chessVerification.checking ? (
+                    <div className="flex items-center gap-1.5 text-[#D4AF7C]">
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Verifying player ID...</span>
+                    </div>
+                  ) : chessVerification.result?.exists === true ? (
+                    <div className="flex items-center gap-1.5 text-emerald-400 font-medium">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>Player ID Verified &bull; Free Registration</span>
+                    </div>
+                  ) : chessVerification.result?.unavailable ? (
+                    <div className="flex items-center gap-1.5 text-amber-400 font-medium">
+                      <AlertTriangle className="w-3.5 h-3.5" />
+                      <span>Verification service unavailable &bull; Retry required</span>
+                    </div>
+                  ) : chessVerification.result?.exists === false ? (
+                    <div className="flex items-center gap-1.5 text-red-400 font-medium">
+                      <AlertTriangle className="w-3.5 h-3.5" />
+                      <span>Check your ID carefully before submitting</span>
+                    </div>
+                  ) : (
+                    <>
+                      <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                      <span>100% Free Entry &bull; Instant Confirmation</span>
+                    </>
+                  )}
                 </div>
 
                 <button
                   type="submit"
-                  disabled={isSubmitting}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full font-bold text-xs text-[#0B0F14] bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] hover:brightness-110 transition-all duration-200 shadow-xl shadow-[#D4AF7C]/30 hover:scale-[1.02] active:scale-[0.98] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                  disabled={isSubmitting || chessVerification.checking || (Boolean(formData.chessUsername) && chessVerification.result?.exists === false && !chessVerification.result?.unavailable)}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full font-bold text-xs text-[#0B0F14] bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] hover:brightness-110 transition-all duration-200 shadow-xl shadow-[#D4AF7C]/30 hover:scale-[1.02] active:scale-[0.98] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
                     <>
@@ -1363,7 +1877,7 @@ function RegisterForm() {
                   <div>
                     <span className="text-[10px] text-[#A0A6B0] block">Department</span>
                     <span className="text-[#F5F5F5] truncate block">
-                      {formData.department.split(' ')[0]} &bull; {formData.year.split(' ')[0]}
+                      {formData.department.split(' ')[0] || 'Department'} &bull; {formData.year.split(' ')[0]}
                     </span>
                   </div>
                   <div>
@@ -1371,6 +1885,44 @@ function RegisterForm() {
                     <span className="text-[#D4AF7C] truncate block font-medium">
                       {formData.ratingCategory.split(' ')[0]}
                     </span>
+                  </div>
+                </div>
+
+                {/* Verified Chess Profile Badge in Preview */}
+                <div className="grid grid-cols-2 gap-3 text-[11px] p-2.5 rounded-xl bg-black/40 border border-white/5">
+                  <div>
+                    <span className="text-[10px] text-[#A0A6B0] block">Online Account</span>
+                    <span className="text-[#F5F5F5] font-mono text-xs truncate block font-bold">
+                      {formData.chessUsername
+                        ? `@${formData.chessUsername}`
+                        : 'None'}
+                    </span>
+                    <span className="text-[9px] text-[#D4AF7C] font-semibold block">
+                      {formData.chessPlatform === 'chesscom' ? 'Chess.com' : (formData.chessPlatform === 'lichess' ? 'Lichess.org' : 'Select platform')}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-[#A0A6B0] block">Verification</span>
+                    <div className="mt-0.5">
+                      {chessVerification.result?.exists === true ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] text-emerald-400 font-bold">
+                          <CheckCircle2 className="w-3 h-3" />
+                          <span>Verified</span>
+                        </span>
+                      ) : chessVerification.result?.exists === false ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] text-red-400 font-bold">
+                          <AlertTriangle className="w-3 h-3" />
+                          <span>Invalid ID</span>
+                        </span>
+                      ) : chessVerification.checking ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] text-[#D4AF7C]">
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                          <span>Checking</span>
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-[#A0A6B0]">Pending</span>
+                      )}
+                    </div>
                   </div>
                 </div>
 

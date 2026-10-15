@@ -46,6 +46,14 @@ async function runMigration(): Promise<void> {
     await client.query(sql);
     console.log('Successfully executed schema.sql! All tables, indexes, triggers, and seed data created!');
 
+    const incrementalSqlPath = path.join(process.cwd(), 'supabase', 'incremental_migration.sql');
+    if (fs.existsSync(incrementalSqlPath)) {
+      console.log('Executing supabase/incremental_migration.sql...');
+      const incrementalSql = fs.readFileSync(incrementalSqlPath, 'utf-8');
+      await client.query(incrementalSql);
+      console.log('Successfully executed incremental_migration.sql (team_members, gallery, RLS & seeds)!');
+    }
+
     const resT = await client.query('SELECT count(*) FROM public.tournaments;');
     console.log(`Verified public.tournaments count: ${resT.rows[0].count}`);
 
@@ -58,7 +66,13 @@ async function runMigration(): Promise<void> {
     const resA = await client.query('SELECT count(*) FROM public.announcements;');
     console.log(`Verified public.announcements count: ${resA.rows[0].count}`);
 
-    console.log('MIGRATION COMPLETED SUCCESSFULLY!');
+    const resTeam = await client.query('SELECT count(*) FROM public.team_members;');
+    console.log(`Verified public.team_members count: ${resTeam.rows[0].count}`);
+
+    const resGal = await client.query('SELECT count(*) FROM public.gallery;');
+    console.log(`Verified public.gallery count: ${resGal.rows[0].count}`);
+
+    console.log('ALL SQL MIGRATIONS COMPLETED AND SYNCHRONIZED SUCCESSFULLY!');
   } catch (err: any) {
     console.error('Migration failed:', err.message);
     if (err.code) console.error('Error code:', err.code);
