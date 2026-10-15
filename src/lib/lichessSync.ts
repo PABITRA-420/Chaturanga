@@ -109,7 +109,7 @@ export async function syncLichessClub(force = false): Promise<LichessClubSyncRes
         'Accept': 'application/x-ndjson',
         'User-Agent': 'Chaturanga-JGEC-ChessClub/1.0 (+https://chaturangajgec.netlify.app)'
       },
-      next: { revalidate: 3600 }
+      cache: 'no-store'
     });
 
     if (!res.ok) {
@@ -141,23 +141,25 @@ export async function syncLichessClub(force = false): Promise<LichessClubSyncRes
 
     for (let i = 0; i < userIds.length; i += chunkSize) {
       const chunk = userIds.slice(i, i + chunkSize);
-      try {
-        const detailsRes = await fetch('https://lichess.org/api/users', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'text/plain',
-            'User-Agent': 'Chaturanga-JGEC-ChessClub/1.0'
-          },
-          body: chunk.join(',')
-        });
+      const detailsRes = await fetch('https://lichess.org/api/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain',
+          'User-Agent': 'Chaturanga-JGEC-ChessClub/1.0'
+        },
+        body: chunk.join(',')
+      });
 
-        if (detailsRes.ok) {
-          const usersChunk = await detailsRes.json();
-          allUsers.push(...usersChunk);
-        }
-      } catch (e) {
-        console.warn('Lichess chunk fetch warning:', e);
+      if (!detailsRes.ok) {
+        throw new Error(`Failed to fetch Lichess users batch: HTTP ${detailsRes.status}`);
       }
+
+      const usersChunk = await detailsRes.json();
+      allUsers.push(...usersChunk);
+    }
+
+    if (allUsers.length === 0) {
+      throw new Error('No user details returned from Lichess');
     }
 
     // 3. Parse stats and ratings

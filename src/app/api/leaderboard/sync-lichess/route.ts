@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     }
 
     const result = await syncLichessClub(true);
-    return NextResponse.json(result);
+    return NextResponse.json(result, { status: result.success ? 200 : 502 });
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message || 'Lichess sync execution failed.' },
@@ -37,7 +37,7 @@ export async function GET(request: Request) {
 
     // Check if 24 hours have passed and sync if needed
     const result = await syncLichessClub(false);
-    return NextResponse.json(result);
+    return NextResponse.json(result, { status: result.success ? 200 : 502 });
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message || 'Lichess sync check failed.' },

@@ -199,7 +199,7 @@ export default function AdminTeamTab() {
       department: formData.department.trim(),
       year: formData.year.trim(),
       elo: formData.elo.trim(),
-      fideId: formData.fideId.trim() || undefined,
+      fideId: formData.fideId.trim() || null,
       bio: formData.bio.trim(),
       responsibilities,
       favoriteOpening: formData.favoriteOpening.trim(),
@@ -207,7 +207,7 @@ export default function AdminTeamTab() {
       chessPiece: formData.chessPiece,
       avatarColor: formData.avatarColor.trim(),
       titleBadge: formData.titleBadge.trim(),
-      imageUrl: formData.imageUrl.trim() || undefined
+      imageUrl: formData.imageUrl.trim() || null
     };
 
     try {

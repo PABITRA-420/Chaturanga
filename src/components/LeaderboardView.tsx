@@ -483,7 +483,7 @@ export default function LeaderboardView() {
                       const isTop2 = displayRank === 2;
                       const isTop3 = displayRank === 3;
                       const plat = getPlayerPlatform(player);
-                      const profileUrl = plat?.url || `https://lichess.org/@/${player.name}`;
+                      const profileUrl = plat?.url;
 
                       return (
                         <tr 
@@ -511,34 +511,40 @@ export default function LeaderboardView() {
                               </div>
                               <div>
                                 <div className="flex items-center gap-2">
-                                  <a
-                                    href={profileUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="font-bold text-[#F5F5F5] group-hover:text-[#D4AF7C] transition inline-flex items-center gap-1.5"
-                                  >
-                                    <span>{player.name}</span>
-                                    <span className="text-[10px] text-[#A0A6B0] opacity-60">↗</span>
-                                  </a>
+                                  {profileUrl ? (
+                                    <a
+                                      href={profileUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="font-bold text-[#F5F5F5] group-hover:text-[#D4AF7C] transition inline-flex items-center gap-1.5"
+                                    >
+                                      <span>{player.name}</span>
+                                      <span className="text-[10px] text-[#A0A6B0] opacity-60">↗</span>
+                                    </a>
+                                  ) : (
+                                    <span className="font-bold text-[#F5F5F5]">{player.name}</span>
+                                  )}
                                   {player.title && (
                                     <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#D4AF7C]/15 text-[#D4AF7C] border border-[#D4AF7C]/30">
                                       {player.title}
                                     </span>
                                   )}
                                 </div>
-                                <div className="text-xs text-[#A0A6B0] font-mono flex items-center gap-2 mt-0.5 flex-wrap">
-                                  <a
-                                    href={profileUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border font-mono transition hover:brightness-125 ${
-                                      plat?.color || 'border-sky-500/30 bg-sky-500/10 text-sky-300'
-                                    }`}
-                                  >
-                                    <span>{plat?.platform || 'Lichess'}:</span>
-                                    <span className="font-semibold">@{plat?.username || player.lichessUsername || player.name}</span>
-                                  </a>
-                                </div>
+                                {plat && (
+                                  <div className="text-xs text-[#A0A6B0] font-mono flex items-center gap-2 mt-0.5 flex-wrap">
+                                    <a
+                                      href={plat.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border font-mono transition hover:brightness-125 ${
+                                        plat.color
+                                      }`}
+                                    >
+                                      <span>{plat.platform}:</span>
+                                      <span className="font-semibold">@{plat.username}</span>
+                                    </a>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </td>
