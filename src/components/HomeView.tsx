@@ -11,13 +11,18 @@ import HomeLeaderboardPreview from '@/components/home/HomeLeaderboardPreview';
 import HomeTournaments from '@/components/home/HomeTournaments';
 import RegisterCta from '@/components/home/RegisterCta';
 
+const EMPTY_TOURNAMENT_FALLBACK = {
+  isNeutral: true,
+  badgeText: 'Official Collegiate Chess Club'
+};
+
 export default function HomeView() {
   const [participantsCount, setParticipantsCount] = useState(0);
   const [eventsCount, setEventsCount] = useState(0);
   const [peakElo, setPeakElo] = useState<number | undefined>(undefined);
   const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
   const [pastEvents, setPastEvents] = useState<any[]>([]);
-  const [featuredEvent, setFeaturedEvent] = useState<any>(null);
+  const [featuredEvent, setFeaturedEvent] = useState<any>(EMPTY_TOURNAMENT_FALLBACK);
 
   // Fetch dynamic tournaments
   useEffect(() => {
@@ -26,7 +31,7 @@ export default function HomeView() {
       .then(data => {
         if (data.success && Array.isArray(data.tournaments)) {
           setUpcomingEvents(data.tournaments);
-          const featured = data.tournaments.find((t: any) => t.isFeatured) || data.tournaments[0] || null;
+          const featured = data.tournaments.find((t: any) => t.isFeatured) || data.tournaments[0] || EMPTY_TOURNAMENT_FALLBACK;
           setFeaturedEvent(featured);
         }
       })

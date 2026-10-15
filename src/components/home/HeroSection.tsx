@@ -55,10 +55,21 @@ export default function HeroSection({
           
           {/* Top Badge: Featured Tournament or Active Season */}
           <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-black/60 border border-[#D4AF7C]/30 backdrop-blur-md shadow-lg max-w-full overflow-hidden">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#D4AF7C] truncate max-w-[200px] sm:max-w-none">
-              {featuredEvent?.title ? `Next Up: ${featuredEvent.title}` : 'Spring Season 2026 Live'}
-            </span>
+            {featuredEvent && featuredEvent.title && !featuredEvent.isNeutral ? (
+              <>
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#D4AF7C] truncate max-w-[200px] sm:max-w-none">
+                  Next Up: {featuredEvent.title}
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="w-2 h-2 rounded-full bg-[#D4AF7C]/60 shrink-0" />
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#A0A6B0] truncate max-w-[200px] sm:max-w-none">
+                  {featuredEvent?.badgeText || 'Official Collegiate Chess Club'}
+                </span>
+              </>
+            )}
             <span className="text-[#A0A6B0] text-xs shrink-0">• FIDE Rules</span>
           </div>
 
