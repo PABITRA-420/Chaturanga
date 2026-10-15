@@ -51,7 +51,9 @@ export async function POST(request: Request) {
     }
 
     // Chess account validation & verification using shared verification logic
-    const cleanUsername = typeof chessUsername === 'string' ? chessUsername.trim() : '';
+    const cleanUsername = typeof chessUsername === 'string'
+      ? chessUsername.replace(/\s*\(.*?\)\s*$/, '').trim()
+      : '';
     let validatedPlatform: 'chesscom' | 'lichess' | null = null;
     let verifiedChessUsername = 'N/A';
 
@@ -90,10 +92,8 @@ export async function POST(request: Request) {
         );
       }
 
-      const platformDisplay = validatedPlatform === 'chesscom' ? 'Chess.com' : 'Lichess';
-      verifiedChessUsername = cleanUsername.includes('(')
-        ? cleanUsername
-        : `${verification.username || cleanUsername} (${platformDisplay})`;
+      // Store only the trimmed handle; keep platform labels out because chessPlatform is stored separately
+      verifiedChessUsername = verification.username || cleanUsername;
     } else {
       validatedPlatform = null;
       verifiedChessUsername = 'N/A';

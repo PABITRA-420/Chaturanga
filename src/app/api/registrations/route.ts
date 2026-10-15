@@ -42,6 +42,7 @@ export async function GET(request: Request) {
         r.department.toLowerCase().includes(search) ||
         r.institution.toLowerCase().includes(search) ||
         (r.chessUsername && r.chessUsername.toLowerCase().includes(search)) ||
+        (r.chessPlatform && r.chessPlatform.toLowerCase().includes(search)) ||
         (r.fideId && r.fideId.toLowerCase().includes(search))
       );
     }

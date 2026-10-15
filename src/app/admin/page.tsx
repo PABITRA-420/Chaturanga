@@ -75,6 +75,7 @@ interface Participant {
   email?: string;
   phone?: string;
   ratingCategory: string;
+  chessPlatform?: string | null;
   chessUsername: string;
   fideId: string;
   registeredAt: string;
@@ -319,6 +320,7 @@ export default function AdminDashboardPage() {
           email: r.email || '',
           phone: r.phone || '',
           ratingCategory: r.ratingCategory || 'Club Player (1200 - 1600)',
+          chessPlatform: r.chessPlatform || null,
           chessUsername: r.chessUsername || 'N/A',
           fideId: r.fideId || 'Unrated',
           registeredAt: r.registeredAt || new Date().toISOString(),
@@ -752,7 +754,9 @@ export default function AdminDashboardPage() {
         p.email || 'N/A',
         p.phone || 'N/A',
         p.ratingCategory,
-        p.chessUsername || 'N/A',
+        p.chessUsername && p.chessUsername !== 'N/A'
+          ? `${p.chessUsername}${p.chessPlatform && !p.chessUsername.includes('(') ? ` (${p.chessPlatform === 'chesscom' ? 'Chess.com' : 'Lichess'})` : ''}`
+          : 'N/A',
         p.fideId || 'Unrated',
         p.tournament,
         p.checkInStatus === 'checked_in' ? 'CHECKED_IN (PRESENT)' : 'CONFIRMED (AWAITING DESK)',
@@ -1784,7 +1788,16 @@ export default function AdminDashboardPage() {
                                 </span>
                               </div>
                               <div className="text-[11px] text-[#D4AF7C] font-mono mt-1">
-                                {player.chessUsername !== 'N/A' ? player.chessUsername : ''}
+                                {player.chessUsername && player.chessUsername !== 'N/A' ? (
+                                  <>
+                                    <span>@{player.chessUsername}</span>
+                                    {player.chessPlatform && !player.chessUsername.includes('(') && (
+                                      <span className="text-[#A0A6B0] text-[10px] ml-1">
+                                        ({player.chessPlatform === 'chesscom' ? 'Chess.com' : 'Lichess'})
+                                      </span>
+                                    )}
+                                  </>
+                                ) : ''}
                                 {player.fideId && player.fideId !== 'Unrated' && (
                                   <span className="text-[10px] text-[#A0A6B0] block">FIDE: {player.fideId}</span>
                                 )}
