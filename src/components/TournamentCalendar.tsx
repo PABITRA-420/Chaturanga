@@ -135,13 +135,16 @@ export default function TournamentCalendar() {
     setSelectedEvent(match || null);
   };
 
+  const nearestEvent = useMemo(() => {
+    return eventsList.find((e) => e.isUpcoming) || eventsList[0] || null;
+  }, [eventsList]);
+
   const handleNextEventJump = () => {
-    const nearest = eventsList.find(e => e.isUpcoming) || eventsList[0];
-    if (nearest) {
-      setCurrentYear(nearest.year);
-      setCurrentMonth(nearest.month);
-      setSelectedDay(nearest.day);
-      setSelectedEvent(nearest);
+    if (nearestEvent) {
+      setCurrentYear(nearestEvent.year);
+      setCurrentMonth(nearestEvent.month);
+      setSelectedDay(nearestEvent.day);
+      setSelectedEvent(nearestEvent);
     }
   };
 
@@ -591,13 +594,17 @@ export default function TournamentCalendar() {
                 <p>Casual practice matches, engine analysis, and blitz arenas run every weekday in SAC Room 204 from 5:00 PM – 8:30 PM.</p>
               </div>
 
-              <button
-                type="button"
-                onClick={handleNextEventJump}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#D4AF7C] hover:underline cursor-pointer pt-2"
-              >
-                <span>Jump to Flagship Championship (Nov 07, 2026) &rarr;</span>
-              </button>
+              {nearestEvent && (
+                <button
+                  type="button"
+                  onClick={handleNextEventJump}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#D4AF7C] hover:underline cursor-pointer pt-2"
+                >
+                  <span>
+                    Jump to {nearestEvent.title} ({MONTH_NAMES[nearestEvent.month].slice(0, 3)} {String(nearestEvent.day).padStart(2, '0')}, {nearestEvent.year}) &rarr;
+                  </span>
+                </button>
+              )}
             </div>
           )}
 
