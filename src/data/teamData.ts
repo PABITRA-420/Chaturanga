@@ -6,7 +6,7 @@ export interface TeamMember {
   department: string;
   year: string;
   elo: string;
-  fideId?: string;
+  fideId?: string | null;
   bio: string;
   responsibilities: string[];
   favoriteOpening: string;
@@ -14,7 +14,7 @@ export interface TeamMember {
   chessPiece: 'King' | 'Queen' | 'Rook' | 'Bishop' | 'Knight';
   avatarColor: string;
   titleBadge: string;
-  imageUrl?: string;
+  imageUrl?: string | null;
 }
 
 export const TEAM_MEMBERS: TeamMember[] = [

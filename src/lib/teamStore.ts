@@ -33,7 +33,7 @@ function teamMemberToDb(m: Partial<TeamMember>): any {
   if (m.department !== undefined) dbRecord.department = m.department;
   if (m.year !== undefined) dbRecord.year = m.year;
   if (m.elo !== undefined) dbRecord.elo = m.elo;
-  if (m.fideId !== undefined) dbRecord.fide_id = m.fideId;
+  if (m.fideId !== undefined) dbRecord.fide_id = m.fideId === null ? null : m.fideId;
   if (m.bio !== undefined) dbRecord.bio = m.bio;
   if (m.responsibilities !== undefined) dbRecord.responsibilities = m.responsibilities;
   if (m.favoriteOpening !== undefined) dbRecord.favorite_opening = m.favoriteOpening;
@@ -41,7 +41,7 @@ function teamMemberToDb(m: Partial<TeamMember>): any {
   if (m.chessPiece !== undefined) dbRecord.chess_piece = m.chessPiece;
   if (m.avatarColor !== undefined) dbRecord.avatar_color = m.avatarColor;
   if (m.titleBadge !== undefined) dbRecord.title_badge = m.titleBadge;
-  if (m.imageUrl !== undefined) dbRecord.image_url = m.imageUrl;
+  if (m.imageUrl !== undefined) dbRecord.image_url = m.imageUrl === null ? null : m.imageUrl;
   dbRecord.updated_at = new Date().toISOString();
   return dbRecord;
 }
