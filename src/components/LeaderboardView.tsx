@@ -531,10 +531,12 @@ export default function LeaderboardView() {
                                     href={profileUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border border-sky-500/30 bg-sky-500/10 text-sky-300 font-mono transition hover:brightness-125"
+                                    className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border font-mono transition hover:brightness-125 ${
+                                      plat?.color || 'border-sky-500/30 bg-sky-500/10 text-sky-300'
+                                    }`}
                                   >
-                                    <span>Lichess:</span>
-                                    <span className="font-semibold">@{player.lichessUsername || player.name}</span>
+                                    <span>{plat?.platform || 'Lichess'}:</span>
+                                    <span className="font-semibold">@{plat?.username || player.lichessUsername || player.name}</span>
                                   </a>
                                 </div>
                               </div>
