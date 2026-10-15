@@ -32,7 +32,7 @@ function dbToPlayer(row: any): LeaderboardPlayer {
       winRate: Number(row.win_rate ?? 0),
       tournamentsWon: Number(row.tournaments_won ?? 0),
     },
-    recentForm: Array.isArray(row.recent_form) ? row.recent_form : ['W'],
+    recentForm: Array.isArray(row.recent_form) ? row.recent_form : [],
     avatarColor: row.avatar_color || 'from-[#D4AF7C] to-[#E6C98A]',
     chessPiece: (row.chess_piece as any) || 'Knight',
     chessComUsername: row.chess_com_username || row.chess_username,

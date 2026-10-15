@@ -214,7 +214,7 @@ export default function LeaderboardView() {
                       </div>
                       <div className="text-right">
                         <div className="text-[11px] text-[#A0A6B0] uppercase">Win Rate</div>
-                        <div className="text-sm font-bold font-mono text-emerald-400">{topThree[1].stats.winRate}%</div>
+                        <div className="text-sm font-bold font-mono text-emerald-400">{topThree[1].stats.matchesPlayed > 0 ? `${topThree[1].stats.winRate}%` : '—'}</div>
                       </div>
                     </div>
                   </div>
@@ -268,7 +268,7 @@ export default function LeaderboardView() {
                       </div>
                       <div className="text-right">
                         <div className="text-xs text-[#A0A6B0] uppercase">Win Ratio</div>
-                        <div className="text-lg font-bold font-mono text-emerald-400">{topThree[0].stats.winRate}%</div>
+                        <div className="text-lg font-bold font-mono text-emerald-400">{topThree[0].stats.matchesPlayed > 0 ? `${topThree[0].stats.winRate}%` : '—'}</div>
                       </div>
                     </div>
                   </div>
@@ -320,7 +320,7 @@ export default function LeaderboardView() {
                       </div>
                       <div className="text-right">
                         <div className="text-[11px] text-[#A0A6B0] uppercase">Win Rate</div>
-                        <div className="text-sm font-bold font-mono text-emerald-400">{topThree[2].stats.winRate}%</div>
+                        <div className="text-sm font-bold font-mono text-emerald-400">{topThree[2].stats.matchesPlayed > 0 ? `${topThree[2].stats.winRate}%` : '—'}</div>
                       </div>
                     </div>
                   </div>
@@ -557,34 +557,42 @@ export default function LeaderboardView() {
                           </td>
 
                           <td className="py-4 px-4 text-center">
-                            <div className="inline-flex flex-col items-center">
-                              <span className="font-mono font-bold text-emerald-400 text-xs">
-                                {player.stats.winRate}%
-                              </span>
-                              <div className="w-16 h-1.5 rounded-full bg-white/10 mt-1 overflow-hidden">
-                                <div 
-                                  className="h-full bg-emerald-400 rounded-full" 
-                                  style={{ width: `${player.stats.winRate}%` }} 
-                                />
+                            {player.stats.matchesPlayed > 0 ? (
+                              <div className="inline-flex flex-col items-center">
+                                <span className="font-mono font-bold text-emerald-400 text-xs">
+                                  {player.stats.winRate}%
+                                </span>
+                                <div className="w-16 h-1.5 rounded-full bg-white/10 mt-1 overflow-hidden">
+                                  <div 
+                                    className="h-full bg-emerald-400 rounded-full" 
+                                    style={{ width: `${player.stats.winRate}%` }} 
+                                  />
+                                </div>
                               </div>
-                            </div>
+                            ) : (
+                              <span className="text-[#A0A6B0]/40 text-xs">—</span>
+                            )}
                           </td>
 
                           <td className="py-4 px-4 text-center">
                             <div className="inline-flex items-center gap-1">
-                              {(player.recentForm || []).map((f: string, i: number) => (
-                                <span
-                                  key={i}
-                                  className={`w-5 h-5 rounded text-[10px] font-black flex items-center justify-center font-mono ${
-                                    f === 'W' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
-                                    f === 'D' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
-                                    'bg-rose-500/20 text-rose-400 border border-rose-500/30'
-                                  }`}
-                                  title={f === 'W' ? 'Win' : f === 'D' ? 'Draw' : 'Loss'}
-                                >
-                                  {f}
-                                </span>
-                              ))}
+                              {(player.recentForm && player.recentForm.length > 0) ? (
+                                player.recentForm.map((f: string, i: number) => (
+                                  <span
+                                    key={i}
+                                    className={`w-5 h-5 rounded text-[10px] font-black flex items-center justify-center font-mono ${
+                                      f === 'W' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
+                                      f === 'D' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
+                                      'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                                    }`}
+                                    title={f === 'W' ? 'Win' : f === 'D' ? 'Draw' : 'Loss'}
+                                  >
+                                    {f}
+                                  </span>
+                                ))
+                              ) : (
+                                <span className="text-[#A0A6B0]/40 text-xs">—</span>
+                              )}
                             </div>
                           </td>
 

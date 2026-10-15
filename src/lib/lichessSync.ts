@@ -180,8 +180,26 @@ export async function syncLichessClub(force = false): Promise<LichessClubSyncRes
           bestRating = blitz;
         }
 
-        const totalGames = u.count?.all || ((u.count?.win || 0) + (u.count?.loss || 0) + (u.count?.draw || 0));
-        const winRate = totalGames > 0 ? Math.round(((u.count?.win || 0) / totalGames) * 100) : 60;
+        const totalGames = typeof u.count?.all === 'number'
+          ? u.count.all
+          : u.count
+          ? (u.count.win || 0) + (u.count.loss || 0) + (u.count.draw || 0)
+          : 0;
+
+        const wins = typeof u.count?.win === 'number' ? u.count.win : 0;
+        const draws = typeof u.count?.draw === 'number' ? u.count.draw : 0;
+        const losses = typeof u.count?.loss === 'number' ? u.count.loss : 0;
+        const winRate = totalGames > 0 ? Math.round((wins / totalGames) * 100) : null;
+        const tournamentsWon = typeof u.tournaments_won === 'number'
+          ? u.tournaments_won
+          : typeof u.tournamentsWon === 'number'
+          ? u.tournamentsWon
+          : null;
+        const recentForm = Array.isArray(u.recent_form)
+          ? u.recent_form
+          : Array.isArray(u.recentForm)
+          ? u.recentForm
+          : null;
 
         return {
           id: u.id,
@@ -195,10 +213,12 @@ export async function syncLichessClub(force = false): Promise<LichessClubSyncRes
           bestFormat,
           bestRating,
           matchesPlayed: totalGames,
-          wins: u.count?.win || 0,
-          draws: u.count?.draw || 0,
-          losses: u.count?.loss || 0,
+          wins,
+          draws,
+          losses,
           winRate,
+          tournamentsWon,
+          recentForm,
           profileUrl: `https://lichess.org/@/${u.username}`
         };
       });
@@ -237,13 +257,13 @@ export async function syncLichessClub(force = false): Promise<LichessClubSyncRes
         classical_elo: p.classical,
         bullet_elo: p.bullet,
         peak_elo: p.peak,
-        matches_played: p.matchesPlayed || 20,
-        wins: p.wins || 12,
-        draws: p.draws || 3,
-        losses: p.losses || 5,
-        win_rate: p.winRate || 65,
-        tournaments_won: rank === 1 ? 5 : rank === 2 ? 3 : rank === 3 ? 2 : 1,
-        recent_form: ['W', 'W', 'W', 'D', 'W'],
+        matches_played: p.matchesPlayed,
+        wins: p.wins,
+        draws: p.draws,
+        losses: p.losses,
+        win_rate: p.winRate,
+        tournaments_won: p.tournamentsWon ?? 0,
+        recent_form: p.recentForm,
         avatar_color: avatarColors[idx % avatarColors.length],
         chess_piece: rank === 1 ? 'King' : rank === 2 ? 'Queen' : rank === 3 ? 'Rook' : rank <= 6 ? 'Bishop' : 'Knight',
         is_active: true,
