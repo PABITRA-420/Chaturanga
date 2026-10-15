@@ -69,6 +69,15 @@ export async function GET(request: Request) {
       }
 
       const u = await lichessRes.json();
+      if (u.disabled || u.tosViolation) {
+        return NextResponse.json({
+          success: true,
+          exists: false,
+          platform: 'Lichess',
+          message: `Player "${username}" not found on Lichess. Please check your ID carefully.`
+        });
+      }
+
       return NextResponse.json({
         success: true,
         exists: true,
@@ -125,20 +134,22 @@ export async function GET(request: Request) {
 
     if (lichessRes.ok) {
       const u = await lichessRes.json();
-      return NextResponse.json({
-        success: true,
-        exists: true,
-        platform: 'Lichess',
-        username: u.username || username,
-        title: u.title || null,
-        avatar: null,
-        ratings: {
-          rapid: u.perfs?.rapid?.rating || null,
-          blitz: u.perfs?.blitz?.rating || null,
-          bullet: u.perfs?.bullet?.rating || null,
-          classical: u.perfs?.classical?.rating || null
-        }
-      });
+      if (!u.disabled && !u.tosViolation) {
+        return NextResponse.json({
+          success: true,
+          exists: true,
+          platform: 'Lichess',
+          username: u.username || username,
+          title: u.title || null,
+          avatar: null,
+          ratings: {
+            rapid: u.perfs?.rapid?.rating || null,
+            blitz: u.perfs?.blitz?.rating || null,
+            bullet: u.perfs?.bullet?.rating || null,
+            classical: u.perfs?.classical?.rating || null
+          }
+        });
+      }
     }
 
     return NextResponse.json({
