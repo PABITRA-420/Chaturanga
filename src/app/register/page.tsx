@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
@@ -76,6 +76,7 @@ function RegisterForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sheetStatus, setSheetStatus] = useState<{ synced: boolean; configured: boolean; message?: string } | null>(null);
   const [showSetupGuide, setShowSetupGuide] = useState(false);
+  const verifySequenceRef = useRef(0);
   const [chessVerification, setChessVerification] = useState<{
     checking: boolean;
     hasChecked: boolean;
@@ -103,16 +104,34 @@ function RegisterForm() {
   // Dedicated verification function
   const verifyChessAccount = async (platform: string, username: string) => {
     const handle = username.trim();
+    const seq = ++verifySequenceRef.current;
+
     if (!platform || !handle) {
       setChessVerification({ checking: false, hasChecked: false, lastCheckedHandle: '', lastCheckedPlatform: '', result: null });
       return null;
     }
 
-    setChessVerification(prev => ({ ...prev, checking: true, lastCheckedHandle: handle, lastCheckedPlatform: platform }));
+    setChessVerification(prev => {
+      const isDiff =
+        prev.lastCheckedHandle.toLowerCase() !== handle.toLowerCase() ||
+        prev.lastCheckedPlatform !== platform;
+      return {
+        ...prev,
+        checking: true,
+        lastCheckedHandle: handle,
+        lastCheckedPlatform: platform,
+        result: isDiff ? null : prev.result
+      };
+    });
+
     try {
       const res = await fetch(`/api/player/verify?platform=${encodeURIComponent(platform)}&username=${encodeURIComponent(handle)}`);
+      if (seq !== verifySequenceRef.current) return null;
+
       if (res.ok) {
         const data = await res.json();
+        if (seq !== verifySequenceRef.current) return null;
+
         setChessVerification({
           checking: false,
           hasChecked: true,
@@ -135,6 +154,8 @@ function RegisterForm() {
         return data;
       } else {
         const errJson = await res.json().catch(() => null);
+        if (seq !== verifySequenceRef.current) return null;
+
         const unavailable = {
           exists: false,
           unavailable: true,
@@ -144,6 +165,8 @@ function RegisterForm() {
         return unavailable;
       }
     } catch (err: any) {
+      if (seq !== verifySequenceRef.current) return null;
+
       const failed = {
         exists: false,
         unavailable: true,
@@ -159,16 +182,24 @@ function RegisterForm() {
     const handle = formData.chessUsername.trim();
     const platform = formData.chessPlatform;
     if (!handle || !platform) {
+      verifySequenceRef.current++;
       setChessVerification({ checking: false, hasChecked: false, lastCheckedHandle: '', lastCheckedPlatform: '', result: null });
       return;
     }
 
-    // Skip if already verified for this exact handle and platform
-    if (
-      chessVerification.hasChecked &&
-      chessVerification.lastCheckedHandle.toLowerCase() === handle.toLowerCase() &&
-      chessVerification.lastCheckedPlatform === platform
-    ) {
+    const isDifferent =
+      chessVerification.lastCheckedHandle.toLowerCase() !== handle.toLowerCase() ||
+      chessVerification.lastCheckedPlatform !== platform;
+
+    if (isDifferent) {
+      verifySequenceRef.current++;
+      setChessVerification(prev => ({
+        ...prev,
+        checking: false,
+        hasChecked: false,
+        result: null
+      }));
+    } else if (chessVerification.hasChecked || chessVerification.checking) {
       return;
     }
 
@@ -199,6 +230,23 @@ function RegisterForm() {
       } catch {}
       return updated;
     });
+
+    if (field === 'chessUsername' || field === 'chessPlatform') {
+      const nextUsername = field === 'chessUsername' ? String(val).trim() : formData.chessUsername.trim();
+      const nextPlatform = field === 'chessPlatform' ? val : formData.chessPlatform;
+      if (
+        nextUsername.toLowerCase() !== chessVerification.lastCheckedHandle.toLowerCase() ||
+        nextPlatform !== chessVerification.lastCheckedPlatform
+      ) {
+        verifySequenceRef.current++;
+        setChessVerification(prev => ({
+          ...prev,
+          checking: false,
+          hasChecked: false,
+          result: null
+        }));
+      }
+    }
   };
 
   const currentEvent = events.find((e: any) => e.id === selectedEventId) || events[0] || null;
