@@ -54,11 +54,14 @@ import {
   Bell,
   Zap,
   Cloud,
+  Camera,
   Image as ImageIcon
 } from 'lucide-react';
 import AdminLeaderboardTab from '@/components/admin/AdminLeaderboardTab';
 import AdminResultsTab from '@/components/admin/AdminResultsTab';
 import AdminAnnouncementsTab from '@/components/admin/AdminAnnouncementsTab';
+import AdminTeamTab from '@/components/admin/AdminTeamTab';
+import AdminGalleryTab from '@/components/admin/AdminGalleryTab';
 import AdminMediaManager from '@/components/admin/AdminMediaManager';
 
 interface Participant {
@@ -82,89 +85,6 @@ interface Participant {
   customAnswers?: Record<string, string>;
 }
 
-const INITIAL_PARTICIPANTS: Participant[] = [
-  {
-    id: "p-1",
-    ticketId: "CHTR-2026-A48B2",
-    name: "Arindam Mukherjee",
-    rollNumber: "22101104012",
-    college: "Jalpaiguri Government Engineering College",
-    department: "CSE",
-    ratingCategory: "FIDE Rated (> 1600)",
-    chessUsername: "ArinKing99",
-    fideId: "5029411",
-    registeredAt: "2026-10-12 14:32",
-    verified: true,
-    checkInStatus: 'checked_in',
-    tournamentId: "inter-college-2026",
-    tournament: "Chaturanga Annual Inter-College Chess Championship 2026"
-  },
-  {
-    id: "p-2",
-    ticketId: "CHTR-2026-C89K1",
-    name: "Debayan Roy",
-    rollNumber: "23101103045",
-    college: "Jalpaiguri Government Engineering College",
-    department: "ECE",
-    ratingCategory: "Club Player (1200 - 1600)",
-    chessUsername: "KnightRiderJGEC",
-    fideId: "Unrated",
-    registeredAt: "2026-10-12 16:45",
-    verified: true,
-    checkInStatus: 'checked_in',
-    tournamentId: "inter-college-2026",
-    tournament: "Chaturanga Annual Inter-College Chess Championship 2026"
-  },
-  {
-    id: "p-3",
-    ticketId: "CHTR-2026-F12P9",
-    name: "Sreya Chakraborty",
-    rollNumber: "21101101008",
-    college: "Siliguri Institute of Technology",
-    department: "IT",
-    ratingCategory: "Intermediate (1400 - 1800)",
-    chessUsername: "SreyaChess_Tactics",
-    fideId: "5038190",
-    registeredAt: "2026-10-13 09:15",
-    verified: false,
-    checkInStatus: 'confirmed',
-    tournamentId: "inter-college-2026",
-    tournament: "Chaturanga Annual Inter-College Chess Championship 2026"
-  },
-  {
-    id: "p-4",
-    ticketId: "CHTR-2026-M44Q7",
-    name: "Subhajit Pal",
-    rollNumber: "24101105022",
-    college: "Jalpaiguri Government Engineering College",
-    department: "EE",
-    ratingCategory: "Beginner / Freshmen (< 1200)",
-    chessUsername: "Subho_Bishop",
-    fideId: "Unrated",
-    registeredAt: "2026-10-13 11:20",
-    verified: false,
-    checkInStatus: 'confirmed',
-    tournamentId: "inter-college-2026",
-    tournament: "Chaturanga Annual Inter-College Chess Championship 2026"
-  },
-  {
-    id: "p-5",
-    ticketId: "CHTR-2026-X99T3",
-    name: "Aniket Sen",
-    rollNumber: "22101102031",
-    college: "North Bengal University",
-    department: "Mathematics",
-    ratingCategory: "FIDE Rated (> 1600)",
-    chessUsername: "AniketTactician",
-    fideId: "5018322",
-    registeredAt: "2026-10-13 13:04",
-    verified: true,
-    checkInStatus: 'checked_in',
-    tournamentId: "state-rapid-2026",
-    tournament: "North Bengal State Rapid Rating Open"
-  }
-];
-
 export default function AdminDashboardPage() {
   const router = useRouter();
 
@@ -176,7 +96,7 @@ export default function AdminDashboardPage() {
     fullName?: string; 
     authMethod?: string;
   } | null>(null);
-  const [activeTab, setActiveTab] = useState<'tournaments' | 'roster' | 'results' | 'leaderboard' | 'announcements' | 'media' | 'settings'>('tournaments');
+  const [activeTab, setActiveTab] = useState<'tournaments' | 'roster' | 'results' | 'leaderboard' | 'announcements' | 'team' | 'gallery' | 'media' | 'settings'>('tournaments');
 
   // Tournaments state
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
@@ -1178,6 +1098,30 @@ export default function AdminDashboardPage() {
           </button>
 
           <button
+            onClick={() => setActiveTab('team')}
+            className={`px-4 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0 ${
+              activeTab === 'team'
+                ? 'bg-[#D4AF7C] text-[#0B0F14] shadow-md shadow-[#D4AF7C]/20'
+                : 'text-[#A0A6B0] hover:text-[#F5F5F5] bg-white/[0.03] hover:bg-white/[0.08] border border-white/10'
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            <span>Council &amp; Team</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('gallery')}
+            className={`px-4 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0 ${
+              activeTab === 'gallery'
+                ? 'bg-[#D4AF7C] text-[#0B0F14] shadow-md shadow-[#D4AF7C]/20'
+                : 'text-[#A0A6B0] hover:text-[#F5F5F5] bg-white/[0.03] hover:bg-white/[0.08] border border-white/10'
+            }`}
+          >
+            <Camera className="w-4 h-4" />
+            <span>Photo Gallery</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('media')}
             className={`px-4 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'media'
@@ -1955,6 +1899,16 @@ export default function AdminDashboardPage() {
         {/* TAB 5: NOTICE BOARD & ANNOUNCEMENTS CMS */}
         {activeTab === 'announcements' && (
           <AdminAnnouncementsTab />
+        )}
+
+        {/* TAB 6: COUNCIL & TEAM CMS */}
+        {activeTab === 'team' && (
+          <AdminTeamTab />
+        )}
+
+        {/* TAB 7: PHOTO GALLERY CMS */}
+        {activeTab === 'gallery' && (
+          <AdminGalleryTab />
         )}
 
         {/* TAB 6: NETLIFY BLOBS MEDIA & IMAGE STORAGE */}

@@ -167,8 +167,11 @@ export async function getAllTournaments(): Promise<Tournament[]> {
       .order('is_featured', { ascending: false })
       .order('target_date', { ascending: true });
 
-    if (!error && data && data.length > 0) {
+    if (!error && data !== null) {
       return data.map(dbToTournament);
+    }
+    if (error) {
+      console.warn('Supabase fetch tournaments error:', error.message);
     }
   } catch (err) {
     console.warn('Supabase fetch tournaments failed, using local fallback:', err);
@@ -183,12 +186,14 @@ export async function getTournamentById(id: string): Promise<Tournament | null> 
       .from('tournaments')
       .select('*')
       .eq('id', id)
-      .single();
+      .maybeSingle();
 
-    if (!error && data) {
-      return dbToTournament(data);
+    if (!error) {
+      return data ? dbToTournament(data) : null;
     }
-  } catch {}
+  } catch (err) {
+    console.warn('Supabase getTournamentById error:', err);
+  }
 
   const local = getLocalTournamentsFallback();
   return local.find(t => t.id === id) || null;

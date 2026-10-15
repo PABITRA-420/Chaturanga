@@ -31,7 +31,7 @@ export async function fetchChessComPlayerData(username: string): Promise<ChessCo
     // 1. Fetch player profile (avatar, verification)
     const profileRes = await fetch(`https://api.chess.com/pub/player/${cleanUsername}`, {
       headers,
-      next: { revalidate: 300 } // cache for 5 min in Next.js
+      next: { revalidate: 3600 } // cache for 1 hour in Next.js
     });
 
     let avatarUrl: string | undefined = undefined;
@@ -43,7 +43,7 @@ export async function fetchChessComPlayerData(username: string): Promise<ChessCo
     // 2. Fetch player stats (rapid, blitz, bullet, tactics)
     const statsRes = await fetch(`https://api.chess.com/pub/player/${cleanUsername}/stats`, {
       headers,
-      next: { revalidate: 300 }
+      next: { revalidate: 3600 }
     });
 
     if (!statsRes.ok) {

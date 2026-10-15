@@ -5,7 +5,6 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { UPCOMING_EVENTS } from '@/data/tournamentData';
 import { 
   Trophy, 
   CheckCircle2, 
@@ -26,34 +25,33 @@ import {
   Zap,
   Info,
   ChevronRight,
-  Printer
+  Printer,
+  AlertTriangle
 } from 'lucide-react';
 
 function RegisterForm() {
   const searchParams = useSearchParams();
   const eventParam = searchParams.get('event');
 
-  const [events, setEvents] = useState<any[]>(UPCOMING_EVENTS);
-  const [selectedEventId, setSelectedEventId] = useState<string>(
-    eventParam || UPCOMING_EVENTS[0].id
-  );
+  const [events, setEvents] = useState<any[]>([]);
+  const [loadingEvents, setLoadingEvents] = useState<boolean>(true);
+  const [selectedEventId, setSelectedEventId] = useState<string>(eventParam || '');
 
   useEffect(() => {
     fetch('/api/tournaments?type=upcoming')
       .then(res => res.json())
       .then(data => {
-        if (data.success && data.tournaments && data.tournaments.length > 0) {
+        if (data.success && Array.isArray(data.tournaments)) {
           setEvents(data.tournaments);
+          if (data.tournaments.length > 0) {
+            const matched = eventParam ? data.tournaments.find((e: any) => e.id === eventParam) : null;
+            setSelectedEventId(matched ? matched.id : data.tournaments[0].id);
+          }
         }
       })
-      .catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    if (eventParam && events.some((e: any) => e.id === eventParam)) {
-      setSelectedEventId(eventParam);
-    }
-  }, [eventParam, events]);
+      .catch(() => {})
+      .finally(() => setLoadingEvents(false));
+  }, [eventParam]);
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -77,6 +75,43 @@ function RegisterForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sheetStatus, setSheetStatus] = useState<{ synced: boolean; configured: boolean; message?: string } | null>(null);
   const [showSetupGuide, setShowSetupGuide] = useState(false);
+  const [chessVerification, setChessVerification] = useState<{
+    checking: boolean;
+    result: {
+      exists: boolean;
+      platform?: string;
+      username?: string;
+      avatar?: string | null;
+      ratings?: { rapid?: number | null; blitz?: number | null; bullet?: number | null; classical?: number | null };
+      message?: string;
+    } | null;
+  }>({ checking: false, result: null });
+
+  // Live account verification on Chess.com / Lichess
+  useEffect(() => {
+    const handle = formData.chessUsername.trim();
+    if (!handle) {
+      setChessVerification({ checking: false, result: null });
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setChessVerification({ checking: true, result: null });
+      try {
+        const res = await fetch(`/api/player/verify?username=${encodeURIComponent(handle)}`);
+        if (res.ok) {
+          const data = await res.json();
+          setChessVerification({ checking: false, result: data });
+        } else {
+          setChessVerification({ checking: false, result: null });
+        }
+      } catch {
+        setChessVerification({ checking: false, result: null });
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [formData.chessUsername]);
 
   // Auto-restore draft from localStorage
   useEffect(() => {
@@ -100,21 +135,21 @@ function RegisterForm() {
     });
   };
 
-  const currentEvent = events.find((e: any) => e.id === selectedEventId) || events[0] || UPCOMING_EVENTS[0];
+  const currentEvent = events.find((e: any) => e.id === selectedEventId) || events[0] || null;
 
   const isFieldEnabled = (fieldId: string) => {
-    if (!currentEvent.formConfig) return true;
+    if (!currentEvent?.formConfig) return true;
     const f = currentEvent.formConfig.find((item: any) => item.id === fieldId);
     return f ? f.enabled : true;
   };
 
   const isFieldRequired = (fieldId: string) => {
-    if (!currentEvent.formConfig) return true;
+    if (!currentEvent?.formConfig) return true;
     const f = currentEvent.formConfig.find((item: any) => item.id === fieldId);
     return f ? f.required : true;
   };
 
-  const isRegistrationOpen = currentEvent.status === 'open' || (!currentEvent.status && true);
+  const isRegistrationOpen = currentEvent ? (currentEvent.status === 'open' || !currentEvent.status) : false;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -739,6 +774,43 @@ function RegisterForm() {
     );
   }
 
+  if (loadingEvents) {
+    return (
+      <div className="p-12 rounded-3xl bg-[#12161D] border border-white/10 text-center space-y-4 max-w-xl mx-auto my-12 animate-pulse">
+        <div className="w-14 h-14 rounded-2xl bg-white/5 mx-auto" />
+        <div className="h-6 w-48 bg-white/10 rounded-full mx-auto" />
+        <div className="h-4 w-72 bg-white/5 rounded-full mx-auto" />
+      </div>
+    );
+  }
+
+  if (events.length === 0 || !currentEvent) {
+    return (
+      <div className="p-10 sm:p-14 rounded-3xl bg-[#12161D] border border-white/10 text-center space-y-4 max-w-xl mx-auto my-12 shadow-xl">
+        <div className="w-16 h-16 rounded-2xl bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 flex items-center justify-center mx-auto text-[#D4AF7C]">
+          <Calendar className="w-8 h-8" />
+        </div>
+        <div className="space-y-2">
+          <h3 className="font-['Montserrat',sans-serif] font-bold text-xl text-[#F5F5F5]">
+            No Open Tournament Registrations
+          </h3>
+          <p className="text-xs sm:text-sm text-[#A0A6B0] leading-relaxed">
+            There are currently no scheduled tournaments accepting registrations. Please check back soon or browse our tournament calendar for upcoming announcements.
+          </p>
+        </div>
+        <div className="pt-2">
+          <Link
+            href="/upcoming"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-bold text-[#0B0F14] bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] hover:brightness-110 shadow-md transition"
+          >
+            <span>View Tournament Calendar</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   // -------------------------------------------------------------
   // VIEW: REGISTRATION FORM & LIVE PASS PREVIEW
   // -------------------------------------------------------------
@@ -1174,6 +1246,50 @@ function RegisterForm() {
                             onChange={(e) => handleFieldChange('chessUsername', e.target.value)}
                             className="w-full px-4 py-2.5 rounded-xl bg-[#0B0F14] border border-white/10 text-xs text-[#F5F5F5] placeholder-[#A0A6B0]/40 focus:outline-none focus:border-[#D4AF7C] transition shadow-inner"
                           />
+
+                          {/* Live Account Authenticity Indicator */}
+                          {chessVerification.checking && (
+                            <div className="flex items-center gap-2 text-[11px] text-[#A0A6B0] mt-1.5 animate-pulse">
+                              <Loader2 className="w-3 h-3 animate-spin text-[#D4AF7C]" />
+                              <span>Verifying official player account on Chess.com / Lichess...</span>
+                            </div>
+                          )}
+
+                          {!chessVerification.checking && chessVerification.result && (
+                            chessVerification.result.exists ? (
+                              <div className="mt-2 p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs flex items-center justify-between gap-2 shadow-sm animate-fadeIn">
+                                <div className="flex items-center gap-2">
+                                  <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+                                  <div>
+                                    <div className="font-bold">
+                                      Genuine {chessVerification.result.platform} Player: <span className="font-mono text-[#F5F5F5]">@{chessVerification.result.username}</span>
+                                    </div>
+                                    <div className="text-[10px] text-emerald-300/80 font-mono mt-0.5">
+                                      {chessVerification.result.ratings?.rapid ? `Rapid: ${chessVerification.result.ratings.rapid} • ` : ''}
+                                      {chessVerification.result.ratings?.blitz ? `Blitz: ${chessVerification.result.ratings.blitz} • ` : ''}
+                                      {chessVerification.result.ratings?.classical ? `Classical: ${chessVerification.result.ratings.classical} • ` : ''}
+                                      Active Player Profile
+                                    </div>
+                                  </div>
+                                </div>
+                                {chessVerification.result.avatar && (
+                                  <img
+                                    src={chessVerification.result.avatar}
+                                    alt="Player Avatar"
+                                    className="w-7 h-7 rounded-full border border-emerald-400/40 object-cover shrink-0"
+                                  />
+                                )}
+                              </div>
+                            ) : (
+                              <div className="mt-2 p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center gap-2 animate-fadeIn">
+                                <AlertTriangle className="w-4 h-4 shrink-0 text-amber-400" />
+                                <div className="text-[11px] leading-relaxed">
+                                  <strong className="text-amber-200">Unverified: </strong>
+                                  Account &ldquo;{formData.chessUsername}&rdquo; not found on Chess.com or Lichess. Check spelling or leave as is if playing unrated.
+                                </div>
+                              </div>
+                            )
+                          )}
                         </div>
                       )}
 

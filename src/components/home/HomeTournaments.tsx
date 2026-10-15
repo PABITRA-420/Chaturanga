@@ -42,20 +42,47 @@ export default function HomeTournaments({ upcomingEvents, pastEvents }: HomeTour
           </Link>
         </div>
 
-        {/* Featured Card */}
-        {featured && (
-          <div className="space-y-3">
-            <UpcomingEventCard event={featured} />
+        {/* Featured Card or Empty State */}
+        {upcomingEvents.length === 0 ? (
+          <div className="p-10 sm:p-12 rounded-3xl bg-[#12161D] border border-white/10 text-center space-y-4 shadow-xl relative overflow-hidden">
+            <div className="w-14 h-14 rounded-2xl bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 flex items-center justify-center mx-auto text-[#D4AF7C]">
+              <Calendar className="w-7 h-7" />
+            </div>
+            <div className="space-y-1.5 max-w-md mx-auto">
+              <h3 className="text-lg font-bold font-['Montserrat',sans-serif] text-[#F5F5F5]">
+                No tournaments currently scheduled
+              </h3>
+              <p className="text-xs sm:text-sm text-[#A0A6B0] leading-relaxed font-['Poppins',sans-serif]">
+                Check back soon or follow the club announcements below for new tournament announcements and Swiss round schedules.
+              </p>
+            </div>
+            <div className="pt-2">
+              <Link
+                href="/#announcements"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold text-[#0B0F14] bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] hover:brightness-110 shadow-md transition"
+              >
+                <span>View Club Notices</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
           </div>
-        )}
+        ) : (
+          <>
+            {featured && (
+              <div className="space-y-3">
+                <UpcomingEventCard event={featured} />
+              </div>
+            )}
 
-        {/* Other Upcoming */}
-        {otherUpcoming.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-            {otherUpcoming.map(evt => (
-              <UpcomingEventCard key={evt.id} event={evt} />
-            ))}
-          </div>
+            {/* Other Upcoming */}
+            {otherUpcoming.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                {otherUpcoming.map(evt => (
+                  <UpcomingEventCard key={evt.id} event={evt} />
+                ))}
+              </div>
+            )}
+          </>
         )}
       </section>
 
@@ -100,11 +127,21 @@ export default function HomeTournaments({ upcomingEvents, pastEvents }: HomeTour
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {recentPast.map(pe => (
-            <PastEventCard key={pe.id} event={pe} />
-          ))}
-        </div>
+        {recentPast.length === 0 ? (
+          <div className="p-8 sm:p-10 rounded-3xl bg-[#12161D] border border-white/10 text-center space-y-3 shadow-xl">
+            <Trophy className="w-8 h-8 text-[#D4AF7C]/40 mx-auto" />
+            <h3 className="font-bold text-base text-[#F5F5F5]">No archived championships yet</h3>
+            <p className="text-xs text-[#A0A6B0] max-w-md mx-auto leading-relaxed">
+              Concluded tournaments, Swiss standings, and podium winners will be certified and permanently archived here.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {recentPast.map(pe => (
+              <PastEventCard key={pe.id} event={pe} />
+            ))}
+          </div>
+        )}
       </section>
 
     </div>

@@ -3,21 +3,23 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Megaphone, Calendar, ChevronRight, X, ArrowUpRight, AlertCircle, Bell } from 'lucide-react';
-import { CLUB_ANNOUNCEMENTS, ClubAnnouncement } from '@/data/announcementsData';
+import { ClubAnnouncement } from '@/data/announcementsData';
 
 export default function AnnouncementsBanner() {
-  const [announcements, setAnnouncements] = useState<ClubAnnouncement[]>(CLUB_ANNOUNCEMENTS);
+  const [announcements, setAnnouncements] = useState<ClubAnnouncement[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState<ClubAnnouncement | null>(null);
 
   React.useEffect(() => {
     fetch('/api/announcements')
       .then(res => res.json())
       .then(data => {
-        if (data.success && Array.isArray(data.announcements) && data.announcements.length > 0) {
+        if (data.success && Array.isArray(data.announcements)) {
           setAnnouncements(data.announcements);
         }
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -49,40 +51,59 @@ export default function AnnouncementsBanner() {
         </div>
 
         {/* Announcements List */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {announcements.map((ann) => (
-            <div
-              key={ann.id}
-              onClick={() => setSelectedAnnouncement(ann)}
-              className="p-5 rounded-2xl bg-black/40 border border-white/5 hover:border-[#D4AF7C]/40 transition cursor-pointer flex flex-col justify-between group hover:-translate-y-0.5"
-            >
-              <div>
-                <div className="flex items-center justify-between gap-2 mb-2">
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${ann.badgeColor}`}>
-                    {ann.category}
-                  </span>
-                  <span className="text-[11px] text-[#A0A6B0] flex items-center gap-1">
-                    <Calendar className="w-3 h-3" />
-                    <span>{ann.date}</span>
-                  </span>
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="p-5 rounded-2xl bg-black/40 border border-white/5 animate-pulse space-y-3">
+                <div className="h-4 w-20 bg-white/10 rounded-full" />
+                <div className="h-5 w-3/4 bg-white/10 rounded-lg" />
+                <div className="h-10 w-full bg-white/5 rounded-lg" />
+              </div>
+            ))}
+          </div>
+        ) : announcements.length === 0 ? (
+          <div className="p-8 rounded-2xl bg-black/40 border border-white/5 text-center space-y-2">
+            <p className="text-sm font-semibold text-[#F5F5F5]">No active club announcements at this time</p>
+            <p className="text-xs text-[#A0A6B0]">
+              Official tournament announcements, practice schedules, and arbiter notices will be pinned here.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {announcements.map((ann) => (
+              <div
+                key={ann.id}
+                onClick={() => setSelectedAnnouncement(ann)}
+                className="p-5 rounded-2xl bg-black/40 border border-white/5 hover:border-[#D4AF7C]/40 transition cursor-pointer flex flex-col justify-between group hover:-translate-y-0.5"
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${ann.badgeColor}`}>
+                      {ann.category}
+                    </span>
+                    <span className="text-[11px] text-[#A0A6B0] flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      <span>{ann.date}</span>
+                    </span>
+                  </div>
+
+                  <h3 className="font-['Montserrat',sans-serif] font-bold text-sm text-[#F5F5F5] group-hover:text-[#D4AF7C] transition line-clamp-2 mb-2">
+                    {ann.title}
+                  </h3>
+                  
+                  <p className="text-xs text-[#A0A6B0] line-clamp-2 leading-relaxed">
+                    {ann.summary}
+                  </p>
                 </div>
 
-                <h3 className="font-['Montserrat',sans-serif] font-bold text-sm text-[#F5F5F5] group-hover:text-[#D4AF7C] transition line-clamp-2 mb-2">
-                  {ann.title}
-                </h3>
-                
-                <p className="text-xs text-[#A0A6B0] line-clamp-2 leading-relaxed">
-                  {ann.summary}
-                </p>
+                <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-xs font-semibold text-[#D4AF7C]">
+                  <span>Read notice</span>
+                  <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                </div>
               </div>
-
-              <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-xs font-semibold text-[#D4AF7C]">
-                <span>Read notice</span>
-                <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
       </div>
 

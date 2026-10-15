@@ -17,6 +17,7 @@ import {
 interface HeroSectionProps {
   participantsCount: number;
   eventsCount: number;
+  peakElo?: number;
   featuredEvent: any;
   onRegisterClick: () => void;
 }
@@ -24,6 +25,7 @@ interface HeroSectionProps {
 export default function HeroSection({
   participantsCount,
   eventsCount,
+  peakElo,
   featuredEvent,
   onRegisterClick,
 }: HeroSectionProps) {
@@ -101,7 +103,7 @@ export default function HeroSection({
           <div className="pt-6 border-t border-white/10 grid grid-cols-3 gap-4 sm:gap-8 max-w-lg">
             <div>
               <div className="font-mono text-xl sm:text-3xl font-black text-[#D4AF7C]">
-                {participantsCount}+
+                {participantsCount > 0 ? `${participantsCount}+` : participantsCount}
               </div>
               <div className="text-[11px] sm:text-xs text-[#A0A6B0] uppercase font-medium mt-0.5">
                 Competitors
@@ -109,7 +111,7 @@ export default function HeroSection({
             </div>
             <div>
               <div className="font-mono text-xl sm:text-3xl font-black text-[#F5F5F5]">
-                {eventsCount}+
+                {eventsCount > 0 ? `${eventsCount}+` : eventsCount}
               </div>
               <div className="text-[11px] sm:text-xs text-[#A0A6B0] uppercase font-medium mt-0.5">
                 Championships
@@ -117,7 +119,7 @@ export default function HeroSection({
             </div>
             <div>
               <div className="font-mono text-xl sm:text-3xl font-black text-emerald-400">
-                2185
+                {peakElo && peakElo > 0 ? peakElo : '—'}
               </div>
               <div className="text-[11px] sm:text-xs text-[#A0A6B0] uppercase font-medium mt-0.5">
                 Peak Club Elo

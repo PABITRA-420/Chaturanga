@@ -14,22 +14,52 @@ import {
   Sparkles,
   ExternalLink
 } from 'lucide-react';
-import { GALLERY_PHOTOS, GalleryPhoto } from '@/data/galleryData';
+import type { GalleryPhoto } from '@/data/galleryData';
 
 export default function GalleryView() {
+  const [photos, setPhotos] = useState<GalleryPhoto[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
 
   const categories = ['All', 'Tournaments', 'Awards', 'Blitz Night', 'Club Room'];
 
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchPhotos() {
+      try {
+        setLoading(true);
+        const res = await fetch('/api/gallery');
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted && data.success && Array.isArray(data.photos)) {
+            setPhotos(data.photos);
+            setLoading(false);
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to fetch gallery photos:', err);
+      }
+      if (isMounted) {
+        setPhotos([]);
+        setLoading(false);
+      }
+    }
+    fetchPhotos();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const filteredPhotos = activeCategory === 'All' 
-    ? GALLERY_PHOTOS 
-    : GALLERY_PHOTOS.filter(p => p.category === activeCategory);
+    ? photos 
+    : photos.filter(p => p.category === activeCategory);
 
   // Keyboard navigation for lightbox
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (selectedPhotoIndex === null) return;
+      if (selectedPhotoIndex === null || filteredPhotos.length === 0) return;
       if (e.key === 'Escape') setSelectedPhotoIndex(null);
       if (e.key === 'ArrowRight') {
         setSelectedPhotoIndex((prev) => 
@@ -46,7 +76,9 @@ export default function GalleryView() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedPhotoIndex, filteredPhotos.length]);
 
-  const activePhoto = selectedPhotoIndex !== null ? filteredPhotos[selectedPhotoIndex] : null;
+  const activePhoto = (selectedPhotoIndex !== null && filteredPhotos[selectedPhotoIndex]) 
+    ? filteredPhotos[selectedPhotoIndex] 
+    : null;
 
   return (
     <div className="min-h-screen bg-[#0B0F14] text-[#F5F5F5] font-['Inter',sans-serif] selection:bg-[#D4AF7C] selection:text-[#0B0F14]">
@@ -75,75 +107,128 @@ export default function GalleryView() {
         {/* CATEGORY FILTER PILLS */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
           <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-2 rounded-2xl text-xs sm:text-sm font-semibold transition cursor-pointer whitespace-nowrap ${
-                  activeCategory === cat
-                    ? 'bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] text-[#0B0F14] font-bold shadow-lg shadow-[#D4AF7C]/20'
-                    : 'bg-[#12161D] text-[#A0A6B0] hover:text-[#F5F5F5] hover:bg-white/5 border border-white/10'
-                }`}
-              >
-                {cat}
-                {cat === 'All' ? ` (${GALLERY_PHOTOS.length})` : ''}
-              </button>
-            ))}
+            {categories.map((cat) => {
+              const count = !loading ? (cat === 'All' ? photos.length : photos.filter(p => p.category === cat).length) : null;
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-4 py-2 rounded-2xl text-xs sm:text-sm font-semibold transition cursor-pointer whitespace-nowrap ${
+                    activeCategory === cat
+                      ? 'bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] text-[#0B0F14] font-bold shadow-lg shadow-[#D4AF7C]/20'
+                      : 'bg-[#12161D] text-[#A0A6B0] hover:text-[#F5F5F5] hover:bg-white/5 border border-white/10'
+                  }`}
+                >
+                  {cat}
+                  {count !== null ? ` (${count})` : ''}
+                </button>
+              );
+            })}
           </div>
         </section>
 
         {/* PHOTO GRID */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredPhotos.map((photo, index) => (
-              <div
-                key={photo.id}
-                onClick={() => setSelectedPhotoIndex(index)}
-                className="group relative rounded-3xl overflow-hidden bg-[#12161D] border border-white/10 hover:border-[#D4AF7C]/50 shadow-xl cursor-pointer transition-all duration-300 hover:-translate-y-1"
-              >
-                {/* Image Container */}
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-black/60">
-                  <img
-                    src={photo.imageSrc}
-                    alt={photo.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    loading="lazy"
-                  />
-                  
-                  {/* Category Pill */}
-                  <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/15 text-[11px] font-bold text-[#D4AF7C]">
-                    {photo.tag}
+            {loading ? (
+              Array.from({ length: 6 }).map((_, i) => (
+                <div
+                  key={`skeleton-${i}`}
+                  className="rounded-3xl overflow-hidden bg-[#12161D] border border-white/10 shadow-xl animate-pulse"
+                >
+                  <div className="aspect-[4/3] w-full bg-white/5 relative">
+                    <div className="absolute top-3 left-3 h-5 w-20 rounded-full bg-white/10" />
+                    <div className="absolute top-3 right-3 h-5 w-24 rounded-full bg-white/10" />
                   </div>
-
-                  {/* Date badge */}
-                  <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/15 text-[11px] font-medium text-[#A0A6B0] flex items-center gap-1">
-                    <Calendar className="w-3 h-3" />
-                    <span>{photo.date}</span>
+                  <div className="p-5 space-y-3">
+                    <div className="h-5 w-3/4 rounded-md bg-white/10" />
+                    <div className="space-y-1.5">
+                      <div className="h-3 w-full rounded bg-white/5" />
+                      <div className="h-3 w-2/3 rounded bg-white/5" />
+                    </div>
+                    <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
+                      <div className="h-3 w-32 rounded bg-white/5" />
+                      <div className="h-3 w-16 rounded bg-white/5" />
+                    </div>
                   </div>
-
-                  {/* Dark gradient overlay at bottom */}
-                  <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#12161D] via-[#12161D]/80 to-transparent" />
                 </div>
-
-                {/* Details */}
-                <div className="p-5 relative z-10 -mt-6">
-                  <h3 className="font-['Montserrat',sans-serif] font-bold text-base text-[#F5F5F5] group-hover:text-[#D4AF7C] transition-colors line-clamp-1 mb-1.5">
-                    {photo.title}
+              ))
+            ) : filteredPhotos.length === 0 ? (
+              <div className="col-span-full py-16 px-6 text-center rounded-3xl bg-[#12161D]/60 border border-white/5 space-y-4">
+                <div className="w-16 h-16 rounded-2xl bg-[#D4AF7C]/10 border border-[#D4AF7C]/20 flex items-center justify-center mx-auto text-[#D4AF7C]">
+                  <Camera className="w-8 h-8 opacity-60" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-lg font-bold font-['Montserrat',sans-serif] text-white/90">
+                    No Gallery Photos Found
                   </h3>
-                  <p className="text-xs text-[#A0A6B0] line-clamp-2 leading-relaxed">
-                    {photo.description}
+                  <p className="text-sm text-[#A0A6B0] max-w-md mx-auto font-['Poppins',sans-serif]">
+                    {activeCategory === 'All' 
+                      ? 'Tournament photo archives are being updated by the media coordinator.' 
+                      : `No moments currently catalogued under "${activeCategory}".`}
                   </p>
-                  
-                  <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-[#A0A6B0]">
-                    <span className="font-semibold text-white/80">{photo.tournamentName}</span>
-                    <span className="text-[#D4AF7C] group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
-                      View photo →
-                    </span>
+                </div>
+                {activeCategory !== 'All' && (
+                  <button
+                    type="button"
+                    onClick={() => setActiveCategory('All')}
+                    className="text-xs font-semibold text-[#D4AF7C] hover:underline cursor-pointer"
+                  >
+                    View all categories &rarr;
+                  </button>
+                )}
+              </div>
+            ) : (
+              filteredPhotos.map((photo, index) => (
+                <div
+                  key={photo.id}
+                  onClick={() => setSelectedPhotoIndex(index)}
+                  className="group relative rounded-3xl overflow-hidden bg-[#12161D] border border-white/10 hover:border-[#D4AF7C]/50 shadow-xl cursor-pointer transition-all duration-300 hover:-translate-y-1"
+                >
+                  {/* Image Container */}
+                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-black/60">
+                    <img
+                      src={photo.imageSrc}
+                      alt={photo.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                    
+                    {/* Category Pill */}
+                    <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/15 text-[11px] font-bold text-[#D4AF7C]">
+                      {photo.tag}
+                    </div>
+
+                    {/* Date badge */}
+                    <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/15 text-[11px] font-medium text-[#A0A6B0] flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      <span>{photo.date}</span>
+                    </div>
+
+                    {/* Dark gradient overlay at bottom */}
+                    <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#12161D] via-[#12161D]/80 to-transparent" />
+                  </div>
+
+                  {/* Details */}
+                  <div className="p-5 relative z-10 -mt-6">
+                    <h3 className="font-['Montserrat',sans-serif] font-bold text-base text-[#F5F5F5] group-hover:text-[#D4AF7C] transition-colors line-clamp-1 mb-1.5">
+                      {photo.title}
+                    </h3>
+                    <p className="text-xs text-[#A0A6B0] line-clamp-2 leading-relaxed">
+                      {photo.description}
+                    </p>
+                    
+                    <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-[#A0A6B0]">
+                      <span className="font-semibold text-white/80">{photo.tournamentName}</span>
+                      <span className="text-[#D4AF7C] group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+                        View photo →
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </section>
 

@@ -43,14 +43,17 @@ export async function getAllAnnouncements(): Promise<ClubAnnouncement[]> {
       .order('display_order', { ascending: true })
       .order('created_at', { ascending: false });
 
-    if (!error && data && data.length > 0) {
+    if (!error && data !== null) {
       return data.map(dbToAnnouncement);
     }
+    if (error) {
+      console.warn('Supabase fetch announcements error:', error.message);
+    }
   } catch (err) {
-    console.warn('Supabase fetch announcements failed, using local fallback:', err);
+    console.warn('Supabase fetch announcements failed:', err);
   }
 
-  return CLUB_ANNOUNCEMENTS;
+  return [];
 }
 
 export async function createAnnouncement(data: Partial<ClubAnnouncement>): Promise<ClubAnnouncement> {

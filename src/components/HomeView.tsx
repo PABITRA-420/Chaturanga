@@ -10,23 +10,23 @@ import BentoAbout from '@/components/home/BentoAbout';
 import HomeLeaderboardPreview from '@/components/home/HomeLeaderboardPreview';
 import HomeTournaments from '@/components/home/HomeTournaments';
 import RegisterCta from '@/components/home/RegisterCta';
-import { UPCOMING_EVENTS, PAST_EVENTS } from '@/data/tournamentData';
 
 export default function HomeView() {
   const [participantsCount, setParticipantsCount] = useState(0);
   const [eventsCount, setEventsCount] = useState(0);
-  const [upcomingEvents, setUpcomingEvents] = useState<any[]>(UPCOMING_EVENTS);
-  const [pastEvents, setPastEvents] = useState<any[]>(PAST_EVENTS);
-  const [featuredEvent, setFeaturedEvent] = useState<any>(UPCOMING_EVENTS[0]);
+  const [peakElo, setPeakElo] = useState<number | undefined>(undefined);
+  const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
+  const [pastEvents, setPastEvents] = useState<any[]>([]);
+  const [featuredEvent, setFeaturedEvent] = useState<any>(null);
 
   // Fetch dynamic tournaments
   useEffect(() => {
     fetch('/api/tournaments?type=upcoming')
       .then(res => res.json())
       .then(data => {
-        if (data.success && data.tournaments && data.tournaments.length > 0) {
+        if (data.success && Array.isArray(data.tournaments)) {
           setUpcomingEvents(data.tournaments);
-          const featured = data.tournaments.find((t: any) => t.isFeatured) || data.tournaments[0];
+          const featured = data.tournaments.find((t: any) => t.isFeatured) || data.tournaments[0] || null;
           setFeaturedEvent(featured);
         }
       })
@@ -35,36 +35,58 @@ export default function HomeView() {
     fetch('/api/tournaments?type=past')
       .then(res => res.json())
       .then(data => {
-        if (data.success && data.tournaments && data.tournaments.length > 0) {
+        if (data.success && Array.isArray(data.tournaments)) {
           setPastEvents(data.tournaments);
         }
       })
       .catch(() => {});
   }, []);
 
-  // Smooth cubic ease counter animation for participants and events
+  // Fetch live statistics and animate counters
   useEffect(() => {
-    const duration = 1600;
-    const startTime = performance.now();
+    let animationFrameId: number;
 
-    const animateCounts = (currentTime: number) => {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const easeOut = 1 - Math.pow(1 - progress, 3);
+    fetch('/api/stats')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.stats) {
+          const targetParticipants = Number(data.stats.competitors) || 0;
+          const targetEvents = Number(data.stats.tournaments) || 0;
+          const targetElo = Number(data.stats.peakElo) || 0;
 
-      setParticipantsCount(Math.floor(easeOut * 500));
-      setEventsCount(Math.floor(easeOut * 12));
+          const duration = 1600;
+          const startTime = performance.now();
 
-      if (progress < 1) {
-        requestAnimationFrame(animateCounts);
-      } else {
-        setParticipantsCount(500);
-        setEventsCount(12);
-      }
+          const animateCounts = (currentTime: number) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const easeOut = 1 - Math.pow(1 - progress, 3);
+
+            setParticipantsCount(Math.floor(easeOut * targetParticipants));
+            setEventsCount(Math.floor(easeOut * targetEvents));
+            if (targetElo > 0) {
+              setPeakElo(Math.floor(easeOut * targetElo));
+            }
+
+            if (progress < 1) {
+              animationFrameId = requestAnimationFrame(animateCounts);
+            } else {
+              setParticipantsCount(targetParticipants);
+              setEventsCount(targetEvents);
+              if (targetElo > 0) {
+                setPeakElo(targetElo);
+              }
+            }
+          };
+
+          animationFrameId = requestAnimationFrame(animateCounts);
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
     };
-
-    const frameId = requestAnimationFrame(animateCounts);
-    return () => cancelAnimationFrame(frameId);
   }, []);
 
   const handleRegisterClick = () => {
@@ -87,6 +109,7 @@ export default function HomeView() {
         <HeroSection
           participantsCount={participantsCount}
           eventsCount={eventsCount}
+          peakElo={peakElo}
           featuredEvent={featuredEvent}
           onRegisterClick={handleRegisterClick}
         />
