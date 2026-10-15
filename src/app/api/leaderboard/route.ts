@@ -6,17 +6,15 @@ import {
   deleteLeaderboardPlayer 
 } from '@/lib/leaderboardStore';
 import { isAdminAuthenticated } from '@/lib/adminAuth';
-import { shouldSyncLichessClub, syncLichessClub } from '@/lib/lichessSync';
+import { triggerBackgroundLichessSync } from '@/lib/lichessSync';
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const sortBy = (searchParams.get('sortBy') as 'rapid' | 'blitz' | 'classical' | 'rank') || 'rapid';
 
-    // Auto-sync from Lichess every 24 hours
-    if (await shouldSyncLichessClub()) {
-      await syncLichessClub(true);
-    }
+    // Trigger non-blocking background sync if needed without waiting or duplicate syncs
+    triggerBackgroundLichessSync();
 
     const players = await getAllLeaderboardPlayers(sortBy);
 

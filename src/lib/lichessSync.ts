@@ -47,10 +47,47 @@ export async function shouldSyncLichessClub(): Promise<boolean> {
   return now - lastSync >= SYNC_INTERVAL_MS;
 }
 
+let isSyncInProgress = false;
+
+export function isLichessSyncInProgress(): boolean {
+  return isSyncInProgress;
+}
+
+/**
+ * Trigger background synchronization non-blockingly without waiting or launching duplicates
+ */
+export function triggerBackgroundLichessSync(): void {
+  if (isSyncInProgress) return;
+
+  Promise.resolve().then(async () => {
+    try {
+      const needed = await shouldSyncLichessClub();
+      if (needed && !isSyncInProgress) {
+        await syncLichessClub(true);
+      }
+    } catch (err) {
+      console.warn('Background Lichess sync trigger failed:', err);
+    }
+  });
+}
+
 /**
  * Synchronize all members and ratings from https://lichess.org/team/jgec-chess-club into Supabase
  */
 export async function syncLichessClub(force = false): Promise<LichessClubSyncResult> {
+  if (isSyncInProgress) {
+    const lastSyncTime = await getLastLichessClubSyncTime().catch(() => null);
+    return {
+      success: true,
+      skipped: true,
+      count: 0,
+      lastSyncedAt: lastSyncTime || '',
+      top3: [],
+      error: 'Sync already in progress'
+    };
+  }
+
+  isSyncInProgress = true;
   try {
     if (!force) {
       const lastSyncTime = await getLastLichessClubSyncTime();
@@ -298,5 +335,7 @@ export async function syncLichessClub(force = false): Promise<LichessClubSyncRes
       top3: [],
       error: err.message || 'Lichess sync failed'
     };
+  } finally {
+    isSyncInProgress = false;
   }
 }

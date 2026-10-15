@@ -2,11 +2,20 @@ import { NextResponse } from 'next/server';
 import { syncLichessClub } from '@/lib/lichessSync';
 import { isAdminAuthenticated } from '@/lib/adminAuth';
 
+async function isAuthorized(request: Request): Promise<boolean> {
+  const cronSecret = process.env.CRON_SECRET;
+  const authHeader = request.headers.get('authorization');
+  if (cronSecret && authHeader === `Bearer ${cronSecret}`) {
+    return true;
+  }
+  return isAdminAuthenticated();
+}
+
 export async function POST(request: Request) {
   try {
-    const authed = await isAdminAuthenticated();
+    const authed = await isAuthorized(request);
     if (!authed) {
-      return NextResponse.json({ success: false, error: 'Unauthorized admin credentials required.' }, { status: 401 });
+      return NextResponse.json({ success: false, error: 'Unauthorized credentials required.' }, { status: 401 });
     }
 
     const result = await syncLichessClub(true);
@@ -21,9 +30,9 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   try {
-    const authed = await isAdminAuthenticated();
+    const authed = await isAuthorized(request);
     if (!authed) {
-      return NextResponse.json({ success: false, error: 'Unauthorized admin credentials required.' }, { status: 401 });
+      return NextResponse.json({ success: false, error: 'Unauthorized credentials required.' }, { status: 401 });
     }
 
     // Check if 24 hours have passed and sync if needed
