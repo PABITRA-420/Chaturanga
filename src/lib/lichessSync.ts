@@ -5,6 +5,7 @@ export interface LichessClubSyncResult {
   count: number;
   lastSyncedAt: string;
   top3: any[];
+  skipped?: boolean;
   error?: string;
 }
 
@@ -12,9 +13,9 @@ const LICHESS_TEAM_ID = 'jgec-chess-club';
 const SYNC_INTERVAL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 /**
- * Check if more than 24 hours have passed since the last Lichess club sync
+ * Retrieve the actual timestamp of the most recent sync
  */
-export async function shouldSyncLichessClub(): Promise<boolean> {
+export async function getLastLichessClubSyncTime(): Promise<string | null> {
   try {
     const { data, error } = await supabaseServer
       .from('leaderboard_players')
@@ -23,15 +24,27 @@ export async function shouldSyncLichessClub(): Promise<boolean> {
       .limit(1);
 
     if (error || !data || data.length === 0 || !data[0]?.updated_at) {
-      return true; // No data yet, sync immediately
+      return null;
     }
 
-    const lastSync = new Date(data[0].updated_at).getTime();
-    const now = Date.now();
-    return now - lastSync >= SYNC_INTERVAL_MS;
+    return data[0].updated_at;
   } catch {
-    return false;
+    return null;
   }
+}
+
+/**
+ * Check if more than 24 hours have passed since the last Lichess club sync
+ */
+export async function shouldSyncLichessClub(): Promise<boolean> {
+  const lastSyncStr = await getLastLichessClubSyncTime();
+  if (!lastSyncStr) {
+    return true; // No data yet, sync immediately
+  }
+
+  const lastSync = new Date(lastSyncStr).getTime();
+  const now = Date.now();
+  return now - lastSync >= SYNC_INTERVAL_MS;
 }
 
 /**
@@ -40,12 +53,14 @@ export async function shouldSyncLichessClub(): Promise<boolean> {
 export async function syncLichessClub(force = false): Promise<LichessClubSyncResult> {
   try {
     if (!force) {
-      const needed = await shouldSyncLichessClub();
+      const lastSyncTime = await getLastLichessClubSyncTime();
+      const needed = !lastSyncTime || (Date.now() - new Date(lastSyncTime).getTime() >= SYNC_INTERVAL_MS);
       if (!needed) {
         return {
           success: true,
+          skipped: true,
           count: 0,
-          lastSyncedAt: new Date().toISOString(),
+          lastSyncedAt: lastSyncTime || '',
           top3: []
         };
       }
@@ -269,6 +284,7 @@ export async function syncLichessClub(force = false): Promise<LichessClubSyncRes
 
     return {
       success: true,
+      skipped: false,
       count: parsed.length,
       lastSyncedAt: syncTimestamp,
       top3: parsed.slice(0, 3)

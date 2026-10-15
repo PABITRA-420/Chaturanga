@@ -19,8 +19,13 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const authed = await isAdminAuthenticated();
+    if (!authed) {
+      return NextResponse.json({ success: false, error: 'Unauthorized admin credentials required.' }, { status: 401 });
+    }
+
     // Check if 24 hours have passed and sync if needed
     const result = await syncLichessClub(false);
     return NextResponse.json(result);
