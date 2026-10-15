@@ -124,10 +124,21 @@ export async function updateGalleryPhoto(id: string, updates: Partial<GalleryPho
 }
 
 export async function deleteGalleryPhoto(id: string): Promise<boolean> {
-  const { error } = await supabaseServer
-    .from('gallery')
-    .delete()
-    .eq('id', id);
+  try {
+    const { data, error } = await supabaseServer
+      .from('gallery')
+      .delete()
+      .eq('id', id)
+      .select('id');
 
-  return !error;
+    if (error) {
+      console.warn(`Supabase delete gallery photo ${id} error:`, error.message);
+      return false;
+    }
+
+    return Array.isArray(data) && data.length > 0;
+  } catch (err) {
+    console.warn(`Supabase delete gallery photo ${id} failed:`, err);
+    return false;
+  }
 }
