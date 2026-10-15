@@ -244,52 +244,67 @@ function RegisterForm() {
     }
     // Strict Chess Platform & Player ID Verification
     if (isFieldEnabled('chessUsername')) {
-      if (!formData.chessPlatform) {
-        setErrorMsg('Please select your chess platform: Chess.com or Lichess.');
-        const el = document.getElementById('chess-platform-selector');
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        return;
-      }
-
+      const isRequired = isFieldRequired('chessUsername');
       const handle = formData.chessUsername.trim();
-      if (!handle) {
-        const platformName = formData.chessPlatform === 'chesscom' ? 'Chess.com' : 'Lichess';
-        setErrorMsg(`Please enter your ${platformName} player ID / username.`);
-        const el = document.getElementById('chess-handle-input');
-        if (el) el.focus();
-        return;
+
+      if (isRequired) {
+        if (!formData.chessPlatform) {
+          setErrorMsg('Please select your chess platform: Chess.com or Lichess.');
+          const el = document.getElementById('chess-platform-selector');
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
+
+        if (!handle) {
+          const platformName = formData.chessPlatform === 'chesscom' ? 'Chess.com' : 'Lichess';
+          setErrorMsg(`Please enter your ${platformName} player ID / username.`);
+          const el = document.getElementById('chess-handle-input');
+          if (el) el.focus();
+          return;
+        }
+      } else {
+        // Optional: require platform only if a handle is entered
+        if (handle && !formData.chessPlatform) {
+          setErrorMsg('Please select your chess platform: Chess.com or Lichess.');
+          const el = document.getElementById('chess-platform-selector');
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
       }
 
-      if (chessVerification.checking) {
-        setErrorMsg(`Verifying your player account on ${formData.chessPlatform === 'chesscom' ? 'Chess.com' : 'Lichess'}... Please wait a few seconds.`);
-        return;
-      }
+      // If handle is present, verify it (both required and optional with entered handle)
+      if (handle) {
+        if (chessVerification.checking) {
+          setErrorMsg(`Verifying your player account on ${formData.chessPlatform === 'chesscom' ? 'Chess.com' : 'Lichess'}... Please wait a few seconds.`);
+          return;
+        }
 
-      let verResult = chessVerification.result;
-      if (
-        !chessVerification.hasChecked ||
-        chessVerification.lastCheckedHandle.toLowerCase() !== handle.toLowerCase() ||
-        chessVerification.lastCheckedPlatform !== formData.chessPlatform ||
-        !verResult
-      ) {
-        setIsSubmitting(true);
-        verResult = await verifyChessAccount(formData.chessPlatform, handle);
-        setIsSubmitting(false);
-      }
+        let verResult = chessVerification.result;
+        if (
+          !chessVerification.hasChecked ||
+          chessVerification.lastCheckedHandle.toLowerCase() !== handle.toLowerCase() ||
+          chessVerification.lastCheckedPlatform !== formData.chessPlatform ||
+          !verResult
+        ) {
+          setIsSubmitting(true);
+          verResult = await verifyChessAccount(formData.chessPlatform, handle);
+          setIsSubmitting(false);
+        }
 
-      if (verResult?.unavailable) {
-        setErrorMsg(verResult.message || 'Verification service is temporarily unavailable. Please retry verification before submitting.');
-        const el = document.getElementById('chess-handle-input');
-        if (el) el.focus();
-        return;
-      }
+        if (verResult?.unavailable) {
+          setErrorMsg(verResult.message || 'Verification service is temporarily unavailable. Please retry verification before submitting.');
+          const el = document.getElementById('chess-handle-input');
+          if (el) el.focus();
+          return;
+        }
 
-      if (!verResult || !verResult.exists) {
-        const platformName = formData.chessPlatform === 'chesscom' ? 'Chess.com' : 'Lichess';
-        setErrorMsg(`Registration unsuccessful: Player "@${handle}" does not exist on ${platformName}. Check your ID carefully!`);
-        const el = document.getElementById('chess-handle-input');
-        if (el) el.focus();
-        return;
+        if (!verResult || !verResult.exists) {
+          const platformName = formData.chessPlatform === 'chesscom' ? 'Chess.com' : 'Lichess';
+          setErrorMsg(`Registration unsuccessful: Player "@${handle}" does not exist on ${platformName}. Check your ID carefully!`);
+          const el = document.getElementById('chess-handle-input');
+          if (el) el.focus();
+          return;
+        }
       }
     }
 
@@ -1473,7 +1488,9 @@ function RegisterForm() {
                                 <span>
                                   Type your {formData.chessPlatform === 'chesscom' ? 'Chess.com' : 'Lichess'} Username / ID
                                 </span>
-                                <span className="text-red-400 font-bold">*</span>
+                                {isFieldRequired('chessUsername') && (
+                                  <span className="text-red-400 font-bold">*</span>
+                                )}
                               </label>
                               <span className="text-[10px] text-[#D4AF7C]">
                                 Checked when you go to another field
