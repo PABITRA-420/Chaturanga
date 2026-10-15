@@ -7,13 +7,26 @@ async function fetchLichessTeam() {
 
   const userIds = members.map(m => m.id);
 
-  // Lichess allows batch fetching up to 300 users via POST /api/users
-  const userDetailsRes = await fetch('https://lichess.org/api/users', {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain' },
-    body: userIds.join(',')
-  });
-  const userDetails = await userDetailsRes.json();
+  const chunkSize = 150;
+  const userDetails: any[] = [];
+  for (let i = 0; i < userIds.length; i += chunkSize) {
+    const chunk = userIds.slice(i, i + chunkSize);
+    const userDetailsRes = await fetch('https://lichess.org/api/users', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain',
+        'User-Agent': 'Chaturanga-JGEC-ChessClub/1.0'
+      },
+      body: chunk.join(',')
+    });
+
+    if (!userDetailsRes.ok) {
+      throw new Error(`Failed to fetch Lichess users batch: HTTP ${userDetailsRes.status}`);
+    }
+
+    const chunkData = await userDetailsRes.json();
+    userDetails.push(...chunkData);
+  }
   console.log(`Fetched live details for ${userDetails.length} users.`);
 
   // Process ratings
