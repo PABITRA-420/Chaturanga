@@ -276,8 +276,20 @@ export async function syncLichessClub(force = false): Promise<LichessClubSyncRes
       const batch = rowsToUpsert.slice(i, i + 50);
       const { error } = await supabaseServer.from('leaderboard_players').upsert(batch, { onConflict: 'id' });
       if (error) {
-        console.warn('Error upserting leaderboard batch:', error.message);
+        throw new Error(`Failed to upsert leaderboard_players batch: ${error.message}`);
       }
+    }
+
+    // Deactivate leaderboard_players rows for the matching Lichess ID prefix that were not written in the current sync
+    const { error: deactivateLeaderboardError } = await supabaseServer
+      .from('leaderboard_players')
+      .update({ is_active: false })
+      .like('id', 'player-lichess-%')
+      .lt('updated_at', syncTimestamp)
+      .eq('is_active', true);
+
+    if (deactivateLeaderboardError) {
+      throw new Error(`Failed to deactivate stale leaderboard players: ${deactivateLeaderboardError.message}`);
     }
 
     // 5. Update Top 10 Team Members in public.team_members
@@ -310,7 +322,7 @@ export async function syncLichessClub(force = false): Promise<LichessClubSyncRes
 
       const category = rank <= 3 ? 'core' : rank <= 8 ? 'coordinator' : 'mentor';
 
-      await supabaseServer.from('team_members').upsert({
+      const { error: teamUpsertError } = await supabaseServer.from('team_members').upsert({
         id: teamId,
         name: p.username,
         role,
@@ -337,6 +349,22 @@ export async function syncLichessClub(force = false): Promise<LichessClubSyncRes
         is_active: true,
         updated_at: syncTimestamp
       }, { onConflict: 'id' });
+
+      if (teamUpsertError) {
+        throw new Error(`Failed to upsert team_members record for ${p.username}: ${teamUpsertError.message}`);
+      }
+    }
+
+    // Deactivate stale team-top-10 entries that were not written in the current sync
+    const { error: deactivateTeamError } = await supabaseServer
+      .from('team_members')
+      .update({ is_active: false })
+      .like('id', 'team-top10-%')
+      .lt('updated_at', syncTimestamp)
+      .eq('is_active', true);
+
+    if (deactivateTeamError) {
+      throw new Error(`Failed to deactivate stale team members: ${deactivateTeamError.message}`);
     }
 
     return {
