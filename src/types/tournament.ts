@@ -183,3 +183,26 @@ export const DEFAULT_FORM_FIELDS: FormFieldConfig[] = [
     helpText: 'Adherence to FIDE anti-cheating guidelines and zero-tolerance policy'
   }
 ];
+
+export interface Participant {
+  id: string;
+  ticketId: string;
+  name: string;
+  rollNumber: string;
+  college: string;
+  department: string;
+  year?: string;
+  email?: string;
+  phone?: string;
+  ratingCategory: string;
+  chessPlatform?: string | null;
+  chessUsername: string;
+  fideId: string;
+  registeredAt: string;
+  verified: boolean;
+  checkInStatus: 'registered' | 'confirmed' | 'checked_in';
+  tournamentId: string;
+  tournament: string;
+  customAnswers?: Record<string, string>;
+}
+

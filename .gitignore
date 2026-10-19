@@ -3,6 +3,11 @@
 out/
 build/
 dist/
+coverage/
+.agents/
+.planning/
+.cursor/
+
 
 # Dependencies
 node_modules/
