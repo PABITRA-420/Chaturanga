@@ -126,7 +126,31 @@ export async function POST(request: Request) {
     };
 
     // Save to persistent registrations store only after verification succeeds
-    await addRegistration(registrationRecord);
+    try {
+      await addRegistration(registrationRecord);
+    } catch (regErr: any) {
+      if (regErr.message?.includes('CAPACITY_REACHED') || regErr.code === 'CAPACITY_REACHED') {
+        return NextResponse.json(
+          {
+            success: false,
+            isFull: true,
+            error: 'Tournament registration is full. No additional slots available.'
+          },
+          { status: 409 }
+        );
+      }
+      if (regErr.message?.includes('DUPLICATE_REGISTRATION') || regErr.code === 'DUPLICATE_REGISTRATION') {
+        return NextResponse.json(
+          {
+            success: false,
+            isDuplicate: true,
+            error: `Roll Number ${rollNumber} is already registered for this tournament.`
+          },
+          { status: 409 }
+        );
+      }
+      throw regErr;
+    }
 
     const registrationPayload = {
       ...registrationRecord,

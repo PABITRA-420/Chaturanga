@@ -4,12 +4,22 @@ import path from 'path';
 
 const BLOB_STORE_NAME = 'chaturanga-media';
 
+let mockStoreForTesting: any = undefined;
+
+export function setMediaStoreForTesting(store: any) {
+  mockStoreForTesting = store;
+}
+
 /**
  * Helper to obtain the Netlify Blobs store.
  * Supports production Netlify environment, explicit NETLIFY_SITE_ID & NETLIFY_AUTH_TOKEN,
  * or automatic local directory fallback for local development.
  */
 function getMediaStore() {
+  if (mockStoreForTesting !== undefined) {
+    return mockStoreForTesting;
+  }
+
   const siteID = process.env.NETLIFY_SITE_ID;
   const token = process.env.NETLIFY_AUTH_TOKEN;
 
@@ -90,6 +100,12 @@ export async function uploadImageBlob(
 
   // Fallback to local disk store if Netlify Blobs store is not connected
   if (!uploadedViaNetlify) {
+    if (process.env.NODE_ENV === 'production') {
+      const prodErr = new Error('Netlify Blobs storage unavailable in production');
+      (prodErr as any).status = 503;
+      throw prodErr;
+    }
+
     ensureLocalDir();
     const filePath = path.join(LOCAL_STORAGE_DIR, key);
     fs.writeFileSync(filePath, Buffer.from(data));
@@ -233,4 +249,54 @@ export async function deleteImageBlob(key: string): Promise<boolean> {
   }
 
   return deleted;
+}
+
+export interface MediaStorageHealth {
+  status: 'connected' | 'unbound' | 'error';
+  store: string;
+  environment: string;
+  error?: string;
+}
+
+/**
+ * Health check for Netlify Blobs storage.
+ */
+export async function checkMediaStorageHealth(): Promise<MediaStorageHealth> {
+  const env = process.env.NODE_ENV || 'development';
+  try {
+    const store = getMediaStore();
+    if (!store) {
+      return {
+        status: 'unbound',
+        store: BLOB_STORE_NAME,
+        environment: env,
+        error: 'Netlify Blobs store could not be resolved (missing credentials or unbound environment).'
+      };
+    }
+
+    try {
+      if (typeof store.list === 'function') {
+        await store.list({ paginate: false });
+      }
+      return {
+        status: 'connected',
+        store: BLOB_STORE_NAME,
+        environment: env
+      };
+    } catch (listErr: any) {
+      return {
+        status: 'unbound',
+        store: BLOB_STORE_NAME,
+        environment: env,
+        error: listErr.message || 'Store list operation failed'
+      };
+    }
+  } catch (err: any) {
+    return {
+      status: 'error',
+      store: BLOB_STORE_NAME,
+      environment: env,
+      error: err.message || 'Storage check failed'
+    };
+  }
 }

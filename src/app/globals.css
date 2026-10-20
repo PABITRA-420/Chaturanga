@@ -172,3 +172,25 @@ nav {
   outline: 2px solid #D4AF7C;
   outline-offset: 2px;
 }
+
+/* Glassmorphism HUD Card & Gold Glow Utilities */
+.hud-glass-card {
+  background: rgba(18, 22, 29, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.hud-gold-border {
+  border-color: rgba(212, 175, 124, 0.35);
+  box-shadow: 0 0 20px rgba(212, 175, 124, 0.12);
+}
+
+.glow-gold {
+  box-shadow: 0 0 25px -5px rgba(212, 175, 124, 0.3);
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 1rem);
+}

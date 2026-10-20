@@ -4,12 +4,13 @@ import React from 'react';
 import Link from 'next/link';
 import ChaturangaLogo from '@/components/ChaturangaLogo';
 import { 
-  ShieldCheck, Users, Trophy, LogOut, Download, CheckCircle2, 
-  ExternalLink, Sparkles, Database, Plus, Award, Crown, Bell, Cloud, Camera 
+  ShieldCheck, Shield, Users, Trophy, LogOut, Download, CheckCircle2, 
+  ExternalLink, Sparkles, Database, Plus, Award, Crown, Bell, Cloud, Camera, Swords 
 } from 'lucide-react';
 import { useAdminManagement } from '@/hooks/useAdminManagement';
 import AdminTournamentsTab from '@/components/admin/AdminTournamentsTab';
 import AdminParticipantsTab from '@/components/admin/AdminParticipantsTab';
+import AdminPairingsTab from '@/components/admin/AdminPairingsTab';
 import AdminLeaderboardTab from '@/components/admin/AdminLeaderboardTab';
 import AdminResultsTab from '@/components/admin/AdminResultsTab';
 import AdminAnnouncementsTab from '@/components/admin/AdminAnnouncementsTab';
@@ -17,6 +18,8 @@ import AdminTeamTab from '@/components/admin/AdminTeamTab';
 import AdminGalleryTab from '@/components/admin/AdminGalleryTab';
 import AdminMediaTab from '@/components/admin/AdminMediaTab';
 import AdminSettingsTab from '@/components/admin/AdminSettingsTab';
+import AdminCertificatesTab from '@/components/admin/AdminCertificatesTab';
+import { AdminTeamPairingsTab } from '@/components/admin/AdminTeamPairingsTab';
 import TournamentFormModal from '@/components/admin/TournamentFormModal';
 import ArchiveTournamentModal from '@/components/admin/ArchiveTournamentModal';
 
@@ -146,7 +149,10 @@ export default function AdminDashboardPage() {
           {[
             { id: 'tournaments', label: `Tournaments CMS (${tournaments.length})`, icon: Trophy },
             { id: 'roster', label: `Player Roster (${participants.length})`, icon: Users },
+            { id: 'pairings', label: 'Swiss Pairings & Clocks', icon: Swords },
+            { id: 'team_pairings', label: 'Team Swiss Arena', icon: Shield },
             { id: 'results', label: 'Prizes & Podiums', icon: Award },
+            { id: 'certificates', label: 'Award Certificates', icon: Award },
             { id: 'leaderboard', label: 'Leaderboard & Chess.com', icon: Crown },
             { id: 'announcements', label: 'Notice Board CMS', icon: Bell },
             { id: 'team', label: 'Council & Team', icon: Users },
@@ -198,11 +204,23 @@ export default function AdminDashboardPage() {
           />
         )}
 
+        {activeTab === 'pairings' && (
+          <AdminPairingsTab tournaments={tournaments} />
+        )}
+
+        {activeTab === 'team_pairings' && (
+          <AdminTeamPairingsTab tournaments={tournaments} />
+        )}
+
         {activeTab === 'results' && (
           <AdminResultsTab 
             tournaments={tournaments} 
             onTournamentUpdated={(updated) => setTournaments(prev => prev.map(t => t.id === updated.id ? updated : t))} 
           />
+        )}
+
+        {activeTab === 'certificates' && (
+          <AdminCertificatesTab tournaments={tournaments} />
         )}
 
         {activeTab === 'leaderboard' && <AdminLeaderboardTab />}

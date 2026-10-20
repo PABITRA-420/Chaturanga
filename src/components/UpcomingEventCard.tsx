@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { UpcomingEvent } from '@/data/tournamentData';
 import CountdownTimer from './CountdownTimer';
-import { Calendar, Clock, MapPin, Trophy, Users, ArrowRight, Sparkles } from 'lucide-react';
+import { Calendar, Clock, MapPin, Trophy, Users, ArrowRight, Sparkles, Radio } from 'lucide-react';
 
 interface UpcomingEventCardProps {
   event: UpcomingEvent;
@@ -102,19 +102,30 @@ export default function UpcomingEventCard({ event }: UpcomingEventCardProps) {
             </div>
           </div>
 
-          {/* CTA Button */}
+          {/* CTA Buttons */}
           <div className="pt-3 flex flex-wrap items-center justify-between gap-4 border-t border-white/10">
             <div className="text-xs text-[#A0A6B0]">
               Format: <span className="text-[#F5F5F5] font-semibold bg-white/5 px-2.5 py-1 rounded-md border border-white/10 ml-1.5">{event.format}</span>
             </div>
 
-            <Link
-              href={`/register?event=${event.id}`}
-              className="inline-flex items-center gap-2.5 px-7 sm:px-9 py-3.5 rounded-full font-['Inter',sans-serif] text-sm font-bold text-[#0B0F14] bg-gradient-to-r from-[#D4AF7C] via-[#F3E2B8] to-[#D4AF7C] hover:brightness-110 transition-all duration-300 shadow-[0_4px_25px_rgba(212,175,124,0.35)] hover:scale-[1.03] active:scale-[0.98] cursor-pointer"
-            >
-              <span>Register & Generate Pass</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+            <div className="flex flex-wrap items-center gap-3">
+              <Link
+                href={`/tournaments/${event.id}/live`}
+                className="inline-flex items-center gap-2 px-5 py-3.5 rounded-full font-['Inter',sans-serif] text-sm font-bold text-white bg-red-950/40 hover:bg-red-900/50 border border-red-500/40 hover:border-red-500/70 transition-all duration-300 shadow-lg shadow-red-950/20 active:scale-95"
+              >
+                <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                <Radio className="w-4 h-4 text-red-400" />
+                <span>Live Broadcast</span>
+              </Link>
+
+              <Link
+                href={`/register?event=${event.id}`}
+                className="inline-flex items-center gap-2.5 px-7 sm:px-9 py-3.5 rounded-full font-['Inter',sans-serif] text-sm font-bold text-[#0B0F14] bg-gradient-to-r from-[#D4AF7C] via-[#F3E2B8] to-[#D4AF7C] hover:brightness-110 transition-all duration-300 shadow-[0_4px_25px_rgba(212,175,124,0.35)] hover:scale-[1.03] active:scale-[0.98] cursor-pointer"
+              >
+                <span>Register & Generate Pass</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
           </div>
 
         </div>
@@ -181,8 +192,14 @@ export default function UpcomingEventCard({ event }: UpcomingEventCardProps) {
       </div>
 
       {/* Action Footer */}
-      <div className="pt-5 mt-5 border-t border-white/10 flex items-center justify-between relative z-10">
-        <span className="text-[11px] text-neutral-400">Pre-Registration Open</span>
+      <div className="pt-5 mt-5 border-t border-white/10 flex items-center justify-between relative z-10 gap-2">
+        <Link
+          href={`/tournaments/${event.id}/live`}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-[#D4AF7C] bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 hover:bg-[#D4AF7C]/20 transition"
+        >
+          <Radio className="w-3.5 h-3.5 text-[#D4AF7C]" />
+          <span>Live Board</span>
+        </Link>
         
         <Link
           href={`/register?event=${event.id}`}

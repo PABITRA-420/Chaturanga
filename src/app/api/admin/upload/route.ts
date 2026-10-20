@@ -106,9 +106,10 @@ export async function POST(request: Request) {
     }, { status: 201 });
   } catch (error: any) {
     console.error('Upload Error:', error);
+    const status = error.status || (error.message?.includes('unavailable') ? 503 : 500);
     return NextResponse.json(
       { success: false, error: error.message || 'Image upload failed.' },
-      { status: 500 }
+      { status }
     );
   }
 }

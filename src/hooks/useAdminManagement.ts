@@ -30,7 +30,7 @@ export function useAdminManagement() {
 
   const [loading, setLoading] = useState(true);
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
-  const [activeTab, setActiveTab] = useState<'tournaments' | 'roster' | 'results' | 'leaderboard' | 'announcements' | 'team' | 'gallery' | 'media' | 'settings'>('tournaments');
+  const [activeTab, setActiveTab] = useState<'tournaments' | 'roster' | 'pairings' | 'team_pairings' | 'results' | 'certificates' | 'leaderboard' | 'announcements' | 'team' | 'gallery' | 'media' | 'settings'>('tournaments');
 
   // Tournaments state
   const [tournaments, setTournaments] = useState<Tournament[]>([]);

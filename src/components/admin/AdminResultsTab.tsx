@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Tournament, TournamentPodiumItem, TournamentStandingResult } from '@/types/tournament';
+import { PodiumCelebration } from '@/components/PodiumCelebration';
 import { 
   Trophy, 
   Award, 
@@ -278,6 +279,15 @@ export default function AdminResultsTab({ tournaments, onTournamentUpdated }: Pr
                 </p>
               </div>
             </div>
+
+            {podium.some(p => Boolean(p.name?.trim())) && (
+              <PodiumCelebration
+                winners={podium}
+                tournamentTitle={selectedTournament.title}
+                autoTrigger={false}
+                className="mb-4"
+              />
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {podium.map((pod, idx) => {

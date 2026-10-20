@@ -105,6 +105,8 @@ export const metadata: Metadata = {
   },
 };
 
+import MobileNavigation from '@/components/MobileNavigation';
+
 export default function RootLayout({
   children,
 }: {
@@ -148,7 +150,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="bg-[#0B0F14] text-[#F5F5F5] antialiased selection:bg-[#D4AF7C] selection:text-[#0B0F14]">
+      <body className="bg-[#0B0F14] text-[#F5F5F5] antialiased selection:bg-[#D4AF7C] selection:text-[#0B0F14] pb-16 md:pb-0">
         {/* WCAG Skip to Main Content Link */}
         <a
           href="#main-content"
@@ -157,6 +159,7 @@ export default function RootLayout({
           Skip to main content
         </a>
         {children}
+        <MobileNavigation />
       </body>
     </html>
   );

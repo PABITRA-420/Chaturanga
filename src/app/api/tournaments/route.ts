@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getAllTournaments, createTournament } from '@/lib/tournamentStore';
+import { getAllTournaments, createTournament, getLastTournamentDataSource } from '@/lib/tournamentStore';
 import { isAdminAuthenticated } from '@/lib/adminAuth';
 
 export async function GET(request: Request) {
@@ -25,15 +25,25 @@ export async function GET(request: Request) {
       tournaments = tournaments.filter(t => t.status === status);
     }
 
-    return NextResponse.json({
-      success: true,
-      tournaments,
-      total: tournaments.length
-    });
+    const dataSource = getLastTournamentDataSource();
+
+    return NextResponse.json(
+      {
+        success: true,
+        tournaments,
+        total: tournaments.length
+      },
+      {
+        headers: {
+          'x-data-source': dataSource
+        }
+      }
+    );
   } catch (error: any) {
+    const status = error.status || 500;
     return NextResponse.json(
       { success: false, error: error.message || 'Failed to fetch tournaments.' },
-      { status: 500 }
+      { status }
     );
   }
 }
@@ -64,9 +74,10 @@ export async function POST(request: Request) {
       tournament: created
     }, { status: 201 });
   } catch (error: any) {
+    const status = error.status || 500;
     return NextResponse.json(
       { success: false, error: error.message || 'Server error while creating tournament.' },
-      { status: 500 }
+      { status }
     );
   }
 }

@@ -57,7 +57,8 @@ export async function GET(request: Request) {
     });
   } catch (error: any) {
     console.error('Error in GET /api/registrations:', error);
-    return NextResponse.json({ success: false, error: error.message || 'Failed to fetch registrations' }, { status: 500 });
+    const status = error.status || (error.message?.includes('unavailable') ? 503 : 500);
+    return NextResponse.json({ success: false, error: error.message || 'Failed to fetch registrations' }, { status });
   }
 }
 

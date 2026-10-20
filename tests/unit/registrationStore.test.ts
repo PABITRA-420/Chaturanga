@@ -15,7 +15,8 @@ import { MOCK_REGISTRATION_RECORD, MOCK_REGISTRATION_ROW } from '../fixtures/reg
 vi.mock('@/lib/supabase/server', () => {
   return {
     supabaseServer: {
-      from: vi.fn()
+      from: vi.fn(),
+      rpc: vi.fn()
     },
     getSupabaseConfig: vi.fn(() => ({
       hasServiceRoleKey: true,
@@ -49,6 +50,7 @@ describe('Registration Store (registrationStore.ts)', () => {
     };
 
     vi.mocked(supabaseServer.from).mockReturnValue(mockQuery);
+    vi.mocked((supabaseServer as any).rpc).mockResolvedValue({ data: null, error: { message: 'function does not exist' } });
   });
 
   describe('findDuplicateRegistration', () => {
