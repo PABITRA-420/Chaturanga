@@ -41,6 +41,7 @@ pnpm-debug.log*
 .gemini/
 .claude/
 .cursor/
+.github/
 model_capabilities.yaml
 VERSION
 
