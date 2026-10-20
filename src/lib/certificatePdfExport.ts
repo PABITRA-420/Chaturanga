@@ -12,8 +12,10 @@ export async function exportCertificatePdf(
     throw new Error('Canvas element is required for PDF export');
   }
 
-  // Dynamic import ensures zero server-side bundle pollution
-  const { jsPDF } = await import('jspdf');
+  // Dynamic import of UMD bundle ensures Turbopack does not trace optional canvg dependency
+  // @ts-expect-error jspdf UMD bundle export
+  const jspdfModule = await import('jspdf/dist/jspdf.umd.min.js');
+  const jsPDF = jspdfModule.jsPDF || jspdfModule.default;
 
   // Landscape A4 dimensions: 297mm width, 210mm height
   const pdf = new jsPDF({

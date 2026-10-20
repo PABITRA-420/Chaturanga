@@ -173,7 +173,10 @@ export async function generateBulkCertificatesPdf(
     throw new Error('No certificates supplied for bulk export');
   }
 
-  const { jsPDF } = await import('jspdf');
+  // Dynamic import of UMD bundle ensures Turbopack does not trace optional canvg dependency
+  // @ts-expect-error jspdf UMD bundle export
+  const jspdfModule = await import('jspdf/dist/jspdf.umd.min.js');
+  const jsPDF = jspdfModule.jsPDF || jspdfModule.default;
 
   const pdf = new jsPDF({
     orientation: 'landscape',
