@@ -4,7 +4,7 @@ import {
   createTeamMember, 
   updateTeamMember, 
   deleteTeamMember 
-} from '@/lib/teamStore';
+} from '@/lib/teamMemberStore';
 import { isAdminAuthenticated } from '@/lib/adminAuth';
 
 export async function GET(request: Request) {

@@ -54,6 +54,22 @@ async function runMigration(): Promise<void> {
       console.log('Successfully executed incremental_migration.sql (team_members, gallery, RLS & seeds)!');
     }
 
+    const atomicSqlPath = path.join(process.cwd(), 'supabase', 'atomic_registration.sql');
+    if (fs.existsSync(atomicSqlPath)) {
+      console.log('Executing supabase/atomic_registration.sql...');
+      const atomicSql = fs.readFileSync(atomicSqlPath, 'utf-8');
+      await client.query(atomicSql);
+      console.log('Successfully executed atomic_registration.sql (register_participant_atomic & triggers)!');
+    }
+
+    const phase4SqlPath = path.join(process.cwd(), 'supabase', 'phase4_tournaments_expansion.sql');
+    if (fs.existsSync(phase4SqlPath)) {
+      console.log('Executing supabase/phase4_tournaments_expansion.sql...');
+      const phase4Sql = fs.readFileSync(phase4SqlPath, 'utf-8');
+      await client.query(phase4Sql);
+      console.log('Successfully executed phase4_tournaments_expansion.sql (rounds, matches, games)!');
+    }
+
     const resT = await client.query('SELECT count(*) FROM public.tournaments;');
     console.log(`Verified public.tournaments count: ${resT.rows[0].count}`);
 

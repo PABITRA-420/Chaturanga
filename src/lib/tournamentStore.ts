@@ -8,48 +8,50 @@ import {
   DEFAULT_FORM_FIELDS 
 } from '@/types/tournament';
 
+import { TournamentRow, TournamentInsert } from '@/types/database';
+
 export * from '@/types/tournament';
 
 const DATA_DIR = path.join(process.cwd(), 'src', 'data');
 const DATA_FILE = path.join(DATA_DIR, 'tournaments.json');
 
-function dbToTournament(row: any): Tournament {
+export function dbToTournament(row: TournamentRow): Tournament {
   return {
     id: row.id,
     title: row.title,
     date: row.date || '',
-    targetDate: row.target_date || row.targetDate || '',
+    targetDate: row.target_date || '',
     time: row.time || '',
     venue: row.venue || '',
     format: row.format || '',
-    prizePool: row.prize_pool || row.prizePool || '',
+    prizePool: row.prize_pool || '',
     slots: row.slots || '',
-    maxSlots: Number(row.max_slots ?? row.maxSlots ?? 100),
-    registeredCount: Number(row.registered_count ?? row.registeredCount ?? 0),
-    isFeatured: Boolean(row.is_featured ?? row.isFeatured),
-    isVisible: row.is_visible !== undefined ? Boolean(row.is_visible) : (row.isVisible !== undefined ? Boolean(row.isVisible) : true),
+    maxSlots: Number(row.max_slots ?? 100),
+    registeredCount: Number(row.registered_count ?? 0),
+    isFeatured: Boolean(row.is_featured),
+    isVisible: row.is_visible !== null && row.is_visible !== undefined ? Boolean(row.is_visible) : true,
     description: row.description || '',
     status: (row.status as TournamentStatus) || 'upcoming',
-    registrationStartDate: row.registration_start_date || row.registrationStartDate,
-    registrationEndDate: row.registration_end_date || row.registrationEndDate,
-    entryFee: row.entry_fee || row.entryFee,
-    arbiterName: row.arbiter_name || row.arbiterName,
-    contactEmail: row.contact_email || row.contactEmail,
-    contactPhone: row.contact_phone || row.contactPhone,
-    fairPlayNotice: row.fair_play_notice || row.fairPlayNotice,
-    formConfig: Array.isArray(row.form_config) ? row.form_config : (row.formConfig || []),
-    customFields: Array.isArray(row.custom_fields) ? row.custom_fields : (row.customFields || []),
-    isPast: Boolean(row.is_past ?? row.isPast),
-    totalParticipants: Number(row.total_participants ?? row.totalParticipants ?? 0),
-    summary: row.summary,
-    podium: Array.isArray(row.podium) ? row.podium : [],
-    results: Array.isArray(row.results) ? row.results : [],
-    createdAt: row.created_at || row.createdAt || new Date().toISOString(),
-    updatedAt: row.updated_at || row.updatedAt || new Date().toISOString()
+    registrationStartDate: row.registration_start_date || undefined,
+    registrationEndDate: row.registration_end_date || undefined,
+    entryFee: row.entry_fee || undefined,
+    arbiterName: row.arbiter_name || undefined,
+    contactEmail: row.contact_email || undefined,
+    contactPhone: row.contact_phone || undefined,
+    fairPlayNotice: row.fair_play_notice || undefined,
+    formConfig: Array.isArray(row.form_config) ? (row.form_config as any) : [],
+    customFields: Array.isArray(row.custom_fields) ? (row.custom_fields as any) : [],
+    isPast: Boolean(row.is_past),
+    totalParticipants: Number(row.total_participants ?? 0),
+    summary: row.summary || undefined,
+    podium: Array.isArray(row.podium) ? (row.podium as any) : [],
+    results: Array.isArray(row.results) ? (row.results as any) : [],
+    createdAt: row.created_at || new Date().toISOString(),
+    updatedAt: row.updated_at || new Date().toISOString()
   };
 }
 
-function tournamentToDb(t: Tournament): any {
+export function tournamentToDb(t: Tournament): TournamentInsert {
   return {
     id: t.id,
     title: t.title,
@@ -73,13 +75,13 @@ function tournamentToDb(t: Tournament): any {
     contact_email: t.contactEmail,
     contact_phone: t.contactPhone,
     fair_play_notice: t.fairPlayNotice,
-    form_config: t.formConfig,
-    custom_fields: t.customFields,
+    form_config: t.formConfig as any,
+    custom_fields: t.customFields as any,
     is_past: t.isPast,
     total_participants: t.totalParticipants,
     summary: t.summary,
-    podium: t.podium,
-    results: t.results,
+    podium: t.podium as any,
+    results: t.results as any,
     updated_at: new Date().toISOString()
   };
 }
@@ -159,6 +161,16 @@ function getLocalTournamentsFallback(): Tournament[] {
   return getInitialSeedTournaments();
 }
 
+let lastTournamentDataSource: 'supabase' | 'fallback-mock' = 'supabase';
+
+export function getLastTournamentDataSource(): 'supabase' | 'fallback-mock' {
+  return lastTournamentDataSource;
+}
+
+export function setLastTournamentDataSourceForTesting(source: 'supabase' | 'fallback-mock') {
+  lastTournamentDataSource = source;
+}
+
 export async function getAllTournaments(): Promise<Tournament[]> {
   try {
     const { data, error } = await supabaseServer
@@ -168,6 +180,7 @@ export async function getAllTournaments(): Promise<Tournament[]> {
       .order('target_date', { ascending: true });
 
     if (!error && data !== null) {
+      lastTournamentDataSource = 'supabase';
       return data.map(dbToTournament);
     }
     if (error) {
@@ -177,6 +190,7 @@ export async function getAllTournaments(): Promise<Tournament[]> {
     console.warn('Supabase fetch tournaments failed, using local fallback:', err);
   }
 
+  lastTournamentDataSource = 'fallback-mock';
   return getLocalTournamentsFallback();
 }
 
@@ -248,8 +262,21 @@ export async function createTournament(data: Partial<Tournament>): Promise<Tourn
       .from('tournaments')
       .insert([dbRecord]);
 
-    if (error) console.error('Supabase create tournament error:', error);
-  } catch (err) {
+    if (error) {
+      console.error('Supabase create tournament error:', error);
+      if (process.env.NODE_ENV === 'production') {
+        const prodErr = new Error(`Database service unavailable in production: ${error.message}`);
+        (prodErr as any).status = 503;
+        throw prodErr;
+      }
+    }
+  } catch (err: any) {
+    if (err.status === 503) throw err;
+    if (process.env.NODE_ENV === 'production') {
+      const prodErr = new Error(`Database service unavailable in production: ${err.message}`);
+      (prodErr as any).status = 503;
+      throw prodErr;
+    }
     console.error('Supabase insert exception:', err);
   }
 
@@ -274,8 +301,21 @@ export async function updateTournament(id: string, updates: Partial<Tournament>)
       .update(dbRecord)
       .eq('id', id);
 
-    if (error) console.error('Supabase update tournament error:', error);
-  } catch (err) {
+    if (error) {
+      console.error('Supabase update tournament error:', error);
+      if (process.env.NODE_ENV === 'production') {
+        const prodErr = new Error(`Database service unavailable in production: ${error.message}`);
+        (prodErr as any).status = 503;
+        throw prodErr;
+      }
+    }
+  } catch (err: any) {
+    if (err.status === 503) throw err;
+    if (process.env.NODE_ENV === 'production') {
+      const prodErr = new Error(`Database service unavailable in production: ${err.message}`);
+      (prodErr as any).status = 503;
+      throw prodErr;
+    }
     console.error('Supabase update exception:', err);
   }
 
@@ -290,7 +330,19 @@ export async function deleteTournament(id: string): Promise<boolean> {
       .eq('id', id);
 
     if (!error) return true;
-  } catch {}
+    if (error && process.env.NODE_ENV === 'production') {
+      const prodErr = new Error(`Database service unavailable in production: ${error.message}`);
+      (prodErr as any).status = 503;
+      throw prodErr;
+    }
+  } catch (err: any) {
+    if (err.status === 503) throw err;
+    if (process.env.NODE_ENV === 'production') {
+      const prodErr = new Error(`Database service unavailable in production: ${err.message}`);
+      (prodErr as any).status = 503;
+      throw prodErr;
+    }
+  }
 
   return false;
 }

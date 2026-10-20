@@ -2,7 +2,9 @@
 
 import React, { useState } from 'react';
 import { PastEvent } from '@/data/tournamentData';
-import { Trophy, Calendar, Clock, MapPin, Award, Users, X, ArrowUpRight } from 'lucide-react';
+import { Trophy, Calendar, Clock, MapPin, Award, Users, X, ArrowUpRight, Eye } from 'lucide-react';
+import { PgnViewer } from '@/components/chess/PgnViewer';
+import { SEED_GAMES } from '@/lib/pgnParser';
 
 interface PastEventCardProps {
   event: PastEvent;
@@ -10,6 +12,13 @@ interface PastEventCardProps {
 
 export default function PastEventCard({ event }: PastEventCardProps) {
   const [showResultsModal, setShowResultsModal] = useState(false);
+  const [showPgnModal, setShowPgnModal] = useState(false);
+
+  // Match featured game for this tournament or use default seed
+  const featuredGame =
+    SEED_GAMES.find(g => g.tournament_id === event.id) ||
+    SEED_GAMES[0];
+
 
   return (
     <>
@@ -87,9 +96,16 @@ export default function PastEventCard({ event }: PastEventCardProps) {
           </div>
         </div>
 
-        {/* Action Button: Show Result */}
-        <div className="pt-4 mt-5 border-t border-white/10 flex items-center justify-between relative z-10">
-          <span className="text-[11px] text-[#A0A6B0]/80">Official Scoreboard</span>
+        {/* Action Buttons: PGN Replay & Full Results */}
+        <div className="pt-4 mt-5 border-t border-white/10 flex items-center justify-between relative z-10 gap-2">
+          <button
+            type="button"
+            onClick={() => setShowPgnModal(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-[#D4AF7C] bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 hover:bg-[#D4AF7C]/20 transition cursor-pointer"
+          >
+            <Eye className="w-3.5 h-3.5 text-[#D4AF7C]" />
+            <span>Replay PGN</span>
+          </button>
           
           <button
             type="button"
@@ -150,6 +166,19 @@ export default function PastEventCard({ event }: PastEventCardProps) {
                 <p className="text-xs text-[#A0A6B0] leading-relaxed font-['Poppins',sans-serif]">
                   {event.summary}
                 </p>
+                <div className="pt-1.5 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowResultsModal(false);
+                      setShowPgnModal(true);
+                    }}
+                    className="inline-flex items-center gap-1.5 text-xs text-[#D4AF7C] hover:text-[#F3E2B8] font-medium transition cursor-pointer"
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>Interactive PGN Replay for Championship Game →</span>
+                  </button>
+                </div>
               </div>
 
             {/* Podium Cards with Medals */}
@@ -229,6 +258,38 @@ export default function PastEventCard({ event }: PastEventCardProps) {
               </button>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* PGN REPLAY MODAL */}
+      {showPgnModal && (
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-md p-3 sm:p-6 flex items-start sm:items-center justify-center animate-in fade-in duration-200"
+          onClick={() => setShowPgnModal(false)}
+        >
+          <div
+            className="w-full max-w-4xl bg-gradient-to-b from-[#141922] to-[#0A0D13] rounded-3xl p-4 sm:p-6 shadow-2xl border border-[#D4AF7C]/40 relative my-auto overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#D4AF7C]">
+                Championship Game Archive • {event.title}
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowPgnModal(false)}
+                className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/15 text-[#A0A6B0] hover:text-white flex items-center justify-center transition border border-white/10 cursor-pointer"
+                aria-label="Close PGN viewer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <PgnViewer
+              pgn={featuredGame.pgn}
+              title={`${event.title} • Featured Game`}
+            />
           </div>
         </div>
       )}

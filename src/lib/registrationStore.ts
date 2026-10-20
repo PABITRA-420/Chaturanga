@@ -21,9 +21,11 @@ export interface RegistrationRecord {
   checkInStatus: 'registered' | 'confirmed' | 'checked_in';
 }
 
+import { RegistrationRow, RegistrationInsert } from '@/types/database';
+
 const REGISTRATIONS_FILE_PATH = path.join(process.cwd(), 'src', 'data', 'registrations.json');
 
-function dbToRegistration(row: any): RegistrationRecord {
+export function dbToRegistration(row: RegistrationRow): RegistrationRecord {
   return {
     ticketId: row.ticket_id,
     tournament: row.tournament,
@@ -34,17 +36,19 @@ function dbToRegistration(row: any): RegistrationRecord {
     year: row.year,
     email: row.email,
     phone: row.phone,
-    ratingCategory: row.rating_category,
-    chessPlatform: row.chess_platform || null,
+    ratingCategory: row.rating_category || '',
+    chessPlatform: (row as any).chess_platform || null,
     chessUsername: row.chess_username || 'N/A',
     fideId: row.fide_id || 'Unrated',
-    customAnswers: row.custom_answers || {},
+    customAnswers: (typeof row.custom_answers === 'object' && row.custom_answers !== null && !Array.isArray(row.custom_answers)) 
+      ? (row.custom_answers as Record<string, string>) 
+      : {},
     registeredAt: row.registered_at || new Date().toISOString(),
     checkInStatus: (row.check_in_status as any) || 'confirmed'
   };
 }
 
-function registrationToDb(r: RegistrationRecord): any {
+export function registrationToDb(r: RegistrationRecord): RegistrationInsert {
   return {
     ticket_id: r.ticketId,
     tournament: r.tournament,
@@ -58,7 +62,7 @@ function registrationToDb(r: RegistrationRecord): any {
     rating_category: r.ratingCategory,
     chess_username: r.chessUsername || 'N/A',
     fide_id: r.fideId || 'Unrated',
-    custom_answers: r.customAnswers || {},
+    custom_answers: (r.customAnswers || {}) as any,
     check_in_status: r.checkInStatus,
     registered_at: r.registeredAt || new Date().toISOString()
   };
@@ -85,7 +89,18 @@ export async function getAllRegistrations(): Promise<RegistrationRecord[]> {
     if (!error && data) {
       return data.map(dbToRegistration);
     }
-  } catch (err) {
+    if (error && process.env.NODE_ENV === 'production') {
+      const prodErr = new Error(`Database service unavailable in production: ${error.message}`);
+      (prodErr as any).status = 503;
+      throw prodErr;
+    }
+  } catch (err: any) {
+    if (err.status === 503) throw err;
+    if (process.env.NODE_ENV === 'production') {
+      const prodErr = new Error(`Database service unavailable in production: ${err.message}`);
+      (prodErr as any).status = 503;
+      throw prodErr;
+    }
     console.warn('Supabase fetch registrations failed, using fallback:', err);
   }
 
@@ -142,15 +157,61 @@ export async function findRegistration(query: string): Promise<RegistrationRecor
 
 export async function addRegistration(record: RegistrationRecord): Promise<RegistrationRecord> {
   try {
-    const dbRecord = registrationToDb(record);
-    const { error } = await supabaseServer
-      .from('registrations')
-      .insert([dbRecord]);
+    // 1. Attempt atomic stored function in PostgreSQL with row-level locking
+    const { error } = await (supabaseServer as any).rpc('register_participant_atomic', {
+      p_ticket_id: record.ticketId,
+      p_tournament_id: (record as any).tournamentId || record.tournament,
+      p_tournament_title: record.tournament,
+      p_full_name: record.fullName,
+      p_roll_number: record.rollNumber,
+      p_institution: record.institution,
+      p_department: record.department,
+      p_year: record.year,
+      p_email: record.email,
+      p_phone: record.phone,
+      p_rating_category: record.ratingCategory,
+      p_chess_platform: record.chessPlatform || null,
+      p_chess_username: record.chessUsername || 'N/A',
+      p_fide_id: record.fideId || 'Unrated',
+      p_custom_answers: record.customAnswers || {}
+    });
 
     if (error) {
-      console.error('Supabase add registration error:', error);
+      if (error.message?.includes('CAPACITY_REACHED')) {
+        const capacityErr = new Error('CAPACITY_REACHED');
+        (capacityErr as any).code = 'CAPACITY_REACHED';
+        throw capacityErr;
+      }
+      if (error.message?.includes('DUPLICATE_REGISTRATION')) {
+        const dupErr = new Error('DUPLICATE_REGISTRATION');
+        (dupErr as any).code = 'DUPLICATE_REGISTRATION';
+        throw dupErr;
+      }
+
+      // If stored function is not yet present on remote DB, fallback to direct insert
+      const dbRecord = registrationToDb(record);
+      const { error: insertError } = await supabaseServer
+        .from('registrations')
+        .insert([dbRecord]);
+
+      if (insertError) {
+        console.error('Supabase add registration error:', insertError);
+        if (process.env.NODE_ENV === 'production') {
+          const prodErr = new Error(`Database service unavailable in production: ${insertError.message}`);
+          (prodErr as any).status = 503;
+          throw prodErr;
+        }
+      }
     }
-  } catch (err) {
+  } catch (err: any) {
+    if (err.code === 'CAPACITY_REACHED' || err.code === 'DUPLICATE_REGISTRATION' || err.message?.includes('CAPACITY_REACHED') || err.message?.includes('DUPLICATE_REGISTRATION') || err.status === 503) {
+      throw err;
+    }
+    if (process.env.NODE_ENV === 'production') {
+      const prodErr = new Error(`Database service unavailable in production: ${err.message}`);
+      (prodErr as any).status = 503;
+      throw prodErr;
+    }
     console.error('Supabase insert exception:', err);
   }
 
@@ -165,7 +226,19 @@ export async function updateRegistrationStatus(ticketId: string, status: 'regist
       .eq('ticket_id', ticketId);
 
     if (!error) return true;
-  } catch {}
+    if (error && process.env.NODE_ENV === 'production') {
+      const prodErr = new Error(`Database service unavailable in production: ${error.message}`);
+      (prodErr as any).status = 503;
+      throw prodErr;
+    }
+  } catch (err: any) {
+    if (err.status === 503) throw err;
+    if (process.env.NODE_ENV === 'production') {
+      const prodErr = new Error(`Database service unavailable in production: ${err.message}`);
+      (prodErr as any).status = 503;
+      throw prodErr;
+    }
+  }
 
   return false;
 }
@@ -190,7 +263,19 @@ export async function deleteRegistration(ticketId: string): Promise<{ success: b
         deletedRecord: existing ? dbToRegistration(existing) : undefined 
       };
     }
-  } catch {}
+    if (error && process.env.NODE_ENV === 'production') {
+      const prodErr = new Error(`Database service unavailable in production: ${error.message}`);
+      (prodErr as any).status = 503;
+      throw prodErr;
+    }
+  } catch (err: any) {
+    if (err.status === 503) throw err;
+    if (process.env.NODE_ENV === 'production') {
+      const prodErr = new Error(`Database service unavailable in production: ${err.message}`);
+      (prodErr as any).status = 503;
+      throw prodErr;
+    }
+  }
 
   return { success: false };
 }

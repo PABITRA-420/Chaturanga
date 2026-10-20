@@ -7,17 +7,25 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "db:migrate": "tsx scripts/migrate.ts",
     "db:migrate:incremental": "tsx scripts/migrate_incremental.ts",
     "db:sync": "tsx scripts/sync_data.ts",
-    "db:auth": "tsx scripts/setup_admin_auth.ts"
+    "db:auth": "tsx scripts/setup_admin_auth.ts",
+    "db:types": "tsx scripts/generate_db_types.ts"
   },
   "dependencies": {
     "@netlify/blobs": "^11.1.4",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.3",
+    "canvas-confetti": "^1.9.4",
+    "chess.js": "^1.4.0",
+    "jspdf": "^2.5.2",
     "lucide-react": "^1.55.0",
     "next": "^16.4.0",
+    "qrcode": "^1.5.4",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "tailwindcss": "^4.3.3"
@@ -25,13 +33,22 @@
   "devDependencies": {
     "@netlify/plugin-nextjs": "^5.16.2",
     "@tailwindcss/postcss": "^4.3.3",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^24.19.2",
     "@types/pg": "^8.23.1",
+    "@types/qrcode": "^1.5.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "@vitest/coverage-v8": "^5.0.5",
+    "happy-dom": "^21.0.3",
     "pg": "^8.23.1",
     "postcss": "^8.5.8",
     "tsx": "^4.23.15",
-    "typescript": "~6.0.2"
+    "typescript": "~6.0.2",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^5.0.5"
   }
 }
