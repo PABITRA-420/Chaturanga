@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Megaphone, Calendar, ChevronRight, X, ArrowUpRight, AlertCircle, Bell } from 'lucide-react';
 import { ClubAnnouncement } from '@/data/announcementsData';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 export default function AnnouncementsBanner() {
   const [announcements, setAnnouncements] = useState<ClubAnnouncement[]>([]);
@@ -11,11 +12,25 @@ export default function AnnouncementsBanner() {
   const [selectedAnnouncement, setSelectedAnnouncement] = useState<ClubAnnouncement | null>(null);
 
   React.useEffect(() => {
+    try {
+      const cached = sessionStorage.getItem('chaturanga_announcements');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setAnnouncements(parsed);
+          setLoading(false);
+        }
+      }
+    } catch {}
+
     fetch('/api/announcements')
       .then(res => res.json())
       .then(data => {
         if (data.success && Array.isArray(data.announcements)) {
           setAnnouncements(data.announcements);
+          try {
+            sessionStorage.setItem('chaturanga_announcements', JSON.stringify(data.announcements));
+          } catch {}
         }
       })
       .catch(() => {})
@@ -52,12 +67,19 @@ export default function AnnouncementsBanner() {
 
         {/* Announcements List */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4" data-testid="announcements-skeleton">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="p-5 rounded-2xl bg-black/40 border border-white/5 animate-pulse space-y-3">
-                <div className="h-4 w-20 bg-white/10 rounded-full" />
-                <div className="h-5 w-3/4 bg-white/10 rounded-lg" />
-                <div className="h-10 w-full bg-white/5 rounded-lg" />
+              <div key={i} className="p-5 rounded-2xl bg-black/40 border border-white/5 space-y-3">
+                <div className="flex items-center justify-between">
+                  <Skeleton className="h-4 w-20 rounded-full" />
+                  <Skeleton className="h-3 w-16 rounded" />
+                </div>
+                <Skeleton className="h-5 w-4/5 rounded-lg" />
+                <Skeleton className="h-10 w-full rounded-lg" />
+                <div className="pt-2 border-t border-white/5 flex items-center justify-between">
+                  <Skeleton className="h-4 w-20 rounded" />
+                  <Skeleton className="h-4 w-4 rounded-full" />
+                </div>
               </div>
             ))}
           </div>

@@ -6,13 +6,15 @@ import UpcomingEventCard from '@/components/UpcomingEventCard';
 import PastEventCard from '@/components/PastEventCard';
 import TournamentCalendar from '@/components/TournamentCalendar';
 import { Calendar, Trophy, ArrowRight, Sparkles } from 'lucide-react';
+import { SkeletonCard } from '@/components/ui/Skeleton';
 
 interface HomeTournamentsProps {
   upcomingEvents: any[];
   pastEvents: any[];
+  loading?: boolean;
 }
 
-export default function HomeTournaments({ upcomingEvents, pastEvents }: HomeTournamentsProps) {
+export default function HomeTournaments({ upcomingEvents, pastEvents, loading = false }: HomeTournamentsProps) {
   const featured = upcomingEvents.find(e => e.isFeatured) || upcomingEvents[0];
   const otherUpcoming = upcomingEvents.filter(e => e.id !== featured?.id).slice(0, 2);
   const recentPast = pastEvents.slice(0, 2);
@@ -42,8 +44,16 @@ export default function HomeTournaments({ upcomingEvents, pastEvents }: HomeTour
           </Link>
         </div>
 
-        {/* Featured Card or Empty State */}
-        {upcomingEvents.length === 0 ? (
+        {/* Featured Card, Skeletons or Empty State */}
+        {loading ? (
+          <div className="space-y-6" data-testid="home-tournaments-skeleton">
+            <SkeletonCard isFeatured={true} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+              <SkeletonCard />
+              <SkeletonCard />
+            </div>
+          </div>
+        ) : upcomingEvents.length === 0 ? (
           <div className="p-10 sm:p-12 rounded-3xl bg-[#12161D] border border-white/10 text-center space-y-4 shadow-xl relative overflow-hidden">
             <div className="w-14 h-14 rounded-2xl bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 flex items-center justify-center mx-auto text-[#D4AF7C]">
               <Calendar className="w-7 h-7" />
@@ -127,7 +137,12 @@ export default function HomeTournaments({ upcomingEvents, pastEvents }: HomeTour
           </Link>
         </div>
 
-        {recentPast.length === 0 ? (
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6" data-testid="home-past-skeleton">
+            <SkeletonCard />
+            <SkeletonCard />
+          </div>
+        ) : recentPast.length === 0 ? (
           <div className="p-8 sm:p-10 rounded-3xl bg-[#12161D] border border-white/10 text-center space-y-3 shadow-xl">
             <Trophy className="w-8 h-8 text-[#D4AF7C]/40 mx-auto" />
             <h3 className="font-bold text-base text-[#F5F5F5]">No archived championships yet</h3>

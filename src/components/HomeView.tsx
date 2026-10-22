@@ -29,9 +29,11 @@ export default function HomeView() {
   const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
   const [pastEvents, setPastEvents] = useState<any[]>([]);
   const [featuredEvent, setFeaturedEvent] = useState<any>(EMPTY_TOURNAMENT_FALLBACK);
+  const [loadingTournaments, setLoadingTournaments] = useState<boolean>(true);
 
   // Fetch dynamic tournaments with instant session cache for zero-lag page open
   useEffect(() => {
+    let hasCached = false;
     try {
       const cachedUpcoming = sessionStorage.getItem('chaturanga_upcoming');
       if (cachedUpcoming) {
@@ -40,6 +42,7 @@ export default function HomeView() {
           setUpcomingEvents(parsed);
           const feat = parsed.find((t: any) => t.isFeatured) || parsed[0];
           if (feat) setFeaturedEvent(feat);
+          hasCached = true;
         }
       }
       const cachedPast = sessionStorage.getItem('chaturanga_past');
@@ -48,6 +51,10 @@ export default function HomeView() {
         if (Array.isArray(parsed)) setPastEvents(parsed);
       }
     } catch {}
+
+    if (hasCached) {
+      setLoadingTournaments(false);
+    }
 
     fetch('/api/tournaments?type=upcoming')
       .then(res => res.json())
@@ -64,7 +71,8 @@ export default function HomeView() {
           } catch {}
         }
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoadingTournaments(false));
 
     fetch('/api/tournaments?type=past')
       .then(res => res.json())
@@ -195,6 +203,7 @@ export default function HomeView() {
         <HomeTournaments
           upcomingEvents={upcomingEvents}
           pastEvents={pastEvents}
+          loading={loadingTournaments}
         />
 
         {/* 7. Bottom Registration Callout */}
