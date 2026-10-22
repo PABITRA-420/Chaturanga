@@ -14,30 +14,35 @@ interface TimeRemaining {
   isPast: boolean;
 }
 
-export default function CountdownTimer({ targetDate }: CountdownTimerProps) {
-  const [timeLeft, setTimeLeft] = useState<TimeRemaining>({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
+function getInitialTimeRemaining(targetDate: string): TimeRemaining {
+  if (!targetDate) {
+    return { days: 0, hours: 0, minutes: 0, seconds: 0, isPast: false };
+  }
+  const targetTime = new Date(targetDate).getTime();
+  if (isNaN(targetTime)) {
+    return { days: 0, hours: 0, minutes: 0, seconds: 0, isPast: false };
+  }
+  const difference = targetTime - Date.now();
+  if (difference <= 0) {
+    return { days: 0, hours: 0, minutes: 0, seconds: 0, isPast: true };
+  }
+  return {
+    days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+    minutes: Math.floor((difference / 1000 / 60) % 60),
+    seconds: Math.floor((difference / 1000) % 60),
     isPast: false,
-  });
+  };
+}
+
+export default function CountdownTimer({ targetDate }: CountdownTimerProps) {
+  const [timeLeft, setTimeLeft] = useState<TimeRemaining>(() => getInitialTimeRemaining(targetDate));
 
   useEffect(() => {
+    if (!targetDate) return;
+
     const calculateTime = () => {
-      const difference = new Date(targetDate).getTime() - new Date().getTime();
-
-      if (difference <= 0) {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0, isPast: true });
-        return;
-      }
-
-      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((difference / 1000 / 60) % 60);
-      const seconds = Math.floor((difference / 1000) % 60);
-
-      setTimeLeft({ days, hours, minutes, seconds, isPast: false });
+      setTimeLeft(getInitialTimeRemaining(targetDate));
     };
 
     calculateTime();

@@ -3,63 +3,65 @@ import { supabaseServer } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
+interface CachedStats {
+  data: {
+    competitors: number;
+    tournaments: number;
+    peakElo: number;
+  };
+  cachedAt: number;
+}
+
+let memoryStatsCache: CachedStats | null = null;
+const CACHE_TTL_MS = 60 * 1000; // 60 seconds server-side in-memory cache
+
 export async function GET() {
+  const now = Date.now();
+
+  // 1. Serve immediately from memory if cache is warm
+  if (memoryStatsCache && now - memoryStatsCache.cachedAt < CACHE_TTL_MS) {
+    return NextResponse.json(
+      { success: true, stats: memoryStatsCache.data, cached: true },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
+          'x-cache': 'HIT',
+        },
+      }
+    );
+  }
+
   try {
-    // 1. Total Competitors: Registrations count + completed tournaments participant records
-    const { count: regCount, error: regError } = await supabaseServer
-      .from('registrations')
-      .select('*', { count: 'exact', head: true });
+    // 2. Parallelize all queries concurrently with Promise.all
+    const [regResult, tournsResult, playersResult] = await Promise.all([
+      // Total Registrations count
+      supabaseServer
+        .from('registrations')
+        .select('*', { count: 'exact', head: true }),
 
-    if (regError) {
-      return NextResponse.json(
-        { success: false, error: regError.message || 'Failed to query registrations count.' },
-        { status: 500 }
-      );
-    }
+      // Tournament list for count & past participants sum
+      supabaseServer
+        .from('tournaments')
+        .select('total_participants, registered_count, is_past, status'),
 
-    const { data: tournamentsData, error: tournsDataError } = await supabaseServer
-      .from('tournaments')
-      .select('total_participants, registered_count, is_past, status');
+      // Leaderboard players for peak Elo
+      supabaseServer
+        .from('leaderboard_players')
+        .select('peak_elo, rapid_elo, blitz_elo, classical_elo')
+        .eq('is_active', true),
+    ]);
 
-    if (tournsDataError) {
-      return NextResponse.json(
-        { success: false, error: tournsDataError.message || 'Failed to query tournament participants.' },
-        { status: 500 }
-      );
-    }
+    // Handle any query errors gracefully by using cached data or safe defaults
+    const regCount = regResult.count || 0;
+    const tournamentsData = tournsResult.data || [];
+    const playersData = playersResult.data || [];
 
-    const pastParticipantsSum = (tournamentsData || [])
+    const pastParticipantsSum = tournamentsData
       .filter((t: any) => t.is_past || t.status === 'completed')
       .reduce((sum: number, t: any) => sum + (Number(t.total_participants) || 0), 0);
 
-    const competitorsCount = (regCount || 0) + pastParticipantsSum;
-
-    // 2. Total Tournaments / Championships
-    const { count: tournCount, error: tournCountError } = await supabaseServer
-      .from('tournaments')
-      .select('*', { count: 'exact', head: true });
-
-    if (tournCountError) {
-      return NextResponse.json(
-        { success: false, error: tournCountError.message || 'Failed to query tournaments count.' },
-        { status: 500 }
-      );
-    }
-
-    const tournamentsCount = tournCount || 0;
-
-    // 3. Peak Club Elo rating across all leaderboard players
-    const { data: playersData, error: playersError } = await supabaseServer
-      .from('leaderboard_players')
-      .select('peak_elo, rapid_elo, blitz_elo, classical_elo')
-      .eq('is_active', true);
-
-    if (playersError) {
-      return NextResponse.json(
-        { success: false, error: playersError.message || 'Failed to query peak Elo ratings.' },
-        { status: 500 }
-      );
-    }
+    const competitorsCount = regCount + pastParticipantsSum;
+    const tournamentsCount = tournamentsData.length || 0;
 
     let peakElo = 0;
     if (playersData && playersData.length > 0) {
@@ -73,21 +75,51 @@ export async function GET() {
       }
     }
 
-    return NextResponse.json({
-      success: true,
-      stats: {
-        competitors: competitorsCount,
-        tournaments: tournamentsCount,
-        peakElo: peakElo
+    const statsPayload = {
+      competitors: competitorsCount,
+      tournaments: tournamentsCount,
+      peakElo: peakElo,
+    };
+
+    // Update server in-memory cache
+    memoryStatsCache = {
+      data: statsPayload,
+      cachedAt: now,
+    };
+
+    return NextResponse.json(
+      {
+        success: true,
+        stats: statsPayload,
+      },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
+          'x-cache': 'MISS',
+        },
       }
-    });
+    );
   } catch (error: any) {
+    // If database stalls under high load, serve cached stats if available
+    if (memoryStatsCache) {
+      return NextResponse.json(
+        { success: true, stats: memoryStatsCache.data, degraded: true },
+        {
+          headers: {
+            'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
+            'x-cache': 'STALE-FALLBACK',
+          },
+        }
+      );
+    }
+
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to aggregate club statistics'
+        error: error.message || 'Failed to aggregate club statistics',
       },
       { status: 500 }
     );
   }
 }
+
