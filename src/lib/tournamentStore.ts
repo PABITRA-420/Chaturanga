@@ -101,7 +101,7 @@ function getInitialSeedTournaments(): Tournament[] {
       prizePool: ue.prizePool,
       slots: ue.slots,
       maxSlots: ue.id === 'inter-college-2026' ? 128 : ue.id === 'state-rapid-2026' ? 64 : 100,
-      registeredCount: ue.id === 'inter-college-2026' ? 42 : 18,
+      registeredCount: 0,
       isFeatured: ue.isFeatured,
       description: ue.description,
       status: index === 0 ? 'open' : index === 1 ? 'closing_soon' : 'upcoming',
@@ -172,6 +172,7 @@ export function setLastTournamentDataSourceForTesting(source: 'supabase' | 'fall
 }
 
 export async function getAllTournaments(): Promise<Tournament[]> {
+  let tournaments: Tournament[] = [];
   try {
     const { data, error } = await supabaseServer
       .from('tournaments')
@@ -181,17 +182,42 @@ export async function getAllTournaments(): Promise<Tournament[]> {
 
     if (!error && data !== null) {
       lastTournamentDataSource = 'supabase';
-      return data.map(dbToTournament);
-    }
-    if (error) {
-      console.warn('Supabase fetch tournaments error:', error.message);
+      tournaments = data.map(dbToTournament);
+    } else {
+      if (error) {
+        console.warn('Supabase fetch tournaments error:', error.message);
+      }
+      lastTournamentDataSource = 'fallback-mock';
+      tournaments = getLocalTournamentsFallback();
     }
   } catch (err) {
     console.warn('Supabase fetch tournaments failed, using local fallback:', err);
+    lastTournamentDataSource = 'fallback-mock';
+    tournaments = getLocalTournamentsFallback();
   }
 
-  lastTournamentDataSource = 'fallback-mock';
-  return getLocalTournamentsFallback();
+  // Count real registrations to avoid any hardcoded mock participant numbers
+  try {
+    const regPath = path.join(process.cwd(), 'src', 'data', 'registrations.json');
+    if (fs.existsSync(regPath)) {
+      const regContent = fs.readFileSync(regPath, 'utf-8');
+      const regList = JSON.parse(regContent);
+      if (Array.isArray(regList)) {
+        const counts: Record<string, number> = {};
+        regList.forEach((r: any) => {
+          const t = (r.tournament || '').trim().toLowerCase();
+          counts[t] = (counts[t] || 0) + 1;
+        });
+        tournaments.forEach(t => {
+          if (!t.isPast && t.status !== 'completed') {
+            t.registeredCount = counts[t.title.trim().toLowerCase()] || 0;
+          }
+        });
+      }
+    }
+  } catch {}
+
+  return tournaments;
 }
 
 export async function getTournamentById(id: string): Promise<Tournament | null> {

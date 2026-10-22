@@ -20,6 +20,7 @@ import AdminMediaTab from '@/components/admin/AdminMediaTab';
 import AdminSettingsTab from '@/components/admin/AdminSettingsTab';
 import AdminCertificatesTab from '@/components/admin/AdminCertificatesTab';
 import { AdminTeamPairingsTab } from '@/components/admin/AdminTeamPairingsTab';
+import AdminCockpitTab from '@/components/admin/AdminCockpitTab';
 import TournamentFormModal from '@/components/admin/TournamentFormModal';
 import ArchiveTournamentModal from '@/components/admin/ArchiveTournamentModal';
 
@@ -147,6 +148,7 @@ export default function AdminDashboardPage() {
         {/* Navigation Tabs */}
         <div className="flex items-center gap-2 border-b border-white/10 pb-4 overflow-x-auto no-scrollbar">
           {[
+            { id: 'cockpit', label: 'All-in-One Cockpit', icon: Sparkles },
             { id: 'tournaments', label: `Tournaments CMS (${tournaments.length})`, icon: Trophy },
             { id: 'roster', label: `Player Roster (${participants.length})`, icon: Users },
             { id: 'pairings', label: 'Swiss Pairings & Clocks', icon: Swords },
@@ -178,6 +180,17 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Tab Views */}
+        {activeTab === 'cockpit' && (
+          <AdminCockpitTab
+            tournaments={tournaments}
+            participants={participants}
+            onCheckIn={handleCheckIn}
+            onTournamentUpdated={(updated) => {
+              setTournaments(prev => prev.map(t => t.id === updated.id ? updated : t));
+            }}
+          />
+        )}
+
         {activeTab === 'tournaments' && (
           <AdminTournamentsTab
             tournaments={tournaments}

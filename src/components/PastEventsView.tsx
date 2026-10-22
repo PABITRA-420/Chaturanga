@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PastEventCard from '@/components/PastEventCard';
 import { Trophy, Search, Award, Sparkles, Filter } from 'lucide-react';
+import { SkeletonCard } from '@/components/ui/Skeleton';
 
 export default function PastEventsView() {
   const [pastEvents, setPastEvents] = useState<any[]>([]);
@@ -104,13 +105,9 @@ export default function PastEventsView() {
 
           {/* Past Events Grid */}
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-testid="past-events-skeleton">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="p-6 rounded-3xl bg-[#12161D] border border-white/5 animate-pulse space-y-4">
-                  <div className="h-6 w-36 bg-white/10 rounded-full" />
-                  <div className="h-10 w-full bg-white/5 rounded-xl" />
-                  <div className="h-20 bg-white/5 rounded-2xl" />
-                </div>
+                <SkeletonCard key={i} />
               ))}
             </div>
           ) : pastEvents.length === 0 ? (
