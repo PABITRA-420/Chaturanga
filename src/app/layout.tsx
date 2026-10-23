@@ -106,6 +106,7 @@ export const metadata: Metadata = {
 };
 
 import MobileNavigation from '@/components/MobileNavigation';
+import SlowNetworkIndicator from '@/components/ui/SlowNetworkIndicator';
 
 export default function RootLayout({
   children,
@@ -159,6 +160,7 @@ export default function RootLayout({
           Skip to main content
         </a>
         {children}
+        <SlowNetworkIndicator />
         <MobileNavigation />
       </body>
     </html>

@@ -35,9 +35,9 @@ export default function AdminResultsTab({ tournaments, onTournamentUpdated }: Pr
   
   // Podium State
   const [podium, setPodium] = useState<TournamentPodiumItem[]>([
-    { rank: '1st (Gold)', name: '', dept: 'CSE', score: '6.5 / 7.0', prize: '₹10,000 + Trophy' },
-    { rank: '2nd (Silver)', name: '', dept: 'IT', score: '6.0 / 7.0', prize: '₹6,000 + Trophy' },
-    { rank: '3rd (Bronze)', name: '', dept: 'ECE', score: '5.5 / 7.0', prize: '₹4,000 + Trophy' }
+    { rank: '1st (Gold)', name: '', dept: '', score: '', prize: '' },
+    { rank: '2nd (Silver)', name: '', dept: '', score: '', prize: '' },
+    { rank: '3rd (Bronze)', name: '', dept: '', score: '', prize: '' }
   ]);
 
   // Standings / Crosstable State
@@ -67,9 +67,9 @@ export default function AdminResultsTab({ tournaments, onTournamentUpdated }: Pr
         setPodium(t.podium);
       } else {
         setPodium([
-          { rank: '1st (Gold)', name: '', dept: 'CSE', score: '6.5 / 7.0', prize: '₹10,000 + Trophy' },
-          { rank: '2nd (Silver)', name: '', dept: 'IT', score: '6.0 / 7.0', prize: '₹6,000 + Trophy' },
-          { rank: '3rd (Bronze)', name: '', dept: 'ECE', score: '5.5 / 7.0', prize: '₹4,000 + Trophy' }
+          { rank: '1st (Gold)', name: '', dept: '', score: '', prize: '' },
+          { rank: '2nd (Silver)', name: '', dept: '', score: '', prize: '' },
+          { rank: '3rd (Bronze)', name: '', dept: '', score: '', prize: '' }
         ]);
       }
 
@@ -89,10 +89,10 @@ export default function AdminResultsTab({ tournaments, onTournamentUpdated }: Pr
       {
         rank: nextRank,
         name: '',
-        idNumber: `221011040${nextRank < 10 ? '0' + nextRank : nextRank}`,
-        dept: 'CSE',
-        score: '5.0 / 7.0',
-        tieBreak: '28.5'
+        idNumber: '',
+        dept: '',
+        score: '',
+        tieBreak: ''
       }
     ]);
   };
@@ -246,7 +246,7 @@ export default function AdminResultsTab({ tournaments, onTournamentUpdated }: Pr
                   rows={3}
                   value={summary}
                   onChange={(e) => setSummary(e.target.value)}
-                  placeholder="e.g. Over 7 grueling rounds with 64 players across 5 departments. Defending champion Suman Sen secured victory in Round 7 endgame."
+                  placeholder="Enter official arbiter summary, round-by-round highlights, and championship deciders..."
                   className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
                 />
               </div>

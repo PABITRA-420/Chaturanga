@@ -48,7 +48,7 @@ export const UPCOMING_EVENTS: UpcomingEvent[] = [
     venue: "Main Auditorium, JGEC Campus",
     format: "7 Rounds Swiss System • Rapid (15m + 10s)",
     prizePool: "₹25,000 + Trophies",
-    slots: "128 Max (42 Registered)",
+    slots: "128 Max Slots",
     isFeatured: true,
     description: "The premier collegiate chess championship of North Bengal. Open for students across engineering and collegiate institutions with digital clock setups and broadcast live boards."
   },
@@ -61,7 +61,7 @@ export const UPCOMING_EVENTS: UpcomingEvent[] = [
     venue: "Indoor Sports Complex, JGEC",
     format: "6 Rounds Rapid (25m + 10s) • FIDE Rated",
     prizePool: "₹40,000 Cash Pool",
-    slots: "64 Slots (Filling Fast)",
+    slots: "64 Max Slots",
     isFeatured: false,
     description: "Official FIDE-rated Rapid circuit leg organized in association with the North Bengal Chess Federation. Standard electronic clocks and international arbiters."
   },
@@ -74,7 +74,7 @@ export const UPCOMING_EVENTS: UpcomingEvent[] = [
     venue: "Student Activity Centre (SAC) Hall 1",
     format: "9 Double-Rounds (3m + 2s Blitz Arena)",
     prizePool: "₹15,000 + Medals",
-    slots: "Open for all batches",
+    slots: "Open for All Batches",
     isFeatured: false,
     description: "Fast-paced, adrenaline-filled blitz derby open to beginner, intermediate, and advanced players. Sudden death playoffs for top 4 finishers."
   }

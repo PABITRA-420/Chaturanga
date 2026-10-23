@@ -35,7 +35,8 @@ export async function GET(request: Request) {
       },
       {
         headers: {
-          'x-data-source': dataSource
+          'x-data-source': dataSource,
+          'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
         }
       }
     );

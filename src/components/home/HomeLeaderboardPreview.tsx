@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Crown, Trophy, Medal, ArrowRight, Sparkles, ShieldCheck } from 'lucide-react';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 function getPlayerDisplayRating(p: any) {
   if (!p) return { label: 'Rating', rating: 1200, platform: 'Lichess', format: 'Classical' };
@@ -31,11 +32,27 @@ export default function HomeLeaderboardPreview() {
   const [loading, setLoading] = React.useState<boolean>(true);
 
   React.useEffect(() => {
+    let hasCached = false;
+    try {
+      const cached = sessionStorage.getItem('chaturanga_leaderboard_preview');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setPlayers(parsed);
+          hasCached = true;
+          setLoading(false);
+        }
+      }
+    } catch {}
+
     fetch('/api/leaderboard')
       .then(res => res.json())
       .then(data => {
         if (data.success && Array.isArray(data.players)) {
           setPlayers(data.players);
+          try {
+            sessionStorage.setItem('chaturanga_leaderboard_preview', JSON.stringify(data.players));
+          } catch {}
         }
       })
       .catch(() => {})
@@ -78,17 +95,56 @@ export default function HomeLeaderboardPreview() {
           </Link>
         </div>
 
-        {/* Loading Skeletons */}
+        {/* Loading Skeletons - Zero CLS Podium Layout */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="p-6 rounded-2xl bg-black/40 border border-white/5 animate-pulse space-y-4">
-                <div className="h-6 w-24 bg-white/10 rounded-full" />
-                <div className="h-6 w-40 bg-white/10 rounded-lg" />
-                <div className="h-4 w-28 bg-white/5 rounded-md" />
-                <div className="h-10 w-full bg-white/5 rounded-xl mt-4" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch" data-testid="leaderboard-podium-skeleton">
+            {/* Silver #2 Skeleton */}
+            <div className="order-2 md:order-1 p-6 rounded-2xl bg-black/40 border border-slate-400/20 flex flex-col justify-between space-y-4">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Skeleton className="w-24 h-5 rounded-full" />
+                  <span className="text-lg opacity-40">🥈</span>
+                </div>
+                <Skeleton className="w-3/4 h-6 rounded-lg" />
+                <Skeleton className="w-1/2 h-4 rounded-md" />
               </div>
-            ))}
+              <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
+                <Skeleton className="w-20 h-4 rounded" />
+                <Skeleton className="w-16 h-6 rounded-lg" />
+              </div>
+            </div>
+
+            {/* Gold #1 Skeleton */}
+            <div className="order-1 md:order-2 p-6 rounded-2xl bg-gradient-to-b from-[#1C1710] to-[#12161D] border-2 border-[#D4AF7C]/40 shadow-lg flex flex-col justify-between space-y-4 relative transform md:-translate-y-2">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Skeleton className="w-28 h-5 rounded-full" />
+                  <span className="text-xl opacity-60">👑</span>
+                </div>
+                <Skeleton className="w-4/5 h-7 rounded-lg" />
+                <Skeleton className="w-3/5 h-4 rounded-md" />
+              </div>
+              <div className="mt-4 pt-3 border-t border-[#D4AF7C]/20 flex items-center justify-between">
+                <Skeleton className="w-24 h-4 rounded" />
+                <Skeleton className="w-20 h-7 rounded-lg" />
+              </div>
+            </div>
+
+            {/* Bronze #3 Skeleton */}
+            <div className="order-3 md:order-3 p-6 rounded-2xl bg-black/40 border border-amber-700/30 flex flex-col justify-between space-y-4">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Skeleton className="w-24 h-5 rounded-full" />
+                  <span className="text-lg opacity-40">🥉</span>
+                </div>
+                <Skeleton className="w-3/4 h-6 rounded-lg" />
+                <Skeleton className="w-1/2 h-4 rounded-md" />
+              </div>
+              <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
+                <Skeleton className="w-20 h-4 rounded" />
+                <Skeleton className="w-16 h-6 rounded-lg" />
+              </div>
+            </div>
           </div>
         ) : players.length === 0 ? (
           /* Empty State: 0 Players */

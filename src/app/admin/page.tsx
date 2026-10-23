@@ -3,13 +3,14 @@
 import React from 'react';
 import Link from 'next/link';
 import ChaturangaLogo from '@/components/ChaturangaLogo';
-import { 
-  ShieldCheck, Shield, Users, Trophy, LogOut, Download, CheckCircle2, 
-  ExternalLink, Sparkles, Database, Plus, Award, Crown, Bell, Cloud, Camera, Swords 
+import {
+  ShieldCheck, Shield, Users, Trophy, LogOut, Download, CheckCircle2,
+  ExternalLink, Sparkles, Database, Plus, Award, Crown, Bell, Cloud, Camera, Swords, Table2
 } from 'lucide-react';
 import { useAdminManagement } from '@/hooks/useAdminManagement';
 import AdminTournamentsTab from '@/components/admin/AdminTournamentsTab';
 import AdminParticipantsTab from '@/components/admin/AdminParticipantsTab';
+import AdminSpreadsheetTab from '@/components/admin/AdminSpreadsheetTab';
 import AdminPairingsTab from '@/components/admin/AdminPairingsTab';
 import AdminLeaderboardTab from '@/components/admin/AdminLeaderboardTab';
 import AdminResultsTab from '@/components/admin/AdminResultsTab';
@@ -20,6 +21,7 @@ import AdminMediaTab from '@/components/admin/AdminMediaTab';
 import AdminSettingsTab from '@/components/admin/AdminSettingsTab';
 import AdminCertificatesTab from '@/components/admin/AdminCertificatesTab';
 import { AdminTeamPairingsTab } from '@/components/admin/AdminTeamPairingsTab';
+import AdminCockpitTab from '@/components/admin/AdminCockpitTab';
 import TournamentFormModal from '@/components/admin/TournamentFormModal';
 import ArchiveTournamentModal from '@/components/admin/ArchiveTournamentModal';
 
@@ -147,6 +149,7 @@ export default function AdminDashboardPage() {
         {/* Navigation Tabs */}
         <div className="flex items-center gap-2 border-b border-white/10 pb-4 overflow-x-auto no-scrollbar">
           {[
+            { id: 'cockpit', label: 'All-in-One Cockpit', icon: Sparkles },
             { id: 'tournaments', label: `Tournaments CMS (${tournaments.length})`, icon: Trophy },
             { id: 'roster', label: `Player Roster (${participants.length})`, icon: Users },
             { id: 'pairings', label: 'Swiss Pairings & Clocks', icon: Swords },
@@ -166,9 +169,8 @@ export default function AdminDashboardPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`px-4 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0 ${
-                  isActive ? 'bg-[#D4AF7C] text-[#0B0F14] shadow-md shadow-[#D4AF7C]/20' : 'text-[#A0A6B0] hover:text-[#F5F5F5] bg-white/[0.03] hover:bg-white/[0.08] border border-white/10'
-                }`}
+                className={`px-4 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0 ${isActive ? 'bg-[#D4AF7C] text-[#0B0F14] shadow-md shadow-[#D4AF7C]/20' : 'text-[#A0A6B0] hover:text-[#F5F5F5] bg-white/[0.03] hover:bg-white/[0.08] border border-white/10'
+                  }`}
               >
                 <Icon className="w-4 h-4" />
                 <span>{tab.label}</span>
@@ -178,6 +180,17 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Tab Views */}
+        {activeTab === 'cockpit' && (
+          <AdminCockpitTab
+            tournaments={tournaments}
+            participants={participants}
+            onCheckIn={handleCheckIn}
+            onTournamentUpdated={(updated) => {
+              setTournaments(prev => prev.map(t => t.id === updated.id ? updated : t));
+            }}
+          />
+        )}
+
         {activeTab === 'tournaments' && (
           <AdminTournamentsTab
             tournaments={tournaments}
@@ -213,9 +226,9 @@ export default function AdminDashboardPage() {
         )}
 
         {activeTab === 'results' && (
-          <AdminResultsTab 
-            tournaments={tournaments} 
-            onTournamentUpdated={(updated) => setTournaments(prev => prev.map(t => t.id === updated.id ? updated : t))} 
+          <AdminResultsTab
+            tournaments={tournaments}
+            onTournamentUpdated={(updated) => setTournaments(prev => prev.map(t => t.id === updated.id ? updated : t))}
           />
         )}
 

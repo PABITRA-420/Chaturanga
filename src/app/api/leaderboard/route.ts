@@ -18,11 +18,18 @@ export async function GET(request: Request) {
 
     const players = await getAllLeaderboardPlayers(sortBy);
 
-    return NextResponse.json({
-      success: true,
-      players,
-      total: players.length
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        players,
+        total: players.length,
+      },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
+        },
+      }
+    );
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message || 'Failed to fetch leaderboard.' },

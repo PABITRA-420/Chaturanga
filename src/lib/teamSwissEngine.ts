@@ -183,24 +183,25 @@ export function generateTeamSwissPairings(
   });
 
   const matches: TeamMatch[] = [];
-  const pairedIds = new Set<string>();
+  const pairingPool = [...sortedTeams];
+  let byeMatch: TeamMatch | null = null;
 
   // Handle Odd Team Bye:
   // Give bye to lowest ranked team that hasn't received a bye yet
-  let byeTeam: EnrichedTeamState | undefined;
-  if (sortedTeams.length % 2 !== 0) {
-    for (let i = sortedTeams.length - 1; i >= 0; i--) {
-      if (!sortedTeams[i].had_bye) {
-        byeTeam = sortedTeams[i];
+  if (pairingPool.length % 2 !== 0) {
+    let byeIndex = -1;
+    for (let i = pairingPool.length - 1; i >= 0; i--) {
+      if (!pairingPool[i].had_bye) {
+        byeIndex = i;
         break;
       }
     }
     // Fallback if all had byes
-    if (!byeTeam) byeTeam = sortedTeams[sortedTeams.length - 1];
+    if (byeIndex === -1) byeIndex = pairingPool.length - 1;
 
-    pairedIds.add(byeTeam.team.id);
+    const byeTeam = pairingPool.splice(byeIndex, 1)[0];
 
-    matches.push({
+    byeMatch = {
       id: `match-r${currentRoundNumber}-bye-${byeTeam.team.id}`,
       tournament_id: byeTeam.team.tournament_id,
       round_number: currentRoundNumber,
@@ -220,64 +221,73 @@ export function generateTeamSwissPairings(
       black_match_points: 0,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-    });
+    };
   }
 
-  const remainingTeams = sortedTeams.filter(t => !pairedIds.has(t.team.id));
+  // Recursive backtracking pairing search
+  function findTeamPairings(
+    unpaired: EnrichedTeamState[],
+    strictRematches: boolean
+  ): [EnrichedTeamState, EnrichedTeamState][] | null {
+    if (unpaired.length === 0) return [];
 
-  // Backtracking pairing search to satisfy rematch avoidance
-  const pairSearch = (index: number, currentPairs: [EnrichedTeamState, EnrichedTeamState][]): boolean => {
-    if (currentPairs.length * 2 === remainingTeams.length) {
-      return true;
-    }
+    const teamA = unpaired[0];
+    const candidates = unpaired.slice(1);
 
-    // Find first unpaired team
-    let firstIdx = -1;
-    for (let i = 0; i < remainingTeams.length; i++) {
-      const id = remainingTeams[i].team.id;
-      if (!currentPairs.some(([a, b]) => a.team.id === id || b.team.id === id)) {
-        firstIdx = i;
-        break;
-      }
-    }
+    // Sort candidates:
+    // 1. Unplayed opponents first (strict rematch avoidance)
+    // 2. Score closeness (match points difference)
+    // 3. Game points difference
+    // 4. Rating closeness
+    candidates.sort((b1, b2) => {
+      const playedB1 = teamA.opponents.includes(b1.team.id) ? 1 : 0;
+      const playedB2 = teamA.opponents.includes(b2.team.id) ? 1 : 0;
+      if (playedB1 !== playedB2) return playedB1 - playedB2;
 
-    if (firstIdx === -1) return true;
+      const mpDiff1 = Math.abs(teamA.match_points - b1.match_points);
+      const mpDiff2 = Math.abs(teamA.match_points - b2.match_points);
+      if (mpDiff1 !== mpDiff2) return mpDiff1 - mpDiff2;
 
-    const teamA = remainingTeams[firstIdx];
+      const gpDiff1 = Math.abs(teamA.game_points - b1.game_points);
+      const gpDiff2 = Math.abs(teamA.game_points - b2.game_points);
+      if (gpDiff1 !== gpDiff2) return gpDiff1 - gpDiff2;
 
-    for (let j = firstIdx + 1; j < remainingTeams.length; j++) {
-      const teamB = remainingTeams[j];
-      const isPaired = currentPairs.some(([a, b]) => a.team.id === teamB.team.id || b.team.id === teamB.team.id);
-      if (isPaired) continue;
+      const rDiff1 = Math.abs((teamA.team.seed_rating || 0) - (b1.team.seed_rating || 0));
+      const rDiff2 = Math.abs((teamA.team.seed_rating || 0) - (b2.team.seed_rating || 0));
+      return rDiff1 - rDiff2;
+    });
 
-      // Rematch check
-      const hasPlayed = teamA.opponents.includes(teamB.team.id);
-      if (hasPlayed && remainingTeams.length > 2) {
+    for (const teamB of candidates) {
+      if (strictRematches && teamA.opponents.includes(teamB.team.id)) {
         continue;
       }
 
-      currentPairs.push([teamA, teamB]);
-      if (pairSearch(firstIdx + 1, currentPairs)) {
-        return true;
-      }
-      currentPairs.pop();
-    }
+      const remaining = candidates.filter(t => t.team.id !== teamB.team.id);
+      const subPairings = findTeamPairings(remaining, strictRematches);
 
-    // If no rematch-free partner found and we have exhausted candidates, allow best possible rematch if unavoidable
-    if (currentPairs.length === 0 && remainingTeams.length >= 2) {
-      for (let j = firstIdx + 1; j < remainingTeams.length; j++) {
-        const teamB = remainingTeams[j];
-        currentPairs.push([teamA, teamB]);
-        if (pairSearch(firstIdx + 1, currentPairs)) return true;
-        currentPairs.pop();
+      if (subPairings !== null) {
+        return [[teamA, teamB], ...subPairings];
       }
     }
 
-    return false;
-  };
+    return null;
+  }
 
-  const selectedPairs: [EnrichedTeamState, EnrichedTeamState][] = [];
-  pairSearch(0, selectedPairs);
+  // Attempt 1: Strict rematches (zero rematches allowed)
+  let selectedPairs = findTeamPairings(pairingPool, true);
+
+  // Attempt 2: Relax rematches if mathematically impossible (unplayed-first sorting minimizes rematches)
+  if (!selectedPairs) {
+    selectedPairs = findTeamPairings(pairingPool, false);
+  }
+
+  // Attempt 3: Deterministic fallback if graph search fails
+  if (!selectedPairs) {
+    selectedPairs = [];
+    for (let i = 0; i < pairingPool.length - 1; i += 2) {
+      selectedPairs.push([pairingPool[i], pairingPool[i + 1]]);
+    }
+  }
 
   let tableNum = 1;
   for (const [t1, t2] of selectedPairs) {
@@ -287,7 +297,7 @@ export function generateTeamSwissPairings(
 
     const boardPairings = buildBoardPairings(whiteTeam, blackTeam);
 
-    matches.unshift({
+    matches.push({
       id: `match-r${currentRoundNumber}-t${tableNum}`,
       tournament_id: whiteTeam.tournament_id,
       round_number: currentRoundNumber,
@@ -310,6 +320,11 @@ export function generateTeamSwissPairings(
     });
 
     tableNum++;
+  }
+
+  if (byeMatch) {
+    byeMatch.table_number = tableNum;
+    matches.push(byeMatch);
   }
 
   // Sort matches by table number

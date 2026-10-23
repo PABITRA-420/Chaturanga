@@ -7,6 +7,7 @@ import UpcomingEventCard from '@/components/UpcomingEventCard';
 import TournamentCalendar from '@/components/TournamentCalendar';
 import { Calendar, HelpCircle, ShieldCheck, Clock, Award, Sparkles, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import { SkeletonCard } from '@/components/ui/Skeleton';
 
 export default function UpcomingEventsView() {
   const [events, setEvents] = React.useState<any[]>([]);
@@ -48,11 +49,14 @@ export default function UpcomingEventsView() {
             </p>
           </div>
 
-          {/* Loading Skeleton */}
+          {/* Zero-CLS Skeleton Loading */}
           {loading && (
-            <div className="p-12 rounded-3xl bg-[#12161D] border border-white/10 animate-pulse space-y-4">
-              <div className="h-6 w-48 bg-white/10 rounded-full" />
-              <div className="h-32 bg-white/5 rounded-2xl" />
+            <div className="space-y-8" data-testid="upcoming-events-skeleton">
+              <SkeletonCard isFeatured={true} />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <SkeletonCard />
+                <SkeletonCard />
+              </div>
             </div>
           )}
 

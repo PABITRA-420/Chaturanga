@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { 
   Trophy, 
   Crown, 
@@ -436,34 +437,34 @@ export default function LeaderboardView() {
                 </thead>
                 <tbody className="divide-y divide-white/5 text-xs sm:text-sm">
                   {loading ? (
-                    [1, 2, 3, 4, 5].map((i) => (
-                      <tr key={i} className="animate-pulse">
+                    [1, 2, 3, 4, 5, 6].map((i) => (
+                      <tr key={i} className="hover:bg-transparent">
                         <td className="py-4 px-4 sm:px-6 text-center">
-                          <div className="w-7 h-7 rounded-xl bg-white/5 mx-auto" />
+                          <Skeleton className="w-7 h-7 rounded-xl mx-auto" />
                         </td>
                         <td className="py-4 px-4 sm:px-6">
                           <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-white/10" />
-                            <div className="space-y-1.5">
-                              <div className="h-4 w-32 bg-white/10 rounded" />
-                              <div className="h-3 w-20 bg-white/5 rounded" />
+                            <Skeleton className="w-9 h-9 rounded-xl shrink-0" />
+                            <div className="space-y-1.5 flex-1">
+                              <Skeleton className="h-4 w-36 rounded" />
+                              <Skeleton className="h-3 w-24 rounded" />
                             </div>
                           </div>
                         </td>
                         <td className="py-4 px-4 text-right">
-                          <div className="h-5 w-12 bg-white/10 rounded ml-auto" />
+                          <Skeleton className="h-5 w-14 rounded ml-auto" />
                         </td>
                         <td className="py-4 px-4 text-center">
-                          <div className="h-4 w-10 bg-white/5 rounded mx-auto" />
+                          <Skeleton className="h-4 w-12 rounded mx-auto" />
                         </td>
                         <td className="py-4 px-4 text-center">
-                          <div className="h-4 w-12 bg-white/5 rounded mx-auto" />
+                          <Skeleton className="h-4 w-14 rounded mx-auto" />
                         </td>
                         <td className="py-4 px-4 text-center">
-                          <div className="h-5 w-16 bg-white/5 rounded mx-auto" />
+                          <Skeleton className="h-5 w-16 rounded mx-auto" />
                         </td>
                         <td className="py-4 px-4 sm:px-6 text-center">
-                          <div className="h-4 w-8 bg-white/5 rounded mx-auto" />
+                          <Skeleton className="h-4 w-10 rounded mx-auto" />
                         </td>
                       </tr>
                     ))

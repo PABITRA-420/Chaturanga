@@ -194,3 +194,26 @@ nav {
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 1rem);
 }
+
+/* Glassmorphism Obsidian-Gold Skeleton Utilities */
+@keyframes skeletonPulse {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-hud {
+  background: linear-gradient(
+    90deg,
+    rgba(18, 22, 29, 0.7) 0%,
+    rgba(212, 175, 124, 0.08) 35%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(212, 175, 124, 0.08) 65%,
+    rgba(18, 22, 29, 0.7) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
