@@ -35,14 +35,10 @@ npm-debug.log*
 yarn-debug.log*
 pnpm-debug.log*
 
-# AI Assistant & Planning directories
-.agents/
-.planning/
+# AI Assistant directories
 .gemini/
 .claude/
 .cursor/
-model_capabilities.yaml
-VERSION
 
 # Editor & OS Files
 .vscode/*
