@@ -17,8 +17,19 @@
 }
 
 html {
-  scroll-behavior: smooth;
   color-scheme: dark;
+}
+
+/* GPU hardware compositing layer */
+.gpu-layer {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Offscreen section virtualization for smooth 60-120fps scrolling on low-end hardware */
+.content-visibility-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 700px;
 }
 
 body {
@@ -141,6 +152,15 @@ nav {
   animation: pulseSlow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+@keyframes spinReverse {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+.animate-spin-reverse {
+  animation: spinReverse linear infinite;
+}
+
 /* Smooth card hover lift */
 .hover-lift {
   transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.28s ease;
@@ -216,4 +236,144 @@ nav {
   );
   background-size: 200% 100%;
   animation: skeletonPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ==========================================================================
+   Tactile Click & Tap Physics (Humanized Micro-interactions)
+   ========================================================================== */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Tactile push button physics: snappy mechanical press on click */
+.btn-tactile {
+  position: relative;
+  transition: transform 0.14s cubic-bezier(0.2, 0.8, 0.2, 1),
+              filter 0.14s ease,
+              box-shadow 0.14s ease,
+              border-color 0.14s ease;
+  user-select: none;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+.btn-tactile:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1.5px);
+}
+
+.btn-tactile:active {
+  transform: translateY(1.5px) scale(0.975);
+  filter: brightness(0.95);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.35);
+}
+
+/* Card tactile feedback */
+.card-tactile {
+  transition: transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 0.24s cubic-bezier(0.2, 0.8, 0.2, 1),
+              border-color 0.2s ease;
+  touch-action: manipulation;
+}
+
+.card-tactile:hover {
+  transform: translateY(-3px);
+}
+
+.card-tactile:active {
+  transform: translateY(0px) scale(0.99);
+}
+
+/* Pill & badge click physics */
+.pill-tactile {
+  transition: transform 0.12s cubic-bezier(0.2, 0.8, 0.2, 1),
+              background-color 0.15s ease,
+              border-color 0.15s ease;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+.pill-tactile:hover {
+  transform: scale(1.04);
+}
+
+.pill-tactile:active {
+  transform: scale(0.94);
+}
+
+/* ==========================================================================
+   Elevated Luxury Hover States (Universal Interactive Micro-interactions)
+   ========================================================================== */
+.hover-lift-gold {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.24s ease,
+              background-color 0.24s ease;
+}
+
+.hover-lift-gold:hover {
+  transform: translateY(-4px);
+  border-color: rgba(212, 175, 124, 0.45);
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.8), 0 0 25px rgba(212, 175, 124, 0.16);
+}
+
+.hover-glow-gold {
+  transition: box-shadow 0.24s ease, border-color 0.24s ease, transform 0.2s ease;
+}
+
+.hover-glow-gold:hover {
+  border-color: rgba(212, 175, 124, 0.5);
+  box-shadow: 0 0 20px rgba(212, 175, 124, 0.22);
+}
+
+/* Table row interactive gold edge highlight on hover */
+.hover-row {
+  position: relative;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.hover-row:hover {
+  background-color: rgba(212, 175, 124, 0.05);
+}
+
+/* Text link with animated golden beam expansion */
+.hover-link-gold {
+  position: relative;
+  display: inline-block;
+  transition: color 0.2s ease;
+}
+
+.hover-link-gold::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background: linear-gradient(90deg, #D4AF7C, #F3E2B8);
+  transition: width 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  border-radius: 9999px;
+}
+
+.hover-link-gold:hover::after {
+  width: 100%;
+}
+
+/* Modal Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.96) translateY(-8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-scale-up {
+  animation: scaleUp 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

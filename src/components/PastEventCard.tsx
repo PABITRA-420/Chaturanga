@@ -5,6 +5,7 @@ import { PastEvent } from '@/data/tournamentData';
 import { Trophy, Calendar, Clock, MapPin, Award, Users, X, ArrowUpRight, Eye } from 'lucide-react';
 import { PgnViewer } from '@/components/chess/PgnViewer';
 import { SEED_GAMES } from '@/lib/pgnParser';
+import SpotlightCard from '@/components/ui/SpotlightCard';
 
 interface PastEventCardProps {
   event: PastEvent;
@@ -23,7 +24,12 @@ export default function PastEventCard({ event }: PastEventCardProps) {
   return (
     <>
       {/* CARD */}
-      <div className="relative group rounded-2xl bg-[#12161D] border border-white/10 hover:border-[#D4AF7C]/50 p-6 sm:p-7 transition-all duration-300 shadow-xl hover:shadow-[0_8px_30px_rgba(212,175,124,0.1)] flex flex-col justify-between overflow-hidden hover-lift">
+      <SpotlightCard
+        className="rounded-2xl bg-[#12161D] border border-white/10 p-6 sm:p-7 transition-all duration-300 shadow-xl flex flex-col justify-between overflow-hidden hover-lift-gold h-full group"
+        spotlightColor="rgba(212, 175, 124, 0.14)"
+        size={300}
+        interactiveTilt={true}
+      >
         {/* Subtle accent corner glow */}
         <div className="absolute -top-12 -right-12 w-36 h-36 bg-[#D4AF7C]/5 rounded-full blur-2xl group-hover:bg-[#D4AF7C]/20 transition-all duration-500 pointer-events-none" />
 
@@ -116,7 +122,7 @@ export default function PastEventCard({ event }: PastEventCardProps) {
             <ArrowUpRight className="w-3.5 h-3.5" />
           </button>
         </div>
-      </div>
+      </SpotlightCard>
 
       {/* FULL RESULTS MODAL */}
       {showResultsModal && (

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import HeroSection from '@/components/home/HeroSection';
@@ -10,6 +11,9 @@ import BentoAbout from '@/components/home/BentoAbout';
 import HomeLeaderboardPreview from '@/components/home/HomeLeaderboardPreview';
 import HomeTournaments from '@/components/home/HomeTournaments';
 import RegisterCta from '@/components/home/RegisterCta';
+import { UPCOMING_EVENTS, PAST_EVENTS } from '@/data/tournamentData';
+
+const FaqAccordion = dynamic(() => import('@/components/ui/FaqAccordion'), { ssr: true });
 
 const EMPTY_TOURNAMENT_FALLBACK = {
   isNeutral: true,
@@ -22,18 +26,19 @@ const BASELINE_STATS = {
   peakElo: 2140,
 };
 
-export default function HomeView() {
-  const [participantsCount, setParticipantsCount] = useState(0);
-  const [eventsCount, setEventsCount] = useState(0);
-  const [peakElo, setPeakElo] = useState<number | undefined>(undefined);
-  const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
-  const [pastEvents, setPastEvents] = useState<any[]>([]);
-  const [featuredEvent, setFeaturedEvent] = useState<any>(EMPTY_TOURNAMENT_FALLBACK);
-  const [loadingTournaments, setLoadingTournaments] = useState<boolean>(true);
+const initialFeatured = UPCOMING_EVENTS.find(t => t.isFeatured) || UPCOMING_EVENTS[0] || EMPTY_TOURNAMENT_FALLBACK;
 
-  // Fetch dynamic tournaments with instant session cache for zero-lag page open
+export default function HomeView() {
+  const [participantsCount, setParticipantsCount] = useState<number>(BASELINE_STATS.competitors);
+  const [eventsCount, setEventsCount] = useState<number>(BASELINE_STATS.tournaments);
+  const [peakElo, setPeakElo] = useState<number | undefined>(BASELINE_STATS.peakElo);
+  const [upcomingEvents, setUpcomingEvents] = useState<any[]>(UPCOMING_EVENTS);
+  const [pastEvents, setPastEvents] = useState<any[]>(PAST_EVENTS);
+  const [featuredEvent, setFeaturedEvent] = useState<any>(initialFeatured);
+  const [loadingTournaments, setLoadingTournaments] = useState<boolean>(false);
+
+  // Background SWR fetch to update live tournaments if modified in admin
   useEffect(() => {
-    let hasCached = false;
     try {
       const cachedUpcoming = sessionStorage.getItem('chaturanga_upcoming');
       if (cachedUpcoming) {
@@ -42,24 +47,19 @@ export default function HomeView() {
           setUpcomingEvents(parsed);
           const feat = parsed.find((t: any) => t.isFeatured) || parsed[0];
           if (feat) setFeaturedEvent(feat);
-          hasCached = true;
         }
       }
       const cachedPast = sessionStorage.getItem('chaturanga_past');
       if (cachedPast) {
         const parsed = JSON.parse(cachedPast);
-        if (Array.isArray(parsed)) setPastEvents(parsed);
+        if (Array.isArray(parsed) && parsed.length > 0) setPastEvents(parsed);
       }
     } catch {}
-
-    if (hasCached) {
-      setLoadingTournaments(false);
-    }
 
     fetch('/api/tournaments?type=upcoming')
       .then(res => res.json())
       .then(data => {
-        if (data.success && Array.isArray(data.tournaments)) {
+        if (data.success && Array.isArray(data.tournaments) && data.tournaments.length > 0) {
           setUpcomingEvents(data.tournaments);
           const featured =
             data.tournaments.find((t: any) => t.isFeatured) ||
@@ -71,13 +71,12 @@ export default function HomeView() {
           } catch {}
         }
       })
-      .catch(() => {})
-      .finally(() => setLoadingTournaments(false));
+      .catch(() => {});
 
     fetch('/api/tournaments?type=past')
       .then(res => res.json())
       .then(data => {
-        if (data.success && Array.isArray(data.tournaments)) {
+        if (data.success && Array.isArray(data.tournaments) && data.tournaments.length > 0) {
           setPastEvents(data.tournaments);
           try {
             sessionStorage.setItem('chaturanga_past', JSON.stringify(data.tournaments));
@@ -87,79 +86,36 @@ export default function HomeView() {
       .catch(() => {});
   }, []);
 
-  // Animate counters IMMEDIATELY on page mount (no waiting for network delay!)
+  // Background SWR fetch for real-time club statistics
   useEffect(() => {
-    let animationFrameId: number;
-
-    // Read cached stats if available from previous page view
-    let targetParticipants = BASELINE_STATS.competitors;
-    let targetEvents = BASELINE_STATS.tournaments;
-    let targetElo = BASELINE_STATS.peakElo;
-
     try {
       const cached = sessionStorage.getItem('chaturanga_hero_stats');
       if (cached) {
         const parsed = JSON.parse(cached);
-        if (parsed.competitors) targetParticipants = Number(parsed.competitors);
-        if (parsed.tournaments) targetEvents = Number(parsed.tournaments);
-        if (parsed.peakElo) targetElo = Number(parsed.peakElo);
+        if (parsed.competitors) setParticipantsCount(Number(parsed.competitors));
+        if (parsed.tournaments) setEventsCount(Number(parsed.tournaments));
+        if (parsed.peakElo) setPeakElo(Number(parsed.peakElo));
       }
     } catch {}
 
-    const duration = 1200;
-    const startTime = performance.now();
-
-    // 1. Kick off smooth counting animation immediately on frame 1
-    const animateCounts = (currentTime: number) => {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const easeOut = 1 - Math.pow(1 - progress, 3);
-
-      setParticipantsCount(Math.floor(easeOut * targetParticipants));
-      setEventsCount(Math.floor(easeOut * targetEvents));
-      if (targetElo > 0) {
-        setPeakElo(Math.floor(easeOut * targetElo));
-      }
-
-      if (progress < 1) {
-        animationFrameId = requestAnimationFrame(animateCounts);
-      } else {
-        setParticipantsCount(targetParticipants);
-        setEventsCount(targetEvents);
-        if (targetElo > 0) {
-          setPeakElo(targetElo);
-        }
-      }
-    };
-
-    animationFrameId = requestAnimationFrame(animateCounts);
-
-    // 2. Concurrently fetch fresh live statistics from cached API
     fetch('/api/stats')
       .then(res => res.json())
       .then(data => {
         if (data.success && data.stats) {
-          const liveParticipants = Number(data.stats.competitors) || targetParticipants;
-          const liveEvents = Number(data.stats.tournaments) || targetEvents;
-          const liveElo = Number(data.stats.peakElo) || targetElo;
+          const liveParticipants = Number(data.stats.competitors);
+          const liveEvents = Number(data.stats.tournaments);
+          const liveElo = Number(data.stats.peakElo);
+
+          if (liveParticipants > 0) setParticipantsCount(liveParticipants);
+          if (liveEvents > 0) setEventsCount(liveEvents);
+          if (liveElo > 0) setPeakElo(liveElo);
 
           try {
             sessionStorage.setItem('chaturanga_hero_stats', JSON.stringify(data.stats));
           } catch {}
-
-          // Update final numbers seamlessly
-          setParticipantsCount(liveParticipants);
-          setEventsCount(liveEvents);
-          if (liveElo > 0) {
-            setPeakElo(liveElo);
-          }
         }
       })
       .catch(() => {});
-
-    return () => {
-      if (animationFrameId) cancelAnimationFrame(animationFrameId);
-    };
   }, []);
 
   const handleRegisterClick = () => {
@@ -171,7 +127,6 @@ export default function HomeView() {
 
   return (
     <div className="min-h-screen bg-[#0B0F14] text-[#F5F5F5] antialiased selection:bg-[#D4AF7C] selection:text-[#0B0F14] relative overflow-x-hidden">
-      
       {/* NAVBAR */}
       <Navbar onRegisterClick={handleRegisterClick} />
 
@@ -191,23 +146,38 @@ export default function HomeView() {
         <TickerMarquee />
 
         {/* 3. Official Announcements Feed */}
-        <AnnouncementsBanner />
+        <div className="content-visibility-auto">
+          <AnnouncementsBanner />
+        </div>
 
         {/* 4. Bento About Institutional Heritage */}
-        <BentoAbout />
+        <div className="content-visibility-auto">
+          <BentoAbout />
+        </div>
 
         {/* 5. Live Leaderboard Top Board Preview */}
-        <HomeLeaderboardPreview />
+        <div className="content-visibility-auto">
+          <HomeLeaderboardPreview />
+        </div>
 
         {/* 6. Tournaments & Interactive Calendar */}
-        <HomeTournaments
-          upcomingEvents={upcomingEvents}
-          pastEvents={pastEvents}
-          loading={loadingTournaments}
-        />
+        <div className="content-visibility-auto">
+          <HomeTournaments
+            upcomingEvents={upcomingEvents}
+            pastEvents={pastEvents}
+            loading={loadingTournaments}
+          />
+        </div>
 
-        {/* 7. Bottom Registration Callout */}
-        <RegisterCta />
+        {/* 7. Collegiate FAQ Accordion */}
+        <div className="content-visibility-auto">
+          <FaqAccordion />
+        </div>
+
+        {/* 8. Bottom Registration Callout */}
+        <div className="content-visibility-auto">
+          <RegisterCta />
+        </div>
 
       </main>
 

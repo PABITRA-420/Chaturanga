@@ -3,12 +3,12 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Megaphone, Calendar, ChevronRight, X, ArrowUpRight, AlertCircle, Bell } from 'lucide-react';
-import { ClubAnnouncement } from '@/data/announcementsData';
+import { ClubAnnouncement, CLUB_ANNOUNCEMENTS } from '@/data/announcementsData';
 import { Skeleton } from '@/components/ui/Skeleton';
 
 export default function AnnouncementsBanner() {
-  const [announcements, setAnnouncements] = useState<ClubAnnouncement[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [announcements, setAnnouncements] = useState<ClubAnnouncement[]>(() => CLUB_ANNOUNCEMENTS);
+  const [loading, setLoading] = useState<boolean>(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState<ClubAnnouncement | null>(null);
 
   React.useEffect(() => {

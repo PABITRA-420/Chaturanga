@@ -5,6 +5,10 @@ import Link from 'next/link';
 import { UpcomingEvent } from '@/data/tournamentData';
 import CountdownTimer from './CountdownTimer';
 import { Calendar, Clock, MapPin, Trophy, Users, ArrowRight, Sparkles, Radio } from 'lucide-react';
+import SpotlightCard from '@/components/ui/SpotlightCard';
+import BorderBeam from '@/components/ui/BorderBeam';
+import ShimmerButton from '@/components/ui/ShimmerButton';
+import AddToCalendarButton from '@/components/ui/AddToCalendarButton';
 
 interface UpcomingEventCardProps {
   event: UpcomingEvent;
@@ -12,18 +16,23 @@ interface UpcomingEventCardProps {
 
 export default function UpcomingEventCard({ event }: UpcomingEventCardProps) {
   if (event.isFeatured) {
-    // 1. NEAREST EVENT: ULTRA-LUXURY GOLD FOIL & AMBER RADIANCE + LIVE COUNTDOWN
+    // 1. NEAREST/FLAGSHIP EVENT: 21st.dev ULTRA-LUXURY SPOTLIGHT + BORDER BEAM
     return (
-      <div className="relative rounded-3xl bg-gradient-to-br from-[#1C1710] via-[#12161D] to-[#0A0D12] border-2 border-[#D4AF7C]/70 p-6 sm:p-8 lg:p-10 shadow-[0_10px_50px_rgba(212,175,124,0.18)] overflow-hidden group hover-lift">
-        {/* Animated shimmer sweep */}
-        <div className="animate-shimmer" />
+      <SpotlightCard
+        className="rounded-3xl bg-gradient-to-br from-[#1C1710] via-[#12161D] to-[#0A0D12] p-6 sm:p-8 lg:p-10 relative overflow-hidden shadow-[0_10px_50px_rgba(212,175,124,0.18)] hover-lift-gold"
+        spotlightColor="rgba(212, 175, 124, 0.16)"
+        size={500}
+        interactiveTilt={false}
+      >
+        {/* 21st.dev Single Outer Border Beam - shimmer moves through the exact outer border */}
+        <BorderBeam duration={9} colorFrom="#D4AF7C" colorTo="#F3E2B8" baseColor="rgba(212, 175, 124, 0.45)" borderWidth={2} />
 
         {/* Ambient background glows */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#D4AF7C]/15 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20 group-hover:bg-[#D4AF7C]/25 transition-all duration-700" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#D4AF7C]/12 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20 group-hover:bg-[#D4AF7C]/20 transition-all duration-700" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-500/10 rounded-full blur-2xl pointer-events-none -ml-20 -mb-20" />
 
-        {/* Watermark Chess King icon in background */}
-        <div className="absolute -right-8 -bottom-8 pointer-events-none opacity-[0.035] group-hover:opacity-[0.06] transition-opacity duration-500 text-white select-none">
+        {/* Watermark Chess Trophy in background */}
+        <div className="absolute -right-8 -bottom-8 pointer-events-none opacity-[0.035] group-hover:opacity-[0.07] transition-opacity duration-500 text-white select-none">
           <Trophy className="w-80 h-80" />
         </div>
 
@@ -32,7 +41,10 @@ export default function UpcomingEventCard({ event }: UpcomingEventCardProps) {
           {/* Top Banner: Status + Nearest Flag */}
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full text-xs font-bold text-[#0B0F14] bg-gradient-to-r from-[#D4AF7C] via-[#F3E2B8] to-[#D4AF7C] shadow-lg shadow-[#D4AF7C]/30 uppercase tracking-wider">
-              <span className="w-2 h-2 rounded-full bg-emerald-600 animate-ping inline-block" />
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-600 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600" />
+              </span>
               <Sparkles className="w-3.5 h-3.5" />
               <span>Flagship Championship • Live Registration</span>
             </div>
@@ -69,7 +81,7 @@ export default function UpcomingEventCard({ event }: UpcomingEventCardProps) {
 
           {/* Meta Details Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 py-2 text-xs font-['Poppins',sans-serif]">
-            <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5 space-y-1.5 hover:border-[#D4AF7C]/30 transition-all">
+            <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5 space-y-1.5 hover:border-[#D4AF7C]/30 transition-all backdrop-blur-sm">
               <div className="flex items-center gap-2 text-[#D4AF7C] font-semibold">
                 <Calendar className="w-4 h-4" />
                 <span>Match Date</span>
@@ -77,7 +89,7 @@ export default function UpcomingEventCard({ event }: UpcomingEventCardProps) {
               <div className="text-[#F5F5F5] font-medium text-sm">{event.date}</div>
             </div>
 
-            <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5 space-y-1.5 hover:border-[#D4AF7C]/30 transition-all">
+            <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5 space-y-1.5 hover:border-[#D4AF7C]/30 transition-all backdrop-blur-sm">
               <div className="flex items-center gap-2 text-[#D4AF7C] font-semibold">
                 <Clock className="w-4 h-4" />
                 <span>Reporting Time</span>
@@ -85,7 +97,7 @@ export default function UpcomingEventCard({ event }: UpcomingEventCardProps) {
               <div className="text-[#F5F5F5] font-medium text-sm">{event.time}</div>
             </div>
 
-            <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5 space-y-1.5 hover:border-[#D4AF7C]/30 transition-all">
+            <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5 space-y-1.5 hover:border-[#D4AF7C]/30 transition-all backdrop-blur-sm">
               <div className="flex items-center gap-2 text-[#D4AF7C] font-semibold">
                 <MapPin className="w-4 h-4" />
                 <span>Playing Hall</span>
@@ -93,7 +105,7 @@ export default function UpcomingEventCard({ event }: UpcomingEventCardProps) {
               <div className="text-[#F5F5F5] font-medium text-sm">{event.venue}</div>
             </div>
 
-            <div className="p-4 rounded-xl bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 space-y-1.5">
+            <div className="p-4 rounded-xl bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 space-y-1.5 backdrop-blur-sm">
               <div className="flex items-center gap-2 text-[#D4AF7C] font-semibold">
                 <Trophy className="w-4 h-4" />
                 <span>Guaranteed Prize</span>
@@ -104,41 +116,50 @@ export default function UpcomingEventCard({ event }: UpcomingEventCardProps) {
 
           {/* CTA Buttons */}
           <div className="pt-3 flex flex-wrap items-center justify-between gap-4 border-t border-white/10">
-            <div className="text-xs text-[#A0A6B0]">
-              Format: <span className="text-[#F5F5F5] font-semibold bg-white/5 px-2.5 py-1 rounded-md border border-white/10 ml-1.5">{event.format}</span>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="text-xs text-[#A0A6B0]">
+                Format: <span className="text-[#F5F5F5] font-semibold bg-white/5 px-2.5 py-1 rounded-md border border-white/10 ml-1.5">{event.format}</span>
+              </div>
+              <AddToCalendarButton event={event} />
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
               <Link
                 href={`/tournaments/${event.id}/live`}
-                className="inline-flex items-center gap-2 px-5 py-3.5 rounded-full font-['Inter',sans-serif] text-sm font-bold text-white bg-red-950/40 hover:bg-red-900/50 border border-red-500/40 hover:border-red-500/70 transition-all duration-300 shadow-lg shadow-red-950/20 active:scale-95"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-full font-['Inter',sans-serif] text-xs uppercase tracking-wider font-bold text-white bg-red-950/40 hover:bg-red-900/50 border border-red-500/40 hover:border-red-500/70 transition-all duration-300 shadow-lg shadow-red-950/20 active:scale-95"
               >
                 <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
-                <Radio className="w-4 h-4 text-red-400" />
+                <Radio className="w-3.5 h-3.5 text-red-400" />
                 <span>Live Broadcast</span>
               </Link>
 
-              <Link
+              <ShimmerButton
                 href={`/register?event=${event.id}`}
-                className="inline-flex items-center gap-2.5 px-7 sm:px-9 py-3.5 rounded-full font-['Inter',sans-serif] text-sm font-bold text-[#0B0F14] bg-gradient-to-r from-[#D4AF7C] via-[#F3E2B8] to-[#D4AF7C] hover:brightness-110 transition-all duration-300 shadow-[0_4px_25px_rgba(212,175,124,0.35)] hover:scale-[1.03] active:scale-[0.98] cursor-pointer"
+                className="px-8 py-3.5"
+                shimmerColor="#FFFFFF"
+                background="linear-gradient(135deg, #E6C98A 0%, #D4AF7C 50%, #C39958 100%)"
               >
-                <span>Register & Generate Pass</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+                <span className="text-[#0B0F14] font-extrabold flex items-center gap-2">
+                  Register &amp; Generate Pass
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-[#0B0F14]" />
+                </span>
+              </ShimmerButton>
             </div>
           </div>
 
         </div>
-      </div>
+      </SpotlightCard>
     );
   }
 
-  // 2. SUBSEQUENT EVENTS: SOPHISTICATED BRUSHED TITANIUM & MONOCHROME ELEGANCE
+  // 2. SUBSEQUENT EVENTS: 21st.dev SPOTLIGHT WITH TITANIUM ACCENTS
   return (
-    <div className="relative rounded-2xl bg-gradient-to-b from-[#11141A] to-[#0A0D12] border border-white/10 p-6 sm:p-7 transition-all duration-300 hover:border-[#D4AF7C]/40 shadow-xl hover:shadow-[0_8px_30px_rgba(0,0,0,0.6)] flex flex-col justify-between overflow-hidden group hover-lift">
-      {/* Subtle corner light reflection */}
-      <div className="absolute top-0 right-0 w-48 h-48 bg-white/[0.02] rounded-full blur-2xl pointer-events-none group-hover:bg-[#D4AF7C]/10 transition-colors duration-500" />
-
+    <SpotlightCard
+      className="p-6 sm:p-7 h-full rounded-2xl bg-gradient-to-b from-[#11141A] to-[#0A0D12] border border-white/10 flex flex-col justify-between overflow-hidden group hover-lift-gold shadow-xl"
+      spotlightColor="rgba(212, 175, 124, 0.12)"
+      size={300}
+      interactiveTilt={true}
+    >
       <div className="space-y-5 relative z-10">
         
         {/* Top Badges */}
@@ -148,9 +169,12 @@ export default function UpcomingEventCard({ event }: UpcomingEventCardProps) {
             <span>Circuit Event</span>
           </span>
 
-          <span className="text-[11px] text-neutral-400 font-mono bg-black/40 px-2.5 py-0.5 rounded-full border border-white/5">
-            {event.slots}
-          </span>
+          <div className="flex items-center gap-2">
+            <AddToCalendarButton event={event} size="sm" />
+            <span className="text-[11px] text-neutral-400 font-mono bg-black/40 px-2.5 py-0.5 rounded-full border border-white/5">
+              {event.slots}
+            </span>
+          </div>
         </div>
 
         {/* Title & Description */}
@@ -195,7 +219,7 @@ export default function UpcomingEventCard({ event }: UpcomingEventCardProps) {
       <div className="pt-5 mt-5 border-t border-white/10 flex items-center justify-between relative z-10 gap-2">
         <Link
           href={`/tournaments/${event.id}/live`}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-[#D4AF7C] bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 hover:bg-[#D4AF7C]/20 transition"
+          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#D4AF7C] bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 hover:bg-[#D4AF7C]/20 transition"
         >
           <Radio className="w-3.5 h-3.5 text-[#D4AF7C]" />
           <span>Live Board</span>
@@ -209,6 +233,6 @@ export default function UpcomingEventCard({ event }: UpcomingEventCardProps) {
           <ArrowRight className="w-3.5 h-3.5" />
         </Link>
       </div>
-    </div>
+    </SpotlightCard>
   );
 }

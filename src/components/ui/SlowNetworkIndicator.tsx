@@ -49,9 +49,10 @@ export default function SlowNetworkIndicator() {
         <div>
           <div className="text-xs font-bold text-[#F5F5F5] flex items-center gap-1.5">
             <span>Offline Resilience Active</span>
+            <span className="text-[10px] font-mono text-amber-400 font-normal">• Time Trouble Mode</span>
           </div>
           <p className="text-[11px] text-[#A0A6B0] leading-tight">
-            Serving cached Swiss tournaments &amp; local standings.
+            Serving cached Swiss tournaments &amp; local standings. Passes saved safely offline.
           </p>
         </div>
       </div>
@@ -59,7 +60,7 @@ export default function SlowNetworkIndicator() {
       <button
         type="button"
         onClick={() => setIsDismissed(true)}
-        className="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-[#A0A6B0] hover:text-white transition shrink-0"
+        className="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-[#A0A6B0] hover:text-white transition shrink-0 btn-tactile"
         aria-label="Dismiss offline alert"
       >
         <X className="w-3.5 h-3.5" />

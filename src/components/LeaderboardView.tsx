@@ -15,7 +15,10 @@ import {
   Clock, 
   Zap, 
   BookOpen, 
-  Sparkles
+  Sparkles,
+  ArrowUp,
+  ChevronDown,
+  Users
 } from 'lucide-react';
 import { LeaderboardPlayer } from '@/types/leaderboard';
 
@@ -27,6 +30,8 @@ export default function LeaderboardView() {
 
   const [players, setPlayers] = useState<LeaderboardPlayer[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [visibleCount, setVisibleCount] = useState<number>(10);
+  const [showElevator, setShowElevator] = useState<boolean>(false);
 
   // Fetch live players from Supabase API
   React.useEffect(() => {
@@ -46,6 +51,39 @@ export default function LeaderboardView() {
 
     return () => { isMounted = false; };
   }, [ratingMode]);
+
+  // Reset pagination to initial top 10 on query/filter/sort changes
+  React.useEffect(() => {
+    setVisibleCount(10);
+  }, [searchQuery, ratingMode, sortBy]);
+
+  // Scroll listener for floating mini side elevator (throttled with RAF)
+  React.useEffect(() => {
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const isOver = window.scrollY > 280;
+          setShowElevator(prev => (prev !== isOver ? isOver : prev));
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTopBoard = () => {
+    const tableEl = document.getElementById('leaderboard-table');
+    if (tableEl) {
+      const yOffset = -90;
+      const y = tableEl.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   // Filter and Sort Players
   const filteredPlayers = useMemo(() => {
@@ -73,6 +111,11 @@ export default function LeaderboardView() {
   const topThree = useMemo(() => {
     return filteredPlayers.slice(0, 3);
   }, [filteredPlayers]);
+
+  // Paginated slice for the table: loads top 10 initially, expandable via Load More
+  const displayedPlayers = useMemo(() => {
+    return filteredPlayers.slice(0, visibleCount);
+  }, [filteredPlayers, visibleCount]);
 
   const maxRating = players.length > 0 ? Math.max(...players.map(p => p.rating?.[ratingMode] || 0)) : 0;
   const bestDeptPlayer = players.length > 0 
@@ -411,7 +454,7 @@ export default function LeaderboardView() {
         </section>
 
         {/* MAIN LEADERBOARD TABLE */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section id="leaderboard-table" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="rounded-3xl bg-[#12161D] border border-white/10 shadow-2xl overflow-hidden">
             
             {/* Mobile Horizontal Scroll Hint */}
@@ -478,7 +521,7 @@ export default function LeaderboardView() {
                       </td>
                     </tr>
                   ) : (
-                    filteredPlayers.map((player, idx) => {
+                    displayedPlayers.map((player, idx) => {
                       const displayRank = idx + 1;
                       const isTop1 = displayRank === 1;
                       const isTop2 = displayRank === 2;
@@ -489,7 +532,7 @@ export default function LeaderboardView() {
                       return (
                         <tr 
                           key={player.id} 
-                          className="hover:bg-white/[0.03] transition-colors group"
+                          className="hover-row hover:bg-white/[0.04] transition-colors group cursor-pointer"
                         >
                           <td className="py-4 px-4 sm:px-6 text-center">
                             <span className={`inline-flex items-center justify-center w-7 h-7 rounded-xl font-mono text-xs font-bold ${
@@ -621,6 +664,71 @@ export default function LeaderboardView() {
               </table>
             </div>
 
+            {/* LOAD MORE CONTROLS (Top 10 initial view with incremental loading) */}
+            {!loading && filteredPlayers.length > 0 && (
+              <div className="p-5 sm:p-6 bg-[#0E1218]/90 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                {/* Progress Stats & Meter */}
+                <div className="space-y-1.5 w-full sm:w-auto text-center sm:text-left">
+                  <div className="flex items-center justify-center sm:justify-start gap-2 text-xs text-[#A0A6B0]">
+                    <Users className="w-3.5 h-3.5 text-[#D4AF7C]" />
+                    <span>
+                      Showing <strong className="text-[#F5F5F5] font-mono">{displayedPlayers.length}</strong> of{' '}
+                      <strong className="text-[#D4AF7C] font-mono">{filteredPlayers.length}</strong> ranked contenders
+                    </span>
+                  </div>
+                  <div className="w-full sm:w-64 h-1.5 rounded-full bg-white/10 overflow-hidden mx-auto sm:mx-0">
+                    <div
+                      className="h-full bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] rounded-full transition-all duration-300"
+                      style={{ width: `${Math.min(100, (displayedPlayers.length / filteredPlayers.length) * 100)}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex items-center gap-2.5 flex-wrap justify-center sm:justify-end w-full sm:w-auto">
+                  {visibleCount < filteredPlayers.length ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setVisibleCount(prev => Math.min(prev + 10, filteredPlayers.length))}
+                        className="px-6 py-2.5 rounded-full text-xs font-bold text-[#0B0F14] bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] hover:brightness-110 shadow-md shadow-[#D4AF7C]/20 transition-all flex items-center gap-2 btn-tactile cursor-pointer"
+                      >
+                        <span>Load 10 More Players (+10)</span>
+                        <ChevronDown className="w-4 h-4" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setVisibleCount(filteredPlayers.length)}
+                        className="px-4 py-2.5 rounded-full text-xs font-semibold text-[#A0A6B0] hover:text-[#F5F5F5] bg-white/5 hover:bg-white/10 border border-white/10 transition-all cursor-pointer"
+                      >
+                        <span>Show All ({filteredPlayers.length})</span>
+                      </button>
+                    </>
+                  ) : (
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs text-emerald-400 font-medium flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                        All {filteredPlayers.length} contenders loaded
+                      </span>
+                      {filteredPlayers.length > 10 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setVisibleCount(10);
+                            scrollToTopBoard();
+                          }}
+                          className="px-3.5 py-1.5 rounded-full text-xs text-[#A0A6B0] hover:text-[#D4AF7C] bg-white/5 hover:bg-white/10 border border-white/10 transition-all cursor-pointer"
+                        >
+                          Collapse to Top 10
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Table Footer */}
             <div className="p-4 sm:p-5 bg-black/40 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#A0A6B0]">
               <div className="flex items-center gap-2">
@@ -640,6 +748,35 @@ export default function LeaderboardView() {
 
           </div>
         </section>
+
+        {/* 21st.dev MINI SIDE ELEVATOR (Back to #1 Top Board) */}
+        {showElevator && (
+          <aside
+            aria-label="Leaderboard quick navigation elevator"
+            className="fixed right-4 sm:right-6 bottom-6 sm:bottom-8 z-40 flex flex-col items-end gap-2 animate-in fade-in slide-in-from-bottom-4 duration-300"
+          >
+            <div className="p-1.5 rounded-2xl bg-[#12161D]/90 border border-[#D4AF7C]/40 backdrop-blur-xl shadow-2xl shadow-black/80 flex flex-col items-center gap-1.5">
+              {/* Back to #1 Top Board button */}
+              <button
+                type="button"
+                onClick={scrollToTopBoard}
+                className="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] text-[#0B0F14] text-xs font-bold flex items-center gap-2 shadow-lg shadow-[#D4AF7C]/30 hover:brightness-110 active:scale-95 transition-all cursor-pointer btn-tactile group"
+                title="Quick jump back to Rank #1 Top Board"
+              >
+                <Crown className="w-4 h-4 text-[#0B0F14]" />
+                <span className="font-extrabold tracking-wide hidden sm:inline">Back to #1 Top Board</span>
+                <span className="font-extrabold tracking-wide sm:hidden">#1 Top</span>
+                <ArrowUp className="w-3.5 h-3.5 group-hover:-translate-y-0.5 transition-transform" />
+              </button>
+
+              {/* Mini side rail indicator */}
+              <div className="text-[10px] font-mono text-[#A0A6B0] py-0.5 px-2 flex items-center gap-1.5 select-none opacity-80">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF7C] animate-pulse" />
+                <span>Top Board Elevator</span>
+              </div>
+            </div>
+          </aside>
+        )}
 
       </main>
 

@@ -4,6 +4,9 @@ import React from 'react';
 import Link from 'next/link';
 import { Crown, Trophy, Medal, ArrowRight, Sparkles, ShieldCheck } from 'lucide-react';
 import { Skeleton } from '@/components/ui/Skeleton';
+import SpotlightCard from '@/components/ui/SpotlightCard';
+import BorderBeam from '@/components/ui/BorderBeam';
+import { LEADERBOARD_PLAYERS } from '@/data/leaderboardData';
 
 function getPlayerDisplayRating(p: any) {
   if (!p) return { label: 'Rating', rating: 1200, platform: 'Lichess', format: 'Classical' };
@@ -28,8 +31,8 @@ function getPlayerDisplayRating(p: any) {
 }
 
 export default function HomeLeaderboardPreview() {
-  const [players, setPlayers] = React.useState<any[]>([]);
-  const [loading, setLoading] = React.useState<boolean>(true);
+  const [players, setPlayers] = React.useState<any[]>(() => LEADERBOARD_PLAYERS.slice(0, 3));
+  const [loading, setLoading] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     let hasCached = false;
@@ -176,7 +179,12 @@ export default function HomeLeaderboardPreview() {
             
             {/* Silver #2 */}
             {p2 && info2 ? (
-              <div className="order-2 md:order-1 p-6 rounded-2xl bg-black/40 border border-slate-400/20 hover:border-slate-300/40 transition flex flex-col justify-between">
+              <SpotlightCard
+                className="order-2 md:order-1 p-6 rounded-2xl bg-black/40 border border-slate-400/20 hover:border-slate-300/40 transition flex flex-col justify-between"
+                spotlightColor="rgba(203, 213, 225, 0.12)"
+                size={280}
+                interactiveTilt={true}
+              >
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-xs font-bold text-slate-300 px-2.5 py-0.5 rounded-full bg-slate-300/10 border border-slate-300/30">
@@ -196,7 +204,7 @@ export default function HomeLeaderboardPreview() {
                   </div>
                   <span className="font-mono text-xl font-bold text-slate-200">{info2.rating}</span>
                 </div>
-              </div>
+              </SpotlightCard>
             ) : (
               <div className="order-2 md:order-1 p-6 rounded-2xl bg-black/20 border border-dashed border-slate-500/20 flex flex-col justify-between">
                 <div>
@@ -216,37 +224,52 @@ export default function HomeLeaderboardPreview() {
               </div>
             )}
 
-            {/* Gold #1 */}
+            {/* Gold #1 Reigning Champion */}
             {p1 && info1 && (
-              <div className="order-1 md:order-2 p-6 rounded-2xl bg-gradient-to-b from-[#1C1710] to-[#12161D] border-2 border-[#D4AF7C] shadow-lg shadow-[#D4AF7C]/15 flex flex-col justify-between relative transform md:-translate-y-2">
-                <div className="absolute -top-3 right-6 px-3 py-0.5 rounded-full bg-[#D4AF7C] text-[#0B0F14] font-black text-[10px] tracking-wider uppercase">
-                  REIGNING CHAMPION
-                </div>
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-bold text-[#D4AF7C] px-2.5 py-0.5 rounded-full bg-[#D4AF7C]/20 border border-[#D4AF7C]/40">
-                      Rank #1 • Gold Crown
-                    </span>
-                    <span className="text-xl">👑</span>
+              <SpotlightCard
+                className="order-1 md:order-2 p-6 rounded-2xl bg-gradient-to-b from-[#1C1710] to-[#12161D] shadow-lg shadow-[#D4AF7C]/20 flex flex-col justify-between relative transform md:-translate-y-2"
+                spotlightColor="rgba(212, 175, 124, 0.22)"
+                size={340}
+                interactiveTilt={true}
+              >
+                {/* 21st.dev Single Outer Border Beam - shimmer moves seamlessly through the outer border */}
+                <BorderBeam duration={8} colorFrom="#D4AF7C" colorTo="#F3E2B8" baseColor="rgba(212, 175, 124, 0.45)" borderWidth={2} />
+                
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs font-bold text-[#D4AF7C] px-2.5 py-0.5 rounded-full bg-[#D4AF7C]/20 border border-[#D4AF7C]/40">
+                        Rank #1 • Gold Crown
+                      </span>
+                      <span className="px-2.5 py-0.5 rounded-full bg-[#D4AF7C] text-[#0B0F14] font-black text-[10px] tracking-wider uppercase shadow-sm">
+                        REIGNING CHAMPION
+                      </span>
+                    </div>
+                    <span className="text-xl shrink-0">👑</span>
                   </div>
                   <h3 className="font-black text-xl text-[#F5F5F5]">{p1.name}</h3>
                   <p className="text-xs text-[#A0A6B0]">
                     <span className="text-[#D4AF7C] font-semibold">{info1.platform} {info1.format}</span>
                   </p>
                 </div>
-                <div className="mt-4 pt-3 border-t border-[#D4AF7C]/20 flex items-center justify-between">
+                <div className="relative z-10 mt-4 pt-3 border-t border-[#D4AF7C]/20 flex items-center justify-between">
                   <div>
                     <span className="text-[10px] uppercase font-bold text-[#D4AF7C] block">{info1.platform} {info1.format}</span>
                     <span className="text-xs text-[#A0A6B0] font-mono">@{p1.lichessUsername || p1.chessUsername}</span>
                   </div>
                   <span className="font-mono text-2xl font-black text-[#D4AF7C]">{info1.rating}</span>
                 </div>
-              </div>
+              </SpotlightCard>
             )}
 
             {/* Bronze #3 */}
             {p3 && info3 ? (
-              <div className="order-3 md:order-3 p-6 rounded-2xl bg-black/40 border border-amber-700/30 hover:border-amber-600/40 transition flex flex-col justify-between">
+              <SpotlightCard
+                className="order-3 md:order-3 p-6 rounded-2xl bg-black/40 border border-amber-700/30 hover:border-amber-600/40 transition flex flex-col justify-between"
+                spotlightColor="rgba(217, 119, 6, 0.12)"
+                size={280}
+                interactiveTilt={true}
+              >
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-xs font-bold text-amber-500 px-2.5 py-0.5 rounded-full bg-amber-700/20 border border-amber-700/40">
@@ -266,7 +289,7 @@ export default function HomeLeaderboardPreview() {
                   </div>
                   <span className="font-mono text-xl font-bold text-amber-400">{info3.rating}</span>
                 </div>
-              </div>
+              </SpotlightCard>
             ) : (
               <div className="order-3 md:order-3 p-6 rounded-2xl bg-black/20 border border-dashed border-amber-700/20 flex flex-col justify-between">
                 <div>

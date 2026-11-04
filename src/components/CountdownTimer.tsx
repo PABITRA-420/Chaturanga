@@ -52,7 +52,7 @@ export default function CountdownTimer({ targetDate }: CountdownTimerProps) {
 
   if (timeLeft.isPast) {
     return (
-      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-500/10 border border-red-500/30 text-xs font-semibold text-red-400">
+      <div suppressHydrationWarning className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-500/10 border border-red-500/30 text-xs font-semibold text-red-400">
         <span className="w-2 h-2 rounded-full bg-red-400 animate-ping" />
         <span>Event Live or Concluded</span>
       </div>
@@ -67,11 +67,14 @@ export default function CountdownTimer({ targetDate }: CountdownTimerProps) {
   ];
 
   return (
-    <div className="flex flex-wrap items-center gap-2 sm:gap-3 select-none">
+    <div suppressHydrationWarning className="flex flex-wrap items-center gap-2 sm:gap-3 select-none">
       {units.map((unit, index) => (
         <div key={unit.label} className="flex items-center">
           <div className="flex flex-col items-center justify-center min-w-[54px] sm:min-w-[62px] py-2 px-2.5 rounded-xl bg-black/60 border border-[#D4AF7C]/30 shadow-inner backdrop-blur-md">
-            <span className="font-['Montserrat',sans-serif] font-black text-lg sm:text-2xl text-[#D4AF7C] tabular-nums leading-none">
+            <span
+              suppressHydrationWarning
+              className="font-['Montserrat',sans-serif] font-black text-lg sm:text-2xl text-[#D4AF7C] tabular-nums leading-none"
+            >
               {String(unit.value).padStart(2, '0')}
             </span>
             <span className="text-[9px] font-bold tracking-widest text-[#A0A6B0] mt-1">

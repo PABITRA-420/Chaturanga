@@ -19,6 +19,7 @@ import StepEventSelect from '@/components/register/StepEventSelect';
 import StepPersonalDetails from '@/components/register/StepPersonalDetails';
 import StepChessProfile from '@/components/register/StepChessProfile';
 import StepReview from '@/components/register/StepReview';
+import { FormAlert } from '@/components/ui/FormFeedback';
 
 export interface RegistrationWizardProps {
   currentStep: number;
@@ -159,12 +160,13 @@ export default function RegistrationWizard({
               </div>
             )}
 
-            {/* Error Message */}
+            {/* Error Message with FormAlert */}
             {errorMsg && (
-              <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs flex items-center gap-3 animate-shake">
-                <Info className="w-4 h-4 text-red-400 shrink-0" />
-                <span>{errorMsg}</span>
-              </div>
+              <FormAlert
+                type="error"
+                title="Registration Alert"
+                message={errorMsg}
+              />
             )}
 
             {/* Closed Registration Banner vs Active Step */}
