@@ -24,13 +24,13 @@ export default function Loading() {
         {/* Loading text with collegiate flair */}
         <div className="space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest text-[#D4AF7C] bg-[#D4AF7C]/10 border border-[#D4AF7C]/25">
-            <span>CHATURANGA • JGEC</span>
+            <span>CHATURANGA • JGEC • NORTH BENGAL</span>
           </div>
           <h2 className="font-['Montserrat',sans-serif] font-black text-lg text-[#F5F5F5] tracking-tight">
-            Preparing the Board
+            Setting Up the Board
           </h2>
           <p className="text-xs text-[#A0A6B0] font-['Poppins',sans-serif] leading-relaxed">
-            Calibrating Swiss pairings, live ratings, and collegiate tournament tables...
+            Polishing the wooden rooks, winding the tournament clocks, and pairing up board 1...
           </p>
         </div>
 

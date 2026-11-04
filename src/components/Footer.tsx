@@ -5,6 +5,7 @@ import React from 'react';
 import Link from 'next/link';
 import ChaturangaLogo from './ChaturangaLogo';
 import { Lock, ArrowUpRight, Mail } from 'lucide-react';
+import LastUpdatedBadge from '@/components/ui/LastUpdatedBadge';
 
 export interface FooterProps {
   onOpenAdminModal?: () => void;
@@ -207,14 +208,14 @@ export default function Footer({ onOpenAdminModal }: FooterProps) {
         </div>
       </div>
 
-      {/* Bottom Bar: Copyright */}
+      {/* Bottom Bar: Copyright, Last Updated Badge & Navigation */}
       <div className="border-t border-white/5 py-5 bg-[#05070A]">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-[#A0A6B0]/70">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-[#A0A6B0]/70">
           <div>
             © 2026 CHATURANGA • Jalpaiguri Government Engineering College. All rights reserved.
           </div>
-          <div className="flex items-center gap-4">
-            <a href="#home" className="hover:text-[#D4AF7C] transition-colors">Back to top ↑</a>
+          <div className="flex items-center gap-4 flex-wrap justify-center">
+            <LastUpdatedBadge />
           </div>
         </div>
       </div>

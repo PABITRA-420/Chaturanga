@@ -112,6 +112,7 @@ export const RoundCountdownClock: React.FC<RoundCountdownClockProps> = ({
 
           <div className="flex items-baseline gap-2">
             <span
+              suppressHydrationWarning
               className={`font-mono font-black text-2xl sm:text-3xl tracking-tight ${
                 isOvertime
                   ? 'text-red-400'

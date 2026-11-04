@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ClubAnnouncement } from '@/data/announcementsData';
+import ConfirmationModal from '@/components/ui/ConfirmationModal';
 import { 
   Bell, 
   Megaphone, 
@@ -110,23 +111,30 @@ export default function AdminAnnouncementsTab() {
     }
   };
 
-  const handleDelete = async (ann: ClubAnnouncement) => {
-    if (!confirm(`Are you sure you want to remove announcement "${ann.title}"?`)) return;
+  const [deletingAnn, setDeletingAnn] = useState<ClubAnnouncement | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const confirmDelete = async () => {
+    if (!deletingAnn) return;
+    setIsDeleting(true);
 
     try {
-      const res = await fetch(`/api/announcements?id=${encodeURIComponent(ann.id)}`, {
+      const res = await fetch(`/api/announcements?id=${encodeURIComponent(deletingAnn.id)}`, {
         method: 'DELETE'
       });
       const data = await res.json();
       if (data.success) {
-        setAnnouncements(prev => prev.filter(a => a.id !== ann.id));
+        setAnnouncements(prev => prev.filter(a => a.id !== deletingAnn.id));
         setNotice({ type: 'success', text: 'Announcement removed.' });
         setTimeout(() => setNotice(null), 3000);
+        setDeletingAnn(null);
       } else {
-        alert(data.error || 'Failed to delete announcement');
+        setNotice({ type: 'error', text: data.error || 'Failed to delete announcement' });
       }
     } catch (err) {
       console.error('Delete announcement failed:', err);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -239,8 +247,8 @@ export default function AdminAnnouncementsTab() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleDelete(ann)}
-                    className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition cursor-pointer"
+                    onClick={() => setDeletingAnn(ann)}
+                    className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition cursor-pointer btn-tactile"
                     title="Delete announcement"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -400,6 +408,18 @@ export default function AdminAnnouncementsTab() {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={!!deletingAnn}
+        title="Remove Announcement"
+        description={`Are you sure you want to permanently delete "${deletingAnn?.title}"? This cannot be undone.`}
+        confirmText="Delete Announcement"
+        variant="danger"
+        isLoading={isDeleting}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeletingAnn(null)}
+      />
 
     </div>
   );

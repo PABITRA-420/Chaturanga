@@ -13,28 +13,28 @@ export const viewport: Viewport = {
 const montserrat = Montserrat({
   subsets: ['latin'],
   variable: '--font-montserrat',
-  weight: ['400', '500', '600', '700', '800', '900'],
+  weight: ['700', '900'],
   display: 'swap',
 });
 
 const poppins = Poppins({
   subsets: ['latin'],
   variable: '--font-poppins',
-  weight: ['300', '400', '500', '600', '700'],
+  weight: ['400', '600'],
   display: 'swap',
 });
 
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
-  weight: ['300', '400', '500', '600', '700'],
+  weight: ['400', '600'],
   display: 'swap',
 });
 
 const robotoMono = Roboto_Mono({
   subsets: ['latin'],
   variable: '--font-roboto-mono',
-  weight: ['400', '500', '600', '700'],
+  weight: ['400', '700'],
   display: 'swap',
 });
 
@@ -46,7 +46,9 @@ export const metadata: Metadata = {
   },
   description: 'Official Chess Club of Jalpaiguri Government Engineering College. Register for collegiate Swiss rapid championships, view real-time Elo leaderboards, and download official tournament passes.',
   applicationName: 'Chaturanga JGEC',
-  authors: [{ name: 'Chaturanga JGEC Tech & Arbiter Team' }],
+  authors: [
+    { name: 'Chaturanga JGEC Tech & Arbiter Team', url: 'https://chaturangajgec.netlify.app/team' },
+  ],
   keywords: [
     'Chaturanga',
     'JGEC Chess Club',
@@ -58,9 +60,19 @@ export const metadata: Metadata = {
     'Collegiate Chess Championship',
     'Live Chess Leaderboard',
     'Chess Tournament Registration',
+    'JGEC Mind Sports',
   ],
   creator: 'Chaturanga JGEC',
   publisher: 'Jalpaiguri Government Engineering College',
+  category: 'sports',
+  alternates: {
+    canonical: 'https://chaturangajgec.netlify.app',
+  },
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   openGraph: {
     type: 'website',
     locale: 'en_IN',
@@ -70,10 +82,11 @@ export const metadata: Metadata = {
     description: 'Official Chess Club of Jalpaiguri Government Engineering College. Register for collegiate championships, track pairings, and download digital tickets.',
     images: [
       {
-        url: '/hero.png',
+        url: '/opengraph-image',
         width: 1200,
         height: 630,
-        alt: 'Chaturanga JGEC Chess Club',
+        alt: 'Chaturanga JGEC Chess Club Arena',
+        type: 'image/png',
       },
     ],
   },
@@ -81,8 +94,11 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'CHATURANGA • JGEC Chess Club',
     description: 'Official Chess Club of Jalpaiguri Government Engineering College. Register for collegiate championships & live pairings.',
-    images: ['/hero.png'],
+    images: ['/opengraph-image'],
+    creator: '@chaturangajgec',
+    site: '@chaturangajgec',
   },
+  manifest: '/manifest.webmanifest',
   robots: {
     index: true,
     follow: true,
@@ -106,7 +122,7 @@ export const metadata: Metadata = {
 };
 
 import MobileNavigation from '@/components/MobileNavigation';
-import SlowNetworkIndicator from '@/components/ui/SlowNetworkIndicator';
+import ClientOverlays from '@/components/ui/ClientOverlays';
 
 export default function RootLayout({
   children,
@@ -115,35 +131,68 @@ export default function RootLayout({
 }) {
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'SportsClub',
-    name: 'CHATURANGA JGEC Chess Club',
-    alternateName: 'Chaturanga Chess Club',
-    url: 'https://chaturanga-jgec.ac.in',
-    sport: 'Chess',
-    description: 'Official Chess Club of Jalpaiguri Government Engineering College. Managing collegiate FIDE tournaments, Swiss rapid championships, and Elo leaderboards.',
-    location: {
-      '@type': 'Place',
-      name: 'Jalpaiguri Government Engineering College',
-      address: {
-        '@type': 'PostalAddress',
-        addressLocality: 'Jalpaiguri',
-        addressRegion: 'West Bengal',
-        postalCode: '735102',
-        addressCountry: 'IN',
+    '@graph': [
+      {
+        '@type': 'SportsClub',
+        '@id': 'https://chaturangajgec.netlify.app/#organization',
+        name: 'CHATURANGA JGEC Chess Club',
+        alternateName: ['Chaturanga Chess Club', 'JGEC Chess Club', 'Chaturanga North Bengal'],
+        url: 'https://chaturangajgec.netlify.app',
+        logo: 'https://chaturangajgec.netlify.app/icon.svg',
+        image: 'https://chaturangajgec.netlify.app/opengraph-image',
+        sport: 'Chess',
+        description: 'Official Chess Club of Jalpaiguri Government Engineering College. Organizing certified Swiss championships, blitz arenas, and cultivating collegiate grandmasters since 2012.',
+        foundingDate: '2012',
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: 'Jalpaiguri Government Engineering College, NH 31D',
+          addressLocality: 'Jalpaiguri',
+          addressRegion: 'West Bengal',
+          postalCode: '735102',
+          addressCountry: 'IN',
+        },
+        geo: {
+          '@type': 'GeoCoordinates',
+          latitude: 26.5448,
+          longitude: 88.7188,
+        },
+        memberOf: {
+          '@type': 'EducationalOrganization',
+          name: 'Jalpaiguri Government Engineering College',
+          url: 'https://jgec.ac.in',
+        },
+        sameAs: [
+          'https://facebook.com',
+          'https://instagram.com',
+          'https://youtube.com',
+        ],
       },
-    },
-    memberOf: {
-      '@type': 'EducationalOrganization',
-      name: 'Jalpaiguri Government Engineering College',
-    },
+      {
+        '@type': 'WebSite',
+        '@id': 'https://chaturangajgec.netlify.app/#website',
+        url: 'https://chaturangajgec.netlify.app',
+        name: 'CHATURANGA JGEC',
+        publisher: {
+          '@id': 'https://chaturangajgec.netlify.app/#organization',
+        },
+        inLanguage: 'en-IN',
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: {
+            '@type': 'EntryPoint',
+            urlTemplate: 'https://chaturangajgec.netlify.app/upcoming?q={search_term_string}',
+          },
+          'query-input': 'required name=search_term_string',
+        },
+      },
+    ],
   };
 
   return (
     <html
       lang="en"
-      data-scroll-behavior="smooth"
       suppressHydrationWarning
-      className={`${montserrat.variable} ${poppins.variable} ${inter.variable} ${robotoMono.variable} scroll-smooth`}
+      className={`${montserrat.variable} ${poppins.variable} ${inter.variable} ${robotoMono.variable}`}
     >
       <head>
         <script
@@ -160,7 +209,7 @@ export default function RootLayout({
           Skip to main content
         </a>
         {children}
-        <SlowNetworkIndicator />
+        <ClientOverlays />
         <MobileNavigation />
       </body>
     </html>

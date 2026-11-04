@@ -8,6 +8,7 @@ import TournamentCalendar from '@/components/TournamentCalendar';
 import { Calendar, HelpCircle, ShieldCheck, Clock, Award, Sparkles, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { SkeletonCard } from '@/components/ui/Skeleton';
+import FaqAccordion from '@/components/ui/FaqAccordion';
 
 export default function UpcomingEventsView() {
   const [events, setEvents] = React.useState<any[]>([]);
@@ -138,38 +139,8 @@ export default function UpcomingEventsView() {
             <TournamentCalendar />
           </div>
 
-          {/* Section 4: General Player FAQ & Regulations */}
-          <div className="p-8 sm:p-10 rounded-3xl bg-[#12161D] border border-white/10 space-y-6 shadow-2xl">
-            <div className="flex items-center gap-3 text-[#D4AF7C]">
-              <HelpCircle className="w-5 h-5" />
-              <h3 className="font-['Montserrat',sans-serif] font-bold text-lg text-[#F5F5F5]">
-                General Collegiate Regulations & FAQ
-              </h3>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-[#A0A6B0] font-['Poppins',sans-serif]">
-              <div className="space-y-2 p-4 rounded-2xl bg-black/40 border border-white/5">
-                <div className="font-bold text-[#F5F5F5] flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-[#D4AF7C]" />
-                  <span>Fair Play & Clocks</span>
-                </div>
-                <p>Standard FIDE Anti-Cheating protocols apply. Electronic wristwatches and phones are prohibited at the board.</p>
-              </div>
-              <div className="space-y-2 p-4 rounded-2xl bg-black/40 border border-white/5">
-                <div className="font-bold text-[#F5F5F5] flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-[#D4AF7C]" />
-                  <span>Default Reporting Time</span>
-                </div>
-                <p>Default reporting time is 15 minutes after round commencement. Failing which the game is forfeited to the opponent.</p>
-              </div>
-              <div className="space-y-2 p-4 rounded-2xl bg-black/40 border border-white/5">
-                <div className="font-bold text-[#F5F5F5] flex items-center gap-2">
-                  <Award className="w-4 h-4 text-[#D4AF7C]" />
-                  <span>Eligibility & ID</span>
-                </div>
-                <p>Carry your valid College Student ID or FIDE Identity Card. Walk-in spots are subject to seat availability.</p>
-              </div>
-            </div>
-          </div>
+          {/* Section 4: Expandable General Player FAQ & Regulations */}
+          <FaqAccordion />
 
         </div>
       </main>

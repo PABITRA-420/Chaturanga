@@ -22,7 +22,7 @@ export default function NotFound() {
             Illegal Move Detected
           </h2>
           <p className="font-['Poppins',sans-serif] text-sm text-[#A0A6B0] leading-relaxed max-w-md mx-auto">
-            This square doesn&apos;t exist on our board. The page you&apos;re looking for may have been moved, removed, or never existed.
+            You blundered onto an empty square! Looks like this page was captured or never existed on our board. Let&apos;s castle back to safety.
           </p>
         </div>
 
@@ -30,15 +30,15 @@ export default function NotFound() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-['Inter',sans-serif] text-sm font-bold text-[#0B0F14] bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] hover:brightness-110 transition-all shadow-xl shadow-[#D4AF7C]/25 hover:scale-[1.02] active:scale-[0.98]"
+            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-['Inter',sans-serif] text-sm font-bold text-[#0B0F14] bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] shadow-xl shadow-[#D4AF7C]/25 btn-tactile"
           >
             <Home className="w-4 h-4" />
-            <span>Return Home</span>
+            <span>Castle Back Home</span>
           </Link>
 
           <Link
             href="/upcoming"
-            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full font-['Inter',sans-serif] text-sm font-semibold text-[#F5F5F5] bg-white/5 hover:bg-white/10 border border-white/15 hover:border-[#D4AF7C]/40 transition-all active:scale-[0.98]"
+            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full font-['Inter',sans-serif] text-sm font-semibold text-[#F5F5F5] bg-white/5 hover:bg-white/10 border border-white/15 hover:border-[#D4AF7C]/40 transition-all btn-tactile"
           >
             <Trophy className="w-4 h-4 text-[#D4AF7C]" />
             <span>View Tournaments</span>

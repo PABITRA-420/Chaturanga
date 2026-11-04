@@ -63,13 +63,13 @@ export default function HomeTournaments({ upcomingEvents, pastEvents, loading = 
                 No tournaments currently scheduled
               </h3>
               <p className="text-xs sm:text-sm text-[#A0A6B0] leading-relaxed font-['Poppins',sans-serif]">
-                Check back soon or follow the club announcements below for new tournament announcements and Swiss round schedules.
+                The boards are quiet for a moment. Our arbiters are calibrating the next Swiss championship schedule over campus canteen chai. Follow club notices below for upcoming round drops.
               </p>
             </div>
             <div className="pt-2">
               <Link
                 href="/#announcements"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold text-[#0B0F14] bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] hover:brightness-110 shadow-md transition"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold text-[#0B0F14] bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] shadow-md btn-tactile"
               >
                 <span>View Club Notices</span>
                 <ArrowRight className="w-3.5 h-3.5" />

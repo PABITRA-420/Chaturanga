@@ -28,10 +28,11 @@ export default function Navbar({ onRegisterClick }: NavbarProps) {
     { name: 'Register', href: '/register' },
   ];
 
-  // Window scroll state for all pages
+  // Window scroll state for all pages (bails out with zero re-renders when unchanged)
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 15);
+      const isOver = window.scrollY > 15;
+      setScrolled(prev => (prev !== isOver ? isOver : prev));
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
@@ -67,7 +68,7 @@ export default function Navbar({ onRegisterClick }: NavbarProps) {
 
   return (
     <header 
-      className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 font-['Inter',sans-serif] ${
+      className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 font-['Inter',sans-serif] gpu-layer ${
         scrolled
           ? 'bg-[#0B0F14]/90 backdrop-blur-md border-b border-white/10 shadow-2xl shadow-black/80'
           : 'bg-[#0B0F14]/70 backdrop-blur-sm border-b border-white/5'
@@ -134,24 +135,24 @@ export default function Navbar({ onRegisterClick }: NavbarProps) {
             })}
           </nav>
 
-          {/* RIGHT SIDE: JOIN US BUTTON (Desktop only, mobile/tablet button is inside lg:hidden below) */}
-          <div className="hidden lg:flex items-center">
+          {/* RIGHT SIDE: JOIN US BUTTON */}
+          <div className="hidden lg:flex items-center gap-2.5">
             <button
               type="button"
               onClick={handleJoinClick}
-              className="flex items-center gap-1.5 px-4.5 py-2 rounded-full text-xs font-bold text-[#0B0F14] bg-[#D4AF7C] hover:bg-[#E6C98A] transition-all duration-200 shadow-md shadow-[#D4AF7C]/20 active:scale-[0.98] cursor-pointer"
+              className="flex items-center gap-1.5 px-4.5 py-2 rounded-full text-xs font-bold text-[#0B0F14] bg-[#D4AF7C] hover:bg-[#E6C98A] shadow-md shadow-[#D4AF7C]/20 cursor-pointer btn-tactile"
             >
               <Sparkles className="w-3.5 h-3.5" />
               <span>Join Us</span>
             </button>
           </div>
 
-          {/* MOBILE TOGGLE MENU BUTTON */}
-          <div className="flex items-center lg:hidden">
+          {/* MOBILE TOGGLE MENU */}
+          <div className="flex items-center gap-1 lg:hidden">
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="min-w-[44px] min-h-[44px] p-2.5 rounded-xl text-[#F5F5F5] hover:text-[#D4AF7C] hover:bg-white/5 transition cursor-pointer flex items-center justify-center active:scale-95"
+              className="min-w-[44px] min-h-[44px] p-2.5 rounded-xl text-[#F5F5F5] hover:text-[#D4AF7C] hover:bg-white/5 transition flex items-center justify-center btn-tactile"
               aria-label="Toggle Navigation"
             >
               {mobileMenuOpen ? (
