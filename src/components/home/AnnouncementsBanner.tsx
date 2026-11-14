@@ -1,17 +1,30 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Megaphone, Calendar, ChevronRight, X, ArrowUpRight, AlertCircle, Bell } from 'lucide-react';
+import { Calendar, ChevronRight, X, ArrowUpRight, Bell } from 'lucide-react';
 import { ClubAnnouncement, CLUB_ANNOUNCEMENTS } from '@/data/announcementsData';
 import { Skeleton } from '@/components/ui/Skeleton';
+
+function getCategoryBadgeClasses(category?: ClubAnnouncement['category']) {
+  switch (category) {
+    case 'TOURNAMENT':
+      return 'bg-success/10 text-success border-success/30';
+    case 'PRACTICE':
+      return 'bg-info/10 text-info border-info/30';
+    case 'SELECTION':
+      return 'bg-warning/10 text-warning border-warning/30';
+    default:
+      return 'bg-accent/10 text-accent border-border';
+  }
+}
 
 export default function AnnouncementsBanner() {
   const [announcements, setAnnouncements] = useState<ClubAnnouncement[]>(() => CLUB_ANNOUNCEMENTS);
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState<ClubAnnouncement | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     try {
       const cached = sessionStorage.getItem('chaturanga_announcements');
       if (cached) {
@@ -37,92 +50,102 @@ export default function AnnouncementsBanner() {
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    if (!selectedAnnouncement) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSelectedAnnouncement(null);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [selectedAnnouncement]);
+
   return (
-    <section id="announcements" className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="p-6 sm:p-8 rounded-3xl bg-[#12161D] border border-white/10 shadow-2xl relative overflow-hidden">
+    <section id="announcements" className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="p-6 sm:p-8 rounded-md bg-surface border border-border relative overflow-hidden">
         
-        {/* Subtle gold accent line */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#D4AF7C] to-transparent" />
+        {/* Swiss Hairline Top Rule */}
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-accent" aria-hidden="true" />
 
         {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#D4AF7C]/15 border border-[#D4AF7C]/30 flex items-center justify-center text-[#D4AF7C]">
-              <Bell className="w-5 h-5" />
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-border mb-6">
+          <div className="flex items-start gap-3.5">
+            <div className="w-10 h-10 rounded-sm bg-surface-elevated border border-border flex items-center justify-center text-accent shrink-0 mt-0.5">
+              <Bell className="w-4 h-4" aria-hidden="true" />
             </div>
             <div>
-              <span className="text-[11px] font-bold uppercase tracking-widest text-[#D4AF7C]">
-                COLLEGE NOTICE BOARD
+              <span className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-accent block">
+                01 / COLLEGE NOTICE BOARD
               </span>
-              <h2 className="text-xl sm:text-2xl font-bold font-['Montserrat',sans-serif] text-[#F5F5F5]">
+              <h2 className="text-xl sm:text-2xl font-extrabold font-heading text-fg mt-0.5">
                 Official Club Announcements
               </h2>
             </div>
           </div>
 
-          <div className="text-xs text-[#A0A6B0]">
-            Updated weekly by Chief Arbiter &amp; Executive Council
+          <div className="text-xs font-mono text-fg-muted">
+            Updated weekly by Chief Arbiter &amp; Council
           </div>
         </div>
 
-        {/* Announcements List */}
+        {/* Announcements Grid */}
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4" data-testid="announcements-skeleton">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="p-5 rounded-2xl bg-black/40 border border-white/5 space-y-3">
+              <div key={i} className="p-5 rounded-sm bg-surface-elevated border border-border space-y-3">
                 <div className="flex items-center justify-between">
-                  <Skeleton className="h-4 w-20 rounded-full" />
-                  <Skeleton className="h-3 w-16 rounded" />
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton className="h-3 w-16" />
                 </div>
-                <Skeleton className="h-5 w-4/5 rounded-lg" />
-                <Skeleton className="h-10 w-full rounded-lg" />
-                <div className="pt-2 border-t border-white/5 flex items-center justify-between">
-                  <Skeleton className="h-4 w-20 rounded" />
-                  <Skeleton className="h-4 w-4 rounded-full" />
+                <Skeleton className="h-5 w-4/5" />
+                <Skeleton className="h-10 w-full" />
+                <div className="pt-2 border-t border-border flex items-center justify-between">
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton className="h-4 w-4" />
                 </div>
               </div>
             ))}
           </div>
         ) : announcements.length === 0 ? (
-          <div className="p-8 rounded-2xl bg-black/40 border border-white/5 text-center space-y-2">
-            <p className="text-sm font-semibold text-[#F5F5F5]">No active club announcements at this time</p>
-            <p className="text-xs text-[#A0A6B0]">
+          <div className="p-8 rounded-sm bg-surface-elevated border border-border text-center space-y-2">
+            <p className="text-sm font-semibold text-fg">No active club announcements at this time</p>
+            <p className="text-xs text-fg-muted">
               Official tournament announcements, practice schedules, and arbiter notices will be pinned here.
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {announcements.map((ann) => (
-              <div
+              <button
                 key={ann.id}
+                type="button"
                 onClick={() => setSelectedAnnouncement(ann)}
-                className="p-5 rounded-2xl bg-black/40 border border-white/5 hover:border-[#D4AF7C]/40 transition cursor-pointer flex flex-col justify-between group hover:-translate-y-0.5"
+                className="p-5 rounded-sm bg-surface-elevated border border-border hover:border-border-strong transition-colors cursor-pointer flex flex-col justify-between text-left group"
               >
-                <div>
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${ann.badgeColor}`}>
+                <div className="w-full">
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <span className={`px-2 py-0.5 rounded-xs text-[10px] font-mono font-bold uppercase tracking-wider border ${getCategoryBadgeClasses(ann.category)}`}>
                       {ann.category}
                     </span>
-                    <span className="text-[11px] text-[#A0A6B0] flex items-center gap-1">
-                      <Calendar className="w-3 h-3" />
+                    <span className="text-[11px] font-mono text-fg-muted flex items-center gap-1">
+                      <Calendar className="w-3 h-3" aria-hidden="true" />
                       <span>{ann.date}</span>
                     </span>
                   </div>
 
-                  <h3 className="font-['Montserrat',sans-serif] font-bold text-sm text-[#F5F5F5] group-hover:text-[#D4AF7C] transition line-clamp-2 mb-2">
+                  <h3 className="font-heading font-bold text-sm text-fg group-hover:text-accent transition-colors line-clamp-2 mb-2">
                     {ann.title}
                   </h3>
                   
-                  <p className="text-xs text-[#A0A6B0] line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-fg-muted font-body line-clamp-2 leading-relaxed">
                     {ann.summary}
                   </p>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-xs font-semibold text-[#D4AF7C]">
+                <div className="w-full mt-4 pt-3 border-t border-border flex items-center justify-between text-xs font-mono font-semibold text-accent">
                   <span>Read notice</span>
-                  <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" aria-hidden="true" />
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         )}
@@ -131,43 +154,47 @@ export default function AnnouncementsBanner() {
 
       {/* DETAIL MODAL */}
       {selectedAnnouncement && (
-        <div 
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="ann-modal-title"
+          className="fixed inset-0 z-50 bg-scrim/75 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in"
           onClick={() => setSelectedAnnouncement(null)}
         >
-          <div 
-            className="relative max-w-lg w-full bg-[#12161D] border border-white/15 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-4"
+          <div
+            style={{ boxShadow: 'var(--shadow-md)' }}
+            className="relative max-w-lg w-full bg-surface border border-border-strong rounded-md p-6 sm:p-8 space-y-4 animate-scale-up"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               type="button"
               onClick={() => setSelectedAnnouncement(null)}
-              className="absolute top-4 right-4 min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-white/5 hover:bg-white/15 text-[#F5F5F5] flex items-center justify-center transition cursor-pointer active:scale-95 border border-white/10"
+              className="absolute top-4 right-4 min-w-[40px] min-h-[40px] rounded-sm bg-surface-elevated hover:bg-surface-subtle text-fg flex items-center justify-center transition-colors cursor-pointer border border-border hover:border-border-strong"
               aria-label="Close notice"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
 
-            <div className="flex items-center gap-2">
-              <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider border ${selectedAnnouncement.badgeColor}`}>
+            <div className="flex items-center gap-2 pr-10">
+              <span className={`px-2 py-0.5 rounded-xs text-[10px] font-mono font-bold uppercase tracking-wider border ${getCategoryBadgeClasses(selectedAnnouncement.category)}`}>
                 {selectedAnnouncement.category}
               </span>
-              <span className="text-xs text-[#A0A6B0]">{selectedAnnouncement.date}</span>
+              <span className="text-xs font-mono text-fg-muted">{selectedAnnouncement.date}</span>
             </div>
 
-            <h3 className="font-['Montserrat',sans-serif] font-black text-xl text-[#F5F5F5]">
+            <h3 id="ann-modal-title" className="font-heading font-extrabold text-xl text-fg">
               {selectedAnnouncement.title}
             </h3>
 
-            <p className="text-xs sm:text-sm text-[#A0A6B0] leading-relaxed font-['Poppins',sans-serif] pt-2 border-t border-white/10">
+            <p className="text-xs sm:text-sm text-fg-muted leading-relaxed font-body pt-3 border-t border-border">
               {selectedAnnouncement.content}
             </p>
 
-            <div className="pt-4 border-t border-white/10 flex items-center justify-between">
+            <div className="pt-4 border-t border-border flex items-center justify-between">
               <button
                 type="button"
                 onClick={() => setSelectedAnnouncement(null)}
-                className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs text-[#A0A6B0] hover:text-[#F5F5F5] transition"
+                className="px-4 py-2 rounded-sm bg-surface-elevated hover:bg-surface-subtle border border-border text-xs font-semibold text-fg-muted hover:text-fg transition-colors cursor-pointer"
               >
                 Close
               </button>
@@ -176,10 +203,10 @@ export default function AnnouncementsBanner() {
                 <Link
                   href={selectedAnnouncement.linkUrl}
                   onClick={() => setSelectedAnnouncement(null)}
-                  className="px-5 py-2 rounded-xl bg-[#D4AF7C] hover:bg-[#E6C98A] text-[#0B0F14] font-bold text-xs transition inline-flex items-center gap-1.5 shadow"
+                  className="px-5 py-2 rounded-sm bg-accent hover:bg-accent-hover text-on-accent font-bold text-xs uppercase tracking-wider transition-colors inline-flex items-center gap-1.5"
                 >
                   <span>{selectedAnnouncement.linkText || 'Proceed'}</span>
-                  <ArrowUpRight className="w-3.5 h-3.5" />
+                  <ArrowUpRight className="w-3.5 h-3.5" aria-hidden="true" />
                 </Link>
               )}
             </div>

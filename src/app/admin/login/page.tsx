@@ -92,96 +92,93 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#070A0E] text-[#F5F5F5] font-['Inter',sans-serif] flex flex-col justify-between relative overflow-hidden selection:bg-[#D4AF7C] selection:text-[#0B0F14]">
-      {/* Background Ambience & Chess Grid Texture */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.03]" style={{
-        backgroundImage: `radial-gradient(circle at 1px 1px, #D4AF7C 1px, transparent 0)`,
-        backgroundSize: '40px 40px'
-      }} />
-      <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-[#D4AF7C]/10 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute -bottom-40 right-10 w-[500px] h-[500px] bg-amber-500/5 rounded-full blur-[120px] pointer-events-none" />
+    <div className="min-h-screen bg-bg text-fg font-body flex flex-col justify-between relative selection:bg-accent selection:text-on-accent">
+      {/* Subtle Architectural Swiss Grid */}
+      <div className="absolute inset-0 pointer-events-none chess-bg-pattern opacity-40" />
 
       {/* Header Bar */}
-      <header className="relative z-10 w-full px-4 sm:px-8 py-6 max-w-[1440px] mx-auto flex items-center justify-between">
-        <Link 
-          href="/" 
-          className="inline-flex items-center gap-2 text-xs font-semibold text-[#A0A6B0] hover:text-[#D4AF7C] transition-colors group cursor-pointer"
+      <header className="relative z-10 w-full px-4 sm:px-8 py-6 max-w-7xl mx-auto flex items-center justify-between">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-fg-muted hover:text-accent transition-colors group cursor-pointer"
         >
           <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
           <span>Back to Public Website</span>
         </Link>
 
-        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/10 text-[11px] text-[#A0A6B0]">
-          <Database className="w-3.5 h-3.5 text-emerald-400" />
-          <span className="text-emerald-400 font-medium">Supabase Auth Protected</span>
+        <div className="flex items-center gap-2 px-3 py-1 rounded-sm bg-surface border border-border text-[11px] font-mono text-fg-muted">
+          <Database className="w-3.5 h-3.5 text-success" />
+          <span className="text-success font-medium">Supabase Auth Protected</span>
         </div>
       </header>
 
       {/* Main Login Card Section */}
       <main className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-6 py-8">
-        <div className="w-full max-w-[480px]">
-          
+        <div className="w-full max-w-[460px]">
           {/* Brand & Badge Top */}
           <div className="text-center mb-8 space-y-3">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-3xl bg-gradient-to-b from-black/80 to-[#12161D] border border-[#D4AF7C]/40 p-2 shadow-2xl shadow-[#D4AF7C]/15 mx-auto">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-sm bg-[#111114] border border-border-strong p-2 mx-auto">
               <ChaturangaLogo className="w-full h-full" />
             </div>
 
             <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-[0.2em] text-[#D4AF7C] bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 mb-2">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF7C]" />
-                <span>Supabase RBAC & Arbiter Protection</span>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xs text-[11px] font-mono font-semibold uppercase tracking-widest text-accent bg-accent/10 border border-accent/30 mb-2">
+                <ShieldCheck className="w-3.5 h-3.5 text-accent" />
+                <span>Supabase RBAC &amp; Arbiter Protection</span>
               </div>
-              <h1 className="font-['Montserrat',sans-serif] text-2xl sm:text-3xl font-extrabold tracking-tight text-[#F5F5F5]">
+              <h1 className="font-heading text-2xl sm:text-3xl font-bold tracking-tight text-fg">
                 CHATURANGA Admin
               </h1>
-              <p className="text-xs text-[#A0A6B0] max-w-sm mx-auto mt-1 font-['Poppins',sans-serif]">
-                Tournament pairing engine, registration roster & club administration console.
+              <p className="text-xs text-fg-muted max-w-sm mx-auto mt-1">
+                Tournament pairing engine, registration roster &amp; club administration console.
               </p>
             </div>
           </div>
 
           {/* Form Container Card */}
-          <div className="rounded-3xl bg-[#10141C]/90 backdrop-blur-xl border border-white/10 p-6 sm:p-8 shadow-2xl shadow-black/80 relative overflow-hidden">
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#D4AF7C] to-transparent" />
-
+          <div className="rounded-md bg-surface border border-border-strong border-t-2 border-t-accent p-6 sm:p-8 shadow-sm relative">
             {checkingExistingSession ? (
               <div className="py-12 text-center space-y-3">
-                <div className="w-8 h-8 border-2 border-[#D4AF7C] border-t-transparent rounded-full animate-spin mx-auto" />
-                <p className="text-xs text-[#A0A6B0]">Verifying Supabase cryptographic session...</p>
+                <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin mx-auto" />
+                <p className="text-xs font-mono text-fg-muted">Verifying Supabase cryptographic session...</p>
               </div>
             ) : success ? (
-              <div className="py-10 text-center space-y-4 animate-in fade-in zoom-in-95 duration-300">
-                <div className="w-16 h-16 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/10">
-                  <CheckCircle2 className="w-8 h-8" />
+              <div className="py-10 text-center space-y-4">
+                <div className="w-14 h-14 rounded-sm bg-success/10 border border-success/40 text-success flex items-center justify-center mx-auto">
+                  <CheckCircle2 className="w-7 h-7" />
                 </div>
                 <div>
-                  <h3 className="font-['Montserrat',sans-serif] text-lg font-bold text-[#F5F5F5]">
+                  <h3 className="font-heading text-lg font-bold text-fg">
                     Supabase Authentication Verified
                   </h3>
-                  <p className="text-xs text-[#A0A6B0] mt-1">
+                  <p className="text-xs text-fg-muted mt-1">
                     Granting Arbiter Console privileges...
                   </p>
                 </div>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
-                
                 {/* Error Banner */}
                 {errorMessage && (
-                  <div className="p-3.5 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-start gap-3 text-xs text-red-300 animate-in fade-in duration-200">
-                    <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                  <div
+                    role="alert"
+                    className="p-3.5 rounded-sm bg-danger/10 border border-danger/30 flex items-start gap-3 text-xs text-danger"
+                  >
+                    <AlertCircle className="w-4 h-4 text-danger shrink-0 mt-0.5" />
                     <div className="flex-1">{errorMessage}</div>
                   </div>
                 )}
 
                 {/* Username / Email Input */}
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-[#A0A6B0] uppercase tracking-wider">
+                  <label
+                    htmlFor="admin-username"
+                    className="block text-xs font-mono font-semibold text-fg-muted uppercase tracking-wider"
+                  >
                     Admin Email / Identifier
                   </label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#A0A6B0]">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-fg-subtle">
                       <User className="w-4 h-4" />
                     </div>
                     <input
@@ -192,7 +189,7 @@ export default function AdminLoginPage() {
                       placeholder="admin@chaturanga-jgec.ac.in or username"
                       autoComplete="username"
                       required
-                      className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#090D12] border border-white/10 text-sm text-[#F5F5F5] placeholder-[#A0A6B0]/40 focus:outline-none focus:border-[#D4AF7C] focus:ring-1 focus:ring-[#D4AF7C]/40 transition"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-sm bg-surface-elevated border border-border text-sm text-fg placeholder:text-fg-subtle focus:border-accent transition-colors"
                     />
                   </div>
                 </div>
@@ -200,16 +197,19 @@ export default function AdminLoginPage() {
                 {/* Password Input */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="block text-xs font-semibold text-[#A0A6B0] uppercase tracking-wider">
+                    <label
+                      htmlFor="admin-password"
+                      className="block text-xs font-mono font-semibold text-fg-muted uppercase tracking-wider"
+                    >
                       Password
                     </label>
-                    <span className="text-[11px] text-[#A0A6B0]/70 flex items-center gap-1">
-                      <Fingerprint className="w-3 h-3 text-[#D4AF7C]" />
+                    <span className="text-[11px] font-mono text-fg-muted flex items-center gap-1">
+                      <Fingerprint className="w-3 h-3 text-accent" />
                       <span>Encrypted Credential</span>
                     </span>
                   </div>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#A0A6B0]">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-fg-subtle">
                       <Lock className="w-4 h-4" />
                     </div>
                     <input
@@ -220,14 +220,14 @@ export default function AdminLoginPage() {
                       placeholder="Enter administrator password"
                       autoComplete="current-password"
                       required
-                      className="w-full pl-10 pr-11 py-3 rounded-xl bg-[#090D12] border border-white/10 text-sm text-[#F5F5F5] placeholder-[#A0A6B0]/40 focus:outline-none focus:border-[#D4AF7C] focus:ring-1 focus:ring-[#D4AF7C]/40 transition font-mono"
+                      className="w-full pl-10 pr-11 py-2.5 rounded-sm bg-surface-elevated border border-border text-sm text-fg placeholder:text-fg-subtle focus:border-accent transition-colors font-mono"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#A0A6B0] hover:text-[#F5F5F5] transition cursor-pointer"
-                      title={showPassword ? "Hide password" : "Show password"}
-                      tabIndex={-1}
+                      className="absolute inset-y-0 right-0 px-3 flex items-center text-fg-muted hover:text-fg transition-colors cursor-pointer"
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      title={showPassword ? 'Hide password' : 'Show password'}
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -235,18 +235,18 @@ export default function AdminLoginPage() {
                 </div>
 
                 {/* Remember Me */}
-                <div className="flex items-center justify-between text-xs text-[#A0A6B0]">
+                <div className="flex items-center justify-between text-xs text-fg-muted">
                   <label className="flex items-center gap-2 cursor-pointer select-none">
                     <input
                       type="checkbox"
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
-                      className="w-4 h-4 rounded border-white/20 bg-[#090D12] text-[#D4AF7C] focus:ring-0 focus:ring-offset-0 cursor-pointer accent-[#D4AF7C]"
+                      className="w-4 h-4 rounded-xs border-border-strong bg-surface-elevated text-accent cursor-pointer accent-accent"
                     />
                     <span>Remember this session</span>
                   </label>
-                  <span className="text-[11px] text-emerald-400 font-medium flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-ping" />
+                  <span className="text-[11px] font-mono text-success font-medium flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-success inline-block" />
                     Supabase JWT
                   </span>
                 </div>
@@ -255,11 +255,11 @@ export default function AdminLoginPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3.5 px-6 rounded-full font-bold text-xs sm:text-sm text-[#0B0F14] bg-[#D4AF7C] hover:bg-[#E6C98A] disabled:opacity-50 transition-all duration-200 shadow-lg shadow-[#D4AF7C]/20 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
+                  className="w-full py-3 px-6 rounded-sm font-heading font-semibold text-xs sm:text-sm uppercase tracking-wider text-on-accent bg-accent hover:bg-accent-hover disabled:opacity-50 transition-colors flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {loading ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-[#0B0F14] border-t-transparent rounded-full animate-spin" />
+                      <div className="w-4 h-4 border-2 border-on-accent border-t-transparent rounded-full animate-spin" />
                       <span>Verifying via Supabase Auth...</span>
                     </>
                   ) : (
@@ -273,44 +273,42 @@ export default function AdminLoginPage() {
             )}
 
             {/* Enterprise Security Notice */}
-            <div className="mt-6 pt-5 border-t border-white/10">
-              <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/10 text-xs space-y-2">
-                <div className="flex items-center gap-2 font-semibold text-[#D4AF7C]">
+            <div className="mt-6 pt-5 border-t border-border">
+              <div className="p-3.5 rounded-sm bg-surface-elevated border border-border text-xs space-y-2">
+                <div className="flex items-center gap-2 font-semibold text-accent">
                   <KeyRound className="w-3.5 h-3.5" />
                   <span>Restricted Access System</span>
                 </div>
-                
-                <p className="text-[11px] text-[#A0A6B0] leading-relaxed">
+
+                <p className="text-[11px] text-fg-muted leading-relaxed">
                   This console is restricted to certified JGEC arbiters and authorized tournament directors. All sessions are authenticated using Supabase Auth JWTs with PostgreSQL Row Level Security enforcement.
                 </p>
 
                 <div className="grid grid-cols-2 gap-2 pt-1 font-mono text-[11px]">
-                  <div className="px-2.5 py-1.5 rounded-lg bg-[#090D12] border border-white/5 flex flex-col">
-                    <span className="text-[9px] uppercase tracking-wider text-[#A0A6B0]">Audit Logging</span>
-                    <span className="text-[#F5F5F5] font-semibold">Active &amp; Monitored</span>
+                  <div className="px-2.5 py-1.5 rounded-xs bg-surface border border-border flex flex-col">
+                    <span className="text-[9px] uppercase tracking-wider text-fg-subtle">Audit Logging</span>
+                    <span className="text-fg font-semibold">Active &amp; Monitored</span>
                   </div>
-                  <div className="px-2.5 py-1.5 rounded-lg bg-[#090D12] border border-white/5 flex flex-col">
-                    <span className="text-[9px] uppercase tracking-wider text-[#A0A6B0]">Security Standard</span>
-                    <span className="text-emerald-400 font-semibold">FIDE / AICF Fair Play</span>
+                  <div className="px-2.5 py-1.5 rounded-xs bg-surface border border-border flex flex-col">
+                    <span className="text-[9px] uppercase tracking-wider text-fg-subtle">Security Standard</span>
+                    <span className="text-success font-semibold">FIDE / AICF Fair Play</span>
                   </div>
                 </div>
               </div>
             </div>
-
           </div>
 
           {/* Security Note Footer */}
-          <div className="text-center mt-6 text-[11px] text-[#A0A6B0]/60 space-y-1">
+          <div className="text-center mt-6 text-[11px] font-mono text-fg-subtle space-y-1">
             <p>Jalpaiguri Government Engineering College Chess Society</p>
-            <p>Fair play monitoring, arbiter pairing generation & tournament logs.</p>
+            <p>Fair play monitoring, arbiter pairing generation &amp; tournament logs.</p>
           </div>
-
         </div>
       </main>
 
       {/* Footer Info */}
-      <footer className="relative z-10 py-4 text-center text-[11px] text-[#A0A6B0]/50 border-t border-white/5">
-        © 2026 CHATURANGA Arbiter Administration. Protected by Supabase Auth & PostgreSQL RLS.
+      <footer className="relative z-10 py-4 text-center text-[11px] font-mono text-fg-subtle border-t border-border">
+        © 2026 CHATURANGA Arbiter Administration. Protected by Supabase Auth &amp; PostgreSQL RLS.
       </footer>
     </div>
   );

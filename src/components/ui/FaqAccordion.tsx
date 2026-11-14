@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ChevronDown, HelpCircle, ShieldCheck, Trophy, Ticket, Clock, Sparkles } from 'lucide-react';
+import { ChevronDown, HelpCircle } from 'lucide-react';
 
 export interface FaqItem {
   id: string;
@@ -15,7 +15,7 @@ const FAQ_DATA: FaqItem[] = [
     id: 'reg-free',
     category: 'Registration',
     question: 'Is participation in official Chaturanga tournaments free for students?',
-    answer: 'Yes! All regular collegiate championships, blitz arenas, and Swiss rounds organized by Chaturanga are 100% free for all enrolled students across North Bengal and West Bengal colleges.',
+    answer: 'Yes. All regular collegiate championships, blitz arenas, and Swiss rounds organized by Chaturanga are 100% free for all enrolled students across North Bengal and West Bengal colleges.',
   },
   {
     id: 'pass-qr',
@@ -58,7 +58,7 @@ const FAQ_DATA: FaqItem[] = [
 export default function FaqAccordion() {
   const [openIds, setOpenIds] = useState<string[]>(['reg-free', 'touch-move']);
   const [activeCategory, setActiveCategory] = useState<string>('All');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery] = useState('');
 
   const categories = ['All', 'Registration', 'Ratings', 'Arbiter Rules', 'General'];
 
@@ -79,37 +79,34 @@ export default function FaqAccordion() {
 
   return (
     <section className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-12" id="faq">
-      <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-b from-[#141820] to-[#0D1016] border border-white/10 shadow-2xl relative overflow-hidden space-y-8">
+      <div className="p-6 sm:p-10 rounded-md bg-surface border border-border space-y-8">
         
-        {/* Ambient Top Glow */}
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#D4AF7C]/5 rounded-full blur-3xl pointer-events-none" />
-
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest text-[#D4AF7C] bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 mb-2">
-              <HelpCircle className="w-3.5 h-3.5" />
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border pb-6">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-accent">
+              <HelpCircle className="w-3.5 h-3.5" aria-hidden="true" />
               <span>COLLEGIATE PLAYBOOK &amp; GUIDELINES</span>
             </div>
-            <h2 className="text-2xl sm:text-4xl font-black font-['Montserrat',sans-serif] text-[#F5F5F5]">
-              Frequently Asked <span className="text-[#D4AF7C]">Questions</span>
+            <h2 className="text-2xl sm:text-4xl font-extrabold font-heading text-fg tracking-tight">
+              Frequently Asked Questions
             </h2>
-            <p className="text-xs sm:text-sm text-[#A0A6B0] mt-1 max-w-xl font-['Poppins',sans-serif]">
-              Everything you need to know about tournament entry, Swiss pairings, rating calibration, and official FIDE arbiter regulations.
+            <p className="text-xs sm:text-sm text-fg-muted max-w-xl font-body">
+              Tournament entry, Swiss pairings, rating calibration, and official FIDE arbiter regulations.
             </p>
           </div>
 
-          {/* Category Filter Pills */}
+          {/* Category Filter Tabs */}
           <div className="flex items-center gap-1.5 flex-wrap">
             {categories.map((cat) => (
               <button
                 key={cat}
                 type="button"
                 onClick={() => setActiveCategory(cat)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all pill-tactile ${
+                className={`px-3 py-1.5 rounded-sm text-xs font-semibold transition-colors pill-tactile border ${
                   activeCategory === cat
-                    ? 'bg-[#D4AF7C] text-[#0B0F14] shadow-md shadow-[#D4AF7C]/20 font-bold'
-                    : 'bg-white/[0.04] text-[#A0A6B0] hover:text-[#F5F5F5] hover:bg-white/[0.08] border border-white/5'
+                    ? 'bg-primary text-on-primary border-primary'
+                    : 'bg-surface-elevated text-fg-muted hover:text-fg border-border hover:border-border-strong'
                 }`}
               >
                 {cat}
@@ -119,22 +116,21 @@ export default function FaqAccordion() {
         </div>
 
         {/* Accordion Items List */}
-        <div className="space-y-3 font-['Inter',sans-serif]">
+        <div className="divide-y divide-border border border-border rounded-sm font-ui">
           {filteredFaqs.length === 0 ? (
-            <div className="p-10 rounded-2xl bg-black/30 border border-white/5 text-center text-[#A0A6B0] text-xs">
+            <div className="p-10 bg-surface-elevated text-center text-fg-muted text-xs">
               No questions found matching your filter.
             </div>
           ) : (
-            filteredFaqs.map((item) => {
+            filteredFaqs.map((item, idx) => {
               const isOpen = openIds.includes(item.id);
+              const indexLabel = String(idx + 1).padStart(2, '0');
 
               return (
                 <div
                   key={item.id}
-                  className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
-                    isOpen
-                      ? 'bg-[#12161D]/90 border-[#D4AF7C]/40 shadow-lg shadow-black/40'
-                      : 'bg-black/30 border-white/5 hover:border-white/15'
+                  className={`transition-colors duration-150 ${
+                    isOpen ? 'bg-surface-elevated' : 'bg-surface hover:bg-surface-elevated/50'
                   }`}
                 >
                   <button
@@ -143,28 +139,34 @@ export default function FaqAccordion() {
                     aria-expanded={isOpen}
                     className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 cursor-pointer select-none group"
                   >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF7C] shrink-0 opacity-70 group-hover:opacity-100 transition-opacity" />
-                      <span className="font-semibold text-sm sm:text-base text-[#F5F5F5] group-hover:text-[#D4AF7C] transition-colors leading-snug">
+                    <div className="flex items-baseline gap-3.5 min-w-0">
+                      <span className="font-mono text-[11px] font-bold text-accent shrink-0 tabular-nums">
+                        {indexLabel}
+                      </span>
+                      <span className="font-semibold text-sm sm:text-base text-fg group-hover:text-accent transition-colors leading-snug">
                         {item.question}
                       </span>
                     </div>
 
-                    <div className={`p-1.5 rounded-xl bg-white/[0.04] border border-white/10 text-[#D4AF7C] transition-transform duration-300 shrink-0 ${
-                      isOpen ? 'rotate-180 bg-[#D4AF7C]/15 border-[#D4AF7C]/30' : ''
-                    }`}>
-                      <ChevronDown className="w-4 h-4" />
+                    <div
+                      className={`p-1.5 rounded-sm border transition-all duration-150 shrink-0 ${
+                        isOpen
+                          ? 'rotate-180 bg-accent text-on-accent border-accent'
+                          : 'bg-surface border-border text-fg-muted group-hover:text-fg group-hover:border-border-strong'
+                      }`}
+                    >
+                      <ChevronDown className="w-4 h-4" aria-hidden="true" />
                     </div>
                   </button>
 
-                  {/* Smooth Collapsible Content */}
+                  {/* Collapsible Answer */}
                   <div
-                    className={`grid transition-all duration-300 ease-in-out px-5 sm:px-6 ${
+                    className={`grid transition-all duration-200 ease-in-out px-5 sm:px-6 ${
                       isOpen ? 'grid-rows-[1fr] pb-5 sm:pb-6 opacity-100' : 'grid-rows-[0fr] pb-0 opacity-0'
                     }`}
                   >
                     <div className="overflow-hidden">
-                      <div className="pt-2 border-t border-white/5 text-xs sm:text-sm text-[#A0A6B0] leading-relaxed font-['Poppins',sans-serif]">
+                      <div className="pl-7 pt-2 border-t border-border text-xs sm:text-sm text-fg-muted leading-relaxed font-body">
                         {item.answer}
                       </div>
                     </div>
@@ -179,4 +181,3 @@ export default function FaqAccordion() {
     </section>
   );
 }
-

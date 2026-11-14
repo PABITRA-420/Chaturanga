@@ -1,11 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Crown, Trophy, Medal, ArrowRight, Sparkles, ShieldCheck } from 'lucide-react';
+import { Crown, Trophy, Medal, ArrowRight } from 'lucide-react';
 import { Skeleton } from '@/components/ui/Skeleton';
 import SpotlightCard from '@/components/ui/SpotlightCard';
-import BorderBeam from '@/components/ui/BorderBeam';
 import { LEADERBOARD_PLAYERS } from '@/data/leaderboardData';
 
 function getPlayerDisplayRating(p: any) {
@@ -31,18 +30,16 @@ function getPlayerDisplayRating(p: any) {
 }
 
 export default function HomeLeaderboardPreview() {
-  const [players, setPlayers] = React.useState<any[]>(() => LEADERBOARD_PLAYERS.slice(0, 3));
-  const [loading, setLoading] = React.useState<boolean>(false);
+  const [players, setPlayers] = useState<any[]>(() => LEADERBOARD_PLAYERS.slice(0, 3));
+  const [loading, setLoading] = useState<boolean>(false);
 
-  React.useEffect(() => {
-    let hasCached = false;
+  useEffect(() => {
     try {
       const cached = sessionStorage.getItem('chaturanga_leaderboard_preview');
       if (cached) {
         const parsed = JSON.parse(cached);
         if (Array.isArray(parsed) && parsed.length > 0) {
           setPlayers(parsed);
-          hasCached = true;
           setLoading(false);
         }
       }
@@ -62,9 +59,9 @@ export default function HomeLeaderboardPreview() {
       .finally(() => setLoading(false));
   }, []);
 
-  const p1 = players[0]; // Gold #1
-  const p2 = players[1]; // Silver #2
-  const p3 = players[2]; // Bronze #3
+  const p1 = players[0];
+  const p2 = players[1];
+  const p3 = players[2];
 
   const info1 = p1 ? getPlayerDisplayRating(p1) : null;
   const info2 = p2 ? getPlayerDisplayRating(p2) : null;
@@ -72,239 +69,189 @@ export default function HomeLeaderboardPreview() {
 
   return (
     <section className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="p-8 sm:p-10 rounded-3xl bg-gradient-to-b from-[#141820] to-[#0D1016] border border-white/10 shadow-2xl relative overflow-hidden">
+      <div className="p-6 sm:p-10 rounded-md bg-surface border border-border relative overflow-hidden">
         
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest text-[#D4AF7C] bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 mb-2">
-              <Crown className="w-3.5 h-3.5" />
-              <span>COLLEGIATE RATINGS STANDINGS</span>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-border mb-8">
+          <div className="space-y-1.5">
+            <div className="inline-flex items-center gap-2 text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-accent">
+              <Crown className="w-3.5 h-3.5" aria-hidden="true" />
+              <span>03 / COLLEGIATE RATINGS STANDINGS</span>
             </div>
-            <h2 className="text-2xl sm:text-4xl font-black font-['Montserrat',sans-serif] text-[#F5F5F5]">
-              Club Elo Leaderboard <span className="text-[#D4AF7C]">Top Board</span>
+            <h2 className="text-2xl sm:text-4xl font-extrabold font-heading text-fg tracking-tight">
+              Club Elo Leaderboard <span className="text-accent">Top Board</span>
             </h2>
-            <p className="text-xs sm:text-sm text-[#A0A6B0] mt-1 max-w-xl font-['Poppins',sans-serif]">
+            <p className="text-xs sm:text-sm text-fg-muted max-w-xl font-body">
               Live ratings calibrated from official collegiate matches and verified Lichess &amp; Chess.com accounts.
             </p>
           </div>
 
           <Link
             href="/leaderboard"
-            className="px-5 py-2.5 rounded-full text-xs font-bold text-[#0B0F14] bg-[#D4AF7C] hover:bg-[#E6C98A] transition inline-flex items-center gap-2 self-start md:self-end shadow-md shadow-[#D4AF7C]/20"
+            className="px-5 py-2.5 rounded-sm text-xs font-bold uppercase tracking-wider text-on-accent bg-accent hover:bg-accent-hover transition-colors inline-flex items-center gap-2 self-start md:self-end btn-tactile"
           >
             <span>{players.length > 0 ? `View Full (${players.length}) Leaderboard` : 'View Leaderboard'}</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4" aria-hidden="true" />
           </Link>
         </div>
 
-        {/* Loading Skeletons - Zero CLS Podium Layout */}
+        {/* Loading Skeletons */}
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch" data-testid="leaderboard-podium-skeleton">
-            {/* Silver #2 Skeleton */}
-            <div className="order-2 md:order-1 p-6 rounded-2xl bg-black/40 border border-slate-400/20 flex flex-col justify-between space-y-4">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Skeleton className="w-24 h-5 rounded-full" />
-                  <span className="text-lg opacity-40">🥈</span>
-                </div>
-                <Skeleton className="w-3/4 h-6 rounded-lg" />
-                <Skeleton className="w-1/2 h-4 rounded-md" />
-              </div>
-              <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
-                <Skeleton className="w-20 h-4 rounded" />
-                <Skeleton className="w-16 h-6 rounded-lg" />
-              </div>
+            <div className="order-2 md:order-1 p-6 rounded-sm bg-surface-elevated border border-border flex flex-col justify-between space-y-4">
+              <Skeleton className="w-24 h-5" />
+              <Skeleton className="w-3/4 h-6" />
+              <Skeleton className="w-1/2 h-4" />
             </div>
 
-            {/* Gold #1 Skeleton */}
-            <div className="order-1 md:order-2 p-6 rounded-2xl bg-gradient-to-b from-[#1C1710] to-[#12161D] border-2 border-[#D4AF7C]/40 shadow-lg flex flex-col justify-between space-y-4 relative transform md:-translate-y-2">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Skeleton className="w-28 h-5 rounded-full" />
-                  <span className="text-xl opacity-60">👑</span>
-                </div>
-                <Skeleton className="w-4/5 h-7 rounded-lg" />
-                <Skeleton className="w-3/5 h-4 rounded-md" />
-              </div>
-              <div className="mt-4 pt-3 border-t border-[#D4AF7C]/20 flex items-center justify-between">
-                <Skeleton className="w-24 h-4 rounded" />
-                <Skeleton className="w-20 h-7 rounded-lg" />
-              </div>
+            <div className="order-1 md:order-2 p-6 rounded-sm bg-surface-elevated border-2 border-accent/60 flex flex-col justify-between space-y-4">
+              <Skeleton className="w-28 h-5" />
+              <Skeleton className="w-4/5 h-7" />
+              <Skeleton className="w-3/5 h-4" />
             </div>
 
-            {/* Bronze #3 Skeleton */}
-            <div className="order-3 md:order-3 p-6 rounded-2xl bg-black/40 border border-amber-700/30 flex flex-col justify-between space-y-4">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Skeleton className="w-24 h-5 rounded-full" />
-                  <span className="text-lg opacity-40">🥉</span>
-                </div>
-                <Skeleton className="w-3/4 h-6 rounded-lg" />
-                <Skeleton className="w-1/2 h-4 rounded-md" />
-              </div>
-              <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
-                <Skeleton className="w-20 h-4 rounded" />
-                <Skeleton className="w-16 h-6 rounded-lg" />
-              </div>
+            <div className="order-3 p-6 rounded-sm bg-surface-elevated border border-border flex flex-col justify-between space-y-4">
+              <Skeleton className="w-24 h-5" />
+              <Skeleton className="w-3/4 h-6" />
+              <Skeleton className="w-1/2 h-4" />
             </div>
           </div>
         ) : players.length === 0 ? (
-          /* Empty State: 0 Players */
-          <div className="p-10 sm:p-12 rounded-2xl bg-black/40 border border-white/5 text-center space-y-4">
-            <div className="w-14 h-14 rounded-2xl bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 flex items-center justify-center mx-auto text-[#D4AF7C]">
-              <Trophy className="w-7 h-7" />
+          <div className="p-10 sm:p-12 rounded-sm bg-surface-elevated border border-border text-center space-y-4">
+            <div className="w-12 h-12 rounded-sm bg-surface border border-border flex items-center justify-center mx-auto text-accent">
+              <Trophy className="w-6 h-6" aria-hidden="true" />
             </div>
             <div className="space-y-1.5 max-w-md mx-auto">
-              <h3 className="text-lg font-bold font-['Montserrat',sans-serif] text-[#F5F5F5]">
+              <h3 className="text-lg font-bold font-heading text-fg">
                 Season Leaderboard Calibration Pending
               </h3>
-              <p className="text-xs sm:text-sm text-[#A0A6B0] leading-relaxed font-['Poppins',sans-serif]">
-                No rated club players recorded in the system yet. Compete in upcoming official Swiss championships to earn your collegiate ranking and claim the top board!
+              <p className="text-xs sm:text-sm text-fg-muted leading-relaxed font-body">
+                No rated club players recorded in the system yet. Compete in upcoming official Swiss championships to earn your collegiate ranking.
               </p>
             </div>
             <div className="pt-2">
               <Link
                 href="/upcoming"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold text-[#0B0F14] bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] hover:brightness-110 shadow-md transition"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-sm text-xs font-bold uppercase tracking-wider text-on-accent bg-accent hover:bg-accent-hover transition-colors"
               >
                 <span>Explore Tournaments &amp; Play</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
               </Link>
             </div>
           </div>
         ) : (
-          /* 1, 2, or 3+ Players */
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
             
-            {/* Silver #2 */}
+            {/* Rank #2 Silver */}
             {p2 && info2 ? (
-              <SpotlightCard
-                className="order-2 md:order-1 p-6 rounded-2xl bg-black/40 border border-slate-400/20 hover:border-slate-300/40 transition flex flex-col justify-between"
-                spotlightColor="rgba(203, 213, 225, 0.12)"
-                size={280}
-                interactiveTilt={true}
-              >
+              <SpotlightCard className="order-2 md:order-1 p-6 rounded-sm bg-surface-elevated border border-border hover:border-border-strong flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-bold text-slate-300 px-2.5 py-0.5 rounded-full bg-slate-300/10 border border-slate-300/30">
-                      Rank #2 • Silver
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-fg-muted px-2 py-0.5 rounded-xs bg-surface border border-border">
+                      Rank #02 • Silver
                     </span>
-                    <span className="text-lg">🥈</span>
+                    <Medal className="w-5 h-5 text-fg-muted" aria-hidden="true" />
                   </div>
-                  <h3 className="font-bold text-lg text-[#F5F5F5]">{p2.name}</h3>
-                  <p className="text-xs text-[#A0A6B0]">
-                    <span className="text-slate-300 font-semibold">{info2.platform} {info2.format}</span>
+                  <h3 className="font-heading font-bold text-lg text-fg">{p2.name}</h3>
+                  <p className="text-xs text-fg-muted mt-0.5 font-mono">
+                    {info2.platform} {info2.format}
                   </p>
                 </div>
-                <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
+                <div className="mt-5 pt-3 border-t border-border flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block">{info2.platform} {info2.format}</span>
-                    <span className="text-xs text-[#A0A6B0] font-mono">@{p2.lichessUsername || p2.chessUsername}</span>
+                    <span className="text-[10px] font-mono uppercase text-fg-muted block">Handle</span>
+                    <span className="text-xs text-fg font-mono">@{p2.lichessUsername || p2.chessUsername || 'player'}</span>
                   </div>
-                  <span className="font-mono text-xl font-bold text-slate-200">{info2.rating}</span>
+                  <span className="font-mono text-2xl font-bold text-fg tabular-nums">{info2.rating}</span>
                 </div>
               </SpotlightCard>
             ) : (
-              <div className="order-2 md:order-1 p-6 rounded-2xl bg-black/20 border border-dashed border-slate-500/20 flex flex-col justify-between">
+              <div className="order-2 md:order-1 p-6 rounded-sm bg-surface-elevated border border-dashed border-border flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-medium text-slate-400 px-2.5 py-0.5 rounded-full bg-white/5">
-                      Rank #2 • Silver
+                    <span className="text-[11px] font-mono font-medium text-fg-muted px-2 py-0.5 rounded-xs bg-surface border border-border">
+                      Rank #02 • Silver
                     </span>
-                    <span className="text-lg opacity-50">🥈</span>
+                    <Medal className="w-5 h-5 text-fg-muted opacity-50" aria-hidden="true" />
                   </div>
-                  <h3 className="font-semibold text-base text-[#A0A6B0]">Contender Slot Open</h3>
-                  <p className="text-xs text-[#A0A6B0]/60">Play in upcoming Swiss rounds to claim rank #2</p>
+                  <h3 className="font-semibold text-base text-fg-muted">Contender Slot Open</h3>
+                  <p className="text-xs text-fg-muted mt-1">Play in upcoming Swiss rounds to claim rank #2</p>
                 </div>
-                <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
-                  <span className="text-xs text-[#A0A6B0]/60">Status</span>
-                  <span className="font-mono text-xs text-[#A0A6B0]">Unclaimed</span>
+                <div className="mt-4 pt-3 border-t border-border flex items-center justify-between">
+                  <span className="text-xs text-fg-muted">Status</span>
+                  <span className="font-mono text-xs text-fg-muted">Unclaimed</span>
                 </div>
               </div>
             )}
 
-            {/* Gold #1 Reigning Champion */}
+            {/* Rank #1 Champion */}
             {p1 && info1 && (
-              <SpotlightCard
-                className="order-1 md:order-2 p-6 rounded-2xl bg-gradient-to-b from-[#1C1710] to-[#12161D] shadow-lg shadow-[#D4AF7C]/20 flex flex-col justify-between relative transform md:-translate-y-2"
-                spotlightColor="rgba(212, 175, 124, 0.22)"
-                size={340}
-                interactiveTilt={true}
-              >
-                {/* 21st.dev Single Outer Border Beam - shimmer moves seamlessly through the outer border */}
-                <BorderBeam duration={8} colorFrom="#D4AF7C" colorTo="#F3E2B8" baseColor="rgba(212, 175, 124, 0.45)" borderWidth={2} />
-                
+              <SpotlightCard className="order-1 md:order-2 p-6 rounded-sm bg-surface-elevated border-2 border-accent flex flex-col justify-between relative">
                 <div className="relative z-10">
-                  <div className="flex items-center justify-between gap-2 mb-3">
+                  <div className="flex items-center justify-between gap-2 mb-4">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs font-bold text-[#D4AF7C] px-2.5 py-0.5 rounded-full bg-[#D4AF7C]/20 border border-[#D4AF7C]/40">
-                        Rank #1 • Gold Crown
+                      <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-accent px-2 py-0.5 rounded-xs bg-accent/10 border border-accent/40">
+                        Rank #01
                       </span>
-                      <span className="px-2.5 py-0.5 rounded-full bg-[#D4AF7C] text-[#0B0F14] font-black text-[10px] tracking-wider uppercase shadow-sm">
-                        REIGNING CHAMPION
+                      <span className="px-2 py-0.5 rounded-xs bg-accent text-on-accent font-mono font-bold text-[10px] tracking-wider uppercase">
+                        CHAMPION
                       </span>
                     </div>
-                    <span className="text-xl shrink-0">👑</span>
+                    <Crown className="w-5 h-5 text-accent shrink-0" aria-hidden="true" />
                   </div>
-                  <h3 className="font-black text-xl text-[#F5F5F5]">{p1.name}</h3>
-                  <p className="text-xs text-[#A0A6B0]">
-                    <span className="text-[#D4AF7C] font-semibold">{info1.platform} {info1.format}</span>
+                  <h3 className="font-heading font-extrabold text-xl text-fg">{p1.name}</h3>
+                  <p className="text-xs text-accent font-mono font-semibold mt-0.5">
+                    {info1.platform} {info1.format}
                   </p>
                 </div>
-                <div className="relative z-10 mt-4 pt-3 border-t border-[#D4AF7C]/20 flex items-center justify-between">
+                <div className="relative z-10 mt-5 pt-3 border-t border-border flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-[#D4AF7C] block">{info1.platform} {info1.format}</span>
-                    <span className="text-xs text-[#A0A6B0] font-mono">@{p1.lichessUsername || p1.chessUsername}</span>
+                    <span className="text-[10px] font-mono uppercase text-fg-muted block">Handle</span>
+                    <span className="text-xs text-fg font-mono">@{p1.lichessUsername || p1.chessUsername || 'champion'}</span>
                   </div>
-                  <span className="font-mono text-2xl font-black text-[#D4AF7C]">{info1.rating}</span>
+                  <span className="font-mono text-2xl sm:text-3xl font-extrabold text-accent tabular-nums">{info1.rating}</span>
                 </div>
               </SpotlightCard>
             )}
 
-            {/* Bronze #3 */}
+            {/* Rank #3 Bronze */}
             {p3 && info3 ? (
-              <SpotlightCard
-                className="order-3 md:order-3 p-6 rounded-2xl bg-black/40 border border-amber-700/30 hover:border-amber-600/40 transition flex flex-col justify-between"
-                spotlightColor="rgba(217, 119, 6, 0.12)"
-                size={280}
-                interactiveTilt={true}
-              >
+              <SpotlightCard className="order-3 md:order-3 p-6 rounded-sm bg-surface-elevated border border-border hover:border-border-strong flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-bold text-amber-500 px-2.5 py-0.5 rounded-full bg-amber-700/20 border border-amber-700/40">
-                      Rank #3 • Bronze
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-warning px-2 py-0.5 rounded-xs bg-surface border border-warning/40">
+                      Rank #03 • Bronze
                     </span>
-                    <span className="text-lg">🥉</span>
+                    <Medal className="w-5 h-5 text-warning" aria-hidden="true" />
                   </div>
-                  <h3 className="font-bold text-lg text-[#F5F5F5]">{p3.name}</h3>
-                  <p className="text-xs text-[#A0A6B0]">
-                    <span className="text-amber-400 font-semibold">{info3.platform} {info3.format}</span>
+                  <h3 className="font-heading font-bold text-lg text-fg">{p3.name}</h3>
+                  <p className="text-xs text-warning font-mono font-semibold mt-0.5">
+                    {info3.platform} {info3.format}
                   </p>
                 </div>
-                <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
+                <div className="mt-5 pt-3 border-t border-border flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-amber-500 block">{info3.platform} {info3.format}</span>
-                    <span className="text-xs text-[#A0A6B0] font-mono">@{p3.lichessUsername || p3.chessUsername}</span>
+                    <span className="text-[10px] font-mono uppercase text-fg-muted block">Handle</span>
+                    <span className="text-xs text-fg font-mono">@{p3.lichessUsername || p3.chessUsername || 'player'}</span>
                   </div>
-                  <span className="font-mono text-xl font-bold text-amber-400">{info3.rating}</span>
+                  <span className="font-mono text-2xl font-bold text-warning tabular-nums">{info3.rating}</span>
                 </div>
               </SpotlightCard>
             ) : (
-              <div className="order-3 md:order-3 p-6 rounded-2xl bg-black/20 border border-dashed border-amber-700/20 flex flex-col justify-between">
+              <div className="order-3 md:order-3 p-6 rounded-sm bg-surface-elevated border border-dashed border-border flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-medium text-amber-600/70 px-2.5 py-0.5 rounded-full bg-white/5">
-                      Rank #3 • Bronze
+                    <span className="text-[11px] font-mono font-medium text-fg-muted px-2 py-0.5 rounded-xs bg-surface border border-border">
+                      Rank #03 • Bronze
                     </span>
-                    <span className="text-lg opacity-50">🥉</span>
+                    <Medal className="w-5 h-5 text-fg-muted opacity-50" aria-hidden="true" />
                   </div>
-                  <h3 className="font-semibold text-base text-[#A0A6B0]">Contender Slot Open</h3>
-                  <p className="text-xs text-[#A0A6B0]/60">Play in upcoming Swiss rounds to claim rank #3</p>
+                  <h3 className="font-semibold text-base text-fg-muted">Contender Slot Open</h3>
+                  <p className="text-xs text-fg-muted mt-1">Play in upcoming Swiss rounds to claim rank #3</p>
                 </div>
-                <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
-                  <span className="text-xs text-[#A0A6B0]/60">Status</span>
-                  <span className="font-mono text-xs text-[#A0A6B0]">Unclaimed</span>
+                <div className="mt-4 pt-3 border-t border-border flex items-center justify-between">
+                  <span className="text-xs text-fg-muted">Status</span>
+                  <span className="font-mono text-xs text-fg-muted">Unclaimed</span>
                 </div>
               </div>
             )}

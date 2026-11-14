@@ -3,18 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import Image from 'next/image';
-import { 
-  Camera, 
-  X, 
-  ChevronLeft, 
-  ChevronRight, 
-  Calendar, 
-  Trophy, 
-  Sparkles,
-  ExternalLink
-} from 'lucide-react';
+import { Camera, X, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import type { GalleryPhoto } from '@/data/galleryData';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 export default function GalleryView() {
   const [photos, setPhotos] = useState<GalleryPhoto[]>([]);
@@ -52,22 +43,21 @@ export default function GalleryView() {
     };
   }, []);
 
-  const filteredPhotos = activeCategory === 'All' 
-    ? photos 
+  const filteredPhotos = activeCategory === 'All'
+    ? photos
     : photos.filter(p => p.category === activeCategory);
 
-  // Keyboard navigation for lightbox
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (selectedPhotoIndex === null || filteredPhotos.length === 0) return;
       if (e.key === 'Escape') setSelectedPhotoIndex(null);
       if (e.key === 'ArrowRight') {
-        setSelectedPhotoIndex((prev) => 
+        setSelectedPhotoIndex((prev) =>
           prev !== null ? (prev + 1) % filteredPhotos.length : null
         );
       }
       if (e.key === 'ArrowLeft') {
-        setSelectedPhotoIndex((prev) => 
+        setSelectedPhotoIndex((prev) =>
           prev !== null ? (prev - 1 + filteredPhotos.length) % filteredPhotos.length : null
         );
       }
@@ -76,37 +66,37 @@ export default function GalleryView() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedPhotoIndex, filteredPhotos.length]);
 
-  const activePhoto = (selectedPhotoIndex !== null && filteredPhotos[selectedPhotoIndex]) 
-    ? filteredPhotos[selectedPhotoIndex] 
+  const activePhoto = (selectedPhotoIndex !== null && filteredPhotos[selectedPhotoIndex])
+    ? filteredPhotos[selectedPhotoIndex]
     : null;
 
   return (
-    <div className="min-h-screen bg-[#0B0F14] text-[#F5F5F5] font-['Inter',sans-serif] selection:bg-[#D4AF7C] selection:text-[#0B0F14]">
+    <div className="min-h-screen bg-bg text-fg font-ui selection:bg-accent selection:text-on-accent">
       <Navbar />
 
       <main id="main-content" className="pt-28 pb-20">
         
         {/* HEADER SECTION */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-          <div className="relative p-8 sm:p-12 rounded-3xl bg-gradient-to-b from-[#12161D] to-[#0D1016] border border-white/10 overflow-hidden shadow-2xl">
-            <div className="relative z-10 max-w-3xl">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 text-xs font-bold uppercase tracking-widest text-[#D4AF7C] mb-4">
-                <Camera className="w-3.5 h-3.5" />
-                <span>Collegiate Tournament Memories</span>
+        <section className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 mb-10">
+          <div className="p-7 sm:p-10 rounded-md bg-surface border border-border">
+            <div className="max-w-3xl space-y-3">
+              <div className="inline-flex items-center gap-2 text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-accent">
+                <Camera className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>COLLEGIATE TOURNAMENT MEMORIES</span>
               </div>
-              <h1 className="font-['Montserrat',sans-serif] font-black text-3xl sm:text-5xl text-[#F5F5F5] tracking-tight leading-tight mb-4">
-                Photo Gallery <span className="text-[#D4AF7C]">&</span> Highlights
+              <h1 className="font-heading font-extrabold text-3xl sm:text-5xl text-fg tracking-tight leading-tight">
+                Photo Gallery <span className="text-accent">&amp;</span> Highlights
               </h1>
-              <p className="text-sm sm:text-base text-[#A0A6B0] leading-relaxed font-['Poppins',sans-serif]">
-                A visual journey through fierce 64-square encounters, trophy celebrations, blitz night showdowns, and post-game analyses at Jalpaiguri Government Engineering College.
+              <p className="text-sm sm:text-base text-fg-muted leading-relaxed font-body">
+                A visual archive of 64-square encounters, trophy ceremonies, blitz night showdowns, and post-game analyses at Jalpaiguri Government Engineering College.
               </p>
             </div>
           </div>
         </section>
 
         {/* CATEGORY FILTER PILLS */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+        <section className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+          <div className="flex items-center gap-2 overflow-x-auto pb-2">
             {categories.map((cat) => {
               const count = !loading ? (cat === 'All' ? photos.length : photos.filter(p => p.category === cat).length) : null;
               return (
@@ -114,10 +104,10 @@ export default function GalleryView() {
                   key={cat}
                   type="button"
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-4 py-2 rounded-2xl text-xs sm:text-sm font-semibold transition cursor-pointer whitespace-nowrap ${
+                  className={`px-4 py-2 rounded-xs text-xs font-mono font-semibold transition-colors cursor-pointer whitespace-nowrap border ${
                     activeCategory === cat
-                      ? 'bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] text-[#0B0F14] font-bold shadow-lg shadow-[#D4AF7C]/20'
-                      : 'bg-[#12161D] text-[#A0A6B0] hover:text-[#F5F5F5] hover:bg-white/5 border border-white/10'
+                      ? 'bg-primary text-on-primary border-primary'
+                      : 'bg-surface text-fg-muted hover:text-fg border-border hover:border-border-strong'
                   }`}
                 >
                   {cat}
@@ -129,43 +119,34 @@ export default function GalleryView() {
         </section>
 
         {/* PHOTO GRID */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {loading ? (
               Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={`skeleton-${i}`}
-                  className="rounded-3xl overflow-hidden bg-[#12161D] border border-white/10 shadow-xl animate-pulse"
+                  className="rounded-md overflow-hidden bg-surface border border-border"
                 >
-                  <div className="aspect-[4/3] w-full bg-white/5 relative">
-                    <div className="absolute top-3 left-3 h-5 w-20 rounded-full bg-white/10" />
-                    <div className="absolute top-3 right-3 h-5 w-24 rounded-full bg-white/10" />
-                  </div>
+                  <Skeleton className="aspect-[4/3] w-full rounded-none border-0 border-b border-border" />
                   <div className="p-5 space-y-3">
-                    <div className="h-5 w-3/4 rounded-md bg-white/10" />
-                    <div className="space-y-1.5">
-                      <div className="h-3 w-full rounded bg-white/5" />
-                      <div className="h-3 w-2/3 rounded bg-white/5" />
-                    </div>
-                    <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
-                      <div className="h-3 w-32 rounded bg-white/5" />
-                      <div className="h-3 w-16 rounded bg-white/5" />
-                    </div>
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-3 w-full" />
+                    <Skeleton className="h-3 w-2/3" />
                   </div>
                 </div>
               ))
             ) : filteredPhotos.length === 0 ? (
-              <div className="col-span-full py-16 px-6 text-center rounded-3xl bg-[#12161D]/60 border border-white/5 space-y-4">
-                <div className="w-16 h-16 rounded-2xl bg-[#D4AF7C]/10 border border-[#D4AF7C]/20 flex items-center justify-center mx-auto text-[#D4AF7C]">
-                  <Camera className="w-8 h-8 opacity-60" />
+              <div className="col-span-full py-16 px-6 text-center rounded-md bg-surface border border-border space-y-4">
+                <div className="w-14 h-14 rounded-sm bg-surface-elevated border border-border flex items-center justify-center mx-auto text-accent">
+                  <Camera className="w-7 h-7 opacity-70" aria-hidden="true" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-lg font-bold font-['Montserrat',sans-serif] text-white/90">
+                  <h3 className="text-lg font-bold font-heading text-fg">
                     No Gallery Photos Found
                   </h3>
-                  <p className="text-sm text-[#A0A6B0] max-w-md mx-auto font-['Poppins',sans-serif]">
-                    {activeCategory === 'All' 
-                      ? 'Tournament photo archives are being updated by the media coordinator.' 
+                  <p className="text-sm text-fg-muted max-w-md mx-auto font-body">
+                    {activeCategory === 'All'
+                      ? 'Tournament photo archives are being updated by the media coordinator.'
                       : `No moments currently catalogued under "${activeCategory}".`}
                   </p>
                 </div>
@@ -173,60 +154,58 @@ export default function GalleryView() {
                   <button
                     type="button"
                     onClick={() => setActiveCategory('All')}
-                    className="text-xs font-semibold text-[#D4AF7C] hover:underline cursor-pointer"
+                    className="text-xs font-mono font-semibold text-accent hover:underline cursor-pointer"
                   >
-                    View all categories &rarr;
+                    View all categories →
                   </button>
                 )}
               </div>
             ) : (
               filteredPhotos.map((photo, index) => (
-                <div
+                <button
                   key={photo.id}
+                  type="button"
                   onClick={() => setSelectedPhotoIndex(index)}
-                  className="group relative rounded-3xl overflow-hidden bg-[#12161D] border border-white/10 hover:border-[#D4AF7C]/50 shadow-xl cursor-pointer transition-all duration-300 hover:-translate-y-1"
+                  className="group relative rounded-md overflow-hidden bg-surface border border-border hover:border-border-strong cursor-pointer transition-colors text-left flex flex-col"
                 >
-                  {/* Image Container */}
-                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-black/60">
+                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#111114] border-b border-border">
                     <img
                       src={photo.imageSrc}
                       alt={photo.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300"
                       loading="lazy"
                     />
-                    
-                    {/* Category Pill */}
-                    <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/15 text-[11px] font-bold text-[#D4AF7C]">
+
+                    {/* Scrimmed Tag Pills Over Photograph for Guaranteed Contrast */}
+                    <div className="absolute top-3 left-3 px-2 py-0.5 rounded-xs bg-[#09090B]/85 border border-white/15 text-[10px] font-mono font-bold uppercase tracking-wider text-[#D4AF7C]">
                       {photo.tag}
                     </div>
 
-                    {/* Date badge */}
-                    <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/15 text-[11px] font-medium text-[#A0A6B0] flex items-center gap-1">
-                      <Calendar className="w-3 h-3" />
+                    <div className="absolute top-3 right-3 px-2 py-0.5 rounded-xs bg-[#09090B]/85 border border-white/15 text-[10px] font-mono font-medium text-[#FAFAFA] flex items-center gap-1">
+                      <Calendar className="w-3 h-3" aria-hidden="true" />
                       <span>{photo.date}</span>
                     </div>
-
-                    {/* Dark gradient overlay at bottom */}
-                    <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#12161D] via-[#12161D]/80 to-transparent" />
                   </div>
 
-                  {/* Details */}
-                  <div className="p-5 relative z-10 -mt-6">
-                    <h3 className="font-['Montserrat',sans-serif] font-bold text-base text-[#F5F5F5] group-hover:text-[#D4AF7C] transition-colors line-clamp-1 mb-1.5">
-                      {photo.title}
-                    </h3>
-                    <p className="text-xs text-[#A0A6B0] line-clamp-2 leading-relaxed">
-                      {photo.description}
-                    </p>
+                  {/* Card Caption Body */}
+                  <div className="p-5 flex-1 flex flex-col justify-between w-full">
+                    <div>
+                      <h3 className="font-heading font-bold text-base text-fg group-hover:text-accent transition-colors line-clamp-1 mb-1.5">
+                        {photo.title}
+                      </h3>
+                      <p className="text-xs text-fg-muted font-body line-clamp-2 leading-relaxed">
+                        {photo.description}
+                      </p>
+                    </div>
                     
-                    <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-[#A0A6B0]">
-                      <span className="font-semibold text-white/80">{photo.tournamentName}</span>
-                      <span className="text-[#D4AF7C] group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
-                        View photo →
+                    <div className="mt-4 pt-3 border-t border-border flex items-center justify-between text-[11px] font-mono text-fg-muted">
+                      <span className="font-semibold text-fg truncate pr-2">{photo.tournamentName}</span>
+                      <span className="text-accent shrink-0 group-hover:translate-x-0.5 transition-transform">
+                        Inspect →
                       </span>
                     </div>
                   </div>
-                </div>
+                </button>
               ))
             )}
           </div>
@@ -234,46 +213,47 @@ export default function GalleryView() {
 
         {/* LIGHTBOX MODAL */}
         {activePhoto && selectedPhotoIndex !== null && (
-          <div 
-            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 sm:p-6"
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={activePhoto.title}
+            className="fixed inset-0 z-50 bg-scrim/90 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 animate-fade-in"
             onClick={() => setSelectedPhotoIndex(null)}
           >
-            <div 
-              className="relative max-w-5xl w-full max-h-[90vh] bg-[#12161D] border border-white/15 rounded-3xl overflow-hidden shadow-2xl flex flex-col"
+            <div
+              style={{ boxShadow: 'var(--shadow-md)' }}
+              className="relative max-w-5xl w-full max-h-[90vh] bg-surface border border-border-strong rounded-md overflow-hidden flex flex-col animate-scale-up"
               onClick={(e) => e.stopPropagation()}
             >
               
-              {/* Close Button */}
               <button
                 type="button"
                 onClick={() => setSelectedPhotoIndex(null)}
-                className="absolute top-4 right-4 z-20 min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-black/60 hover:bg-white/20 border border-white/20 text-[#F5F5F5] flex items-center justify-center transition cursor-pointer active:scale-95"
+                className="absolute top-4 right-4 z-20 min-w-[40px] min-h-[40px] rounded-sm bg-[#09090B]/80 hover:bg-accent hover:text-on-accent border border-white/20 text-white flex items-center justify-center transition-colors cursor-pointer"
                 aria-label="Close photo preview"
               >
                 <X className="w-5 h-5" />
               </button>
 
-              {/* Prev / Next Buttons */}
               <button
                 type="button"
                 onClick={() => setSelectedPhotoIndex((selectedPhotoIndex - 1 + filteredPhotos.length) % filteredPhotos.length)}
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-black/70 hover:bg-[#D4AF7C] hover:text-[#0B0F14] border border-white/20 text-[#F5F5F5] flex items-center justify-center transition cursor-pointer shadow-lg"
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-sm bg-[#09090B]/80 hover:bg-accent hover:text-on-accent border border-white/20 text-white flex items-center justify-center transition-colors cursor-pointer"
                 aria-label="Previous photo"
               >
-                <ChevronLeft className="w-6 h-6" />
+                <ChevronLeft className="w-5 h-5" />
               </button>
 
               <button
                 type="button"
                 onClick={() => setSelectedPhotoIndex((selectedPhotoIndex + 1) % filteredPhotos.length)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-black/70 hover:bg-[#D4AF7C] hover:text-[#0B0F14] border border-white/20 text-[#F5F5F5] flex items-center justify-center transition cursor-pointer shadow-lg"
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-sm bg-[#09090B]/80 hover:bg-accent hover:text-on-accent border border-white/20 text-white flex items-center justify-center transition-colors cursor-pointer"
                 aria-label="Next photo"
               >
-                <ChevronRight className="w-6 h-6" />
+                <ChevronRight className="w-5 h-5" />
               </button>
 
-              {/* Image Container */}
-              <div className="relative w-full h-[55vh] sm:h-[65vh] bg-black/80 flex items-center justify-center overflow-hidden">
+              <div className="relative w-full h-[55vh] sm:h-[65vh] bg-[#09090B] flex items-center justify-center overflow-hidden border-b border-border">
                 <img
                   src={activePhoto.imageSrc}
                   alt={activePhoto.title}
@@ -281,26 +261,25 @@ export default function GalleryView() {
                 />
               </div>
 
-              {/* Caption & Metadata Footer */}
-              <div className="p-6 bg-[#0E121A] border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="p-6 bg-surface flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-[#D4AF7C]/20 text-[#D4AF7C] border border-[#D4AF7C]/30">
+                  <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                    <span className="px-2 py-0.5 rounded-xs text-[10px] font-mono font-bold uppercase tracking-wider bg-accent text-on-accent">
                       {activePhoto.tag}
                     </span>
-                    <span className="text-xs text-[#A0A6B0]">{activePhoto.date}</span>
-                    <span className="text-xs text-[#A0A6B0]">• {activePhoto.tournamentName}</span>
+                    <span className="text-xs font-mono text-fg-muted">{activePhoto.date}</span>
+                    <span className="text-xs font-mono text-fg-muted">• {activePhoto.tournamentName}</span>
                   </div>
-                  <h2 className="font-['Montserrat',sans-serif] font-bold text-lg text-[#F5F5F5]">
+                  <h2 className="font-heading font-bold text-lg text-fg">
                     {activePhoto.title}
                   </h2>
-                  <p className="text-xs sm:text-sm text-[#A0A6B0] mt-1 max-w-3xl leading-relaxed">
+                  <p className="text-xs sm:text-sm text-fg-muted font-body mt-1 max-w-3xl leading-relaxed">
                     {activePhoto.description}
                   </p>
                 </div>
 
-                <div className="text-xs font-mono text-[#A0A6B0] whitespace-nowrap self-end sm:self-center">
-                  Photo {selectedPhotoIndex + 1} of {filteredPhotos.length}
+                <div className="text-xs font-mono text-fg-muted whitespace-nowrap self-end sm:self-center">
+                  Photo {selectedPhotoIndex + 1} / {filteredPhotos.length}
                 </div>
               </div>
 

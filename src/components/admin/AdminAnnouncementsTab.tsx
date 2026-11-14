@@ -140,18 +140,17 @@ export default function AdminAnnouncementsTab() {
 
   return (
     <div className="space-y-6">
-      
       {/* Header */}
-      <div className="p-6 rounded-3xl bg-[#10141C] border border-white/10 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-6 rounded-md bg-surface border border-border shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xs text-[11px] font-mono font-bold text-success bg-success/10 border border-success/30 mb-2">
             <Bell className="w-3.5 h-3.5" />
             <span>DYNAMIC CLUB NOTICE BOARD</span>
           </div>
-          <h2 className="font-['Montserrat',sans-serif] text-xl sm:text-2xl font-black text-[#F5F5F5]">
+          <h2 className="font-heading text-xl sm:text-2xl font-bold text-fg tracking-tight">
             Announcements &amp; Urgent Banner CMS
           </h2>
-          <p className="text-xs text-[#A0A6B0] mt-1 max-w-2xl font-['Poppins',sans-serif]">
+          <p className="text-xs text-fg-muted mt-1 max-w-2xl">
             Broadcast notices, timetable alerts, and practice schedules directly on the homepage banner without writing code.
           </p>
         </div>
@@ -159,7 +158,7 @@ export default function AdminAnnouncementsTab() {
         <button
           type="button"
           onClick={handleOpenCreateModal}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-[#0B0F14] bg-[#D4AF7C] hover:bg-[#E6C98A] transition cursor-pointer shadow-md shadow-[#D4AF7C]/20 self-start md:self-auto"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-sm text-xs font-heading font-semibold text-on-accent bg-accent hover:bg-accent-hover transition-colors cursor-pointer self-start md:self-auto"
         >
           <Plus className="w-4 h-4" />
           <span>Post Announcement</span>
@@ -168,13 +167,16 @@ export default function AdminAnnouncementsTab() {
 
       {/* Notice Alert */}
       {notice && (
-        <div className={`p-4 rounded-2xl border text-xs flex items-center justify-between gap-3 animate-fadeIn ${
-          notice.type === 'success'
-            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-            : 'bg-red-500/10 border-red-500/30 text-red-300'
-        }`}>
+        <div
+          role="status"
+          className={`p-4 rounded-sm border text-xs flex items-center justify-between gap-3 ${
+            notice.type === 'success'
+              ? 'bg-success/10 border-success/30 text-success'
+              : 'bg-danger/10 border-danger/30 text-danger'
+          }`}
+        >
           <div className="flex items-center gap-2">
-            {notice.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" /> : <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />}
+            {notice.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0 text-success" /> : <AlertCircle className="w-4 h-4 shrink-0 text-danger" />}
             <span className="font-semibold">{notice.text}</span>
           </div>
         </div>
@@ -183,56 +185,61 @@ export default function AdminAnnouncementsTab() {
       {/* Announcements Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {loading ? (
-          <div className="col-span-full py-16 text-center text-[#A0A6B0]">
-            <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-[#D4AF7C]" />
-            <span>Loading announcements...</span>
+          <div className="col-span-full py-16 text-center text-fg-muted">
+            <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-accent" />
+            <span className="font-mono text-xs">Loading announcements...</span>
           </div>
         ) : announcements.length === 0 ? (
-          <div className="col-span-full py-16 text-center text-[#A0A6B0] rounded-3xl bg-[#10141C] border border-white/10">
-            No announcements found. Click "Post Announcement" to create your first notice.
+          <div className="col-span-full py-16 text-center text-fg-muted rounded-md bg-surface border border-border">
+            No announcements found. Click &quot;Post Announcement&quot; to create your first notice.
           </div>
         ) : (
           announcements.map((ann) => (
             <div
               key={ann.id}
-              className="p-6 rounded-3xl bg-[#10141C] border border-white/10 hover:border-white/20 transition flex flex-col justify-between space-y-4 shadow-xl"
+              className="p-6 rounded-md bg-surface border border-border hover:border-border-strong transition-colors flex flex-col justify-between space-y-4 shadow-xs"
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-2">
-                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                    ann.category === 'TOURNAMENT' ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' :
-                    ann.category === 'PRACTICE' ? 'bg-blue-500/15 text-blue-400 border border-blue-500/30' :
-                    ann.category === 'SELECTION' ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30' :
-                    'bg-white/10 text-[#F5F5F5] border border-white/15'
-                  }`}>
+                  <span
+                    className={`px-2.5 py-0.5 rounded-xs text-[10px] font-mono font-bold uppercase tracking-wider border ${
+                      ann.category === 'TOURNAMENT'
+                        ? 'bg-success/10 text-success border-success/30'
+                        : ann.category === 'PRACTICE'
+                        ? 'bg-info/10 text-info border-info/30'
+                        : ann.category === 'SELECTION'
+                        ? 'bg-warning/10 text-warning border-warning/30'
+                        : 'bg-surface-elevated text-fg border-border'
+                    }`}
+                  >
                     {ann.category}
                   </span>
 
                   {ann.isUrgent && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold text-red-400 bg-red-500/15 border border-red-500/30 flex items-center gap-1">
+                    <span className="px-2 py-0.5 rounded-xs text-[10px] font-mono font-bold text-danger bg-danger/10 border border-danger/30 flex items-center gap-1">
                       <AlertTriangle className="w-3 h-3" />
                       <span>URGENT</span>
                     </span>
                   )}
                 </div>
 
-                <h3 className="font-['Montserrat',sans-serif] text-base font-bold text-[#F5F5F5]">
+                <h3 className="font-heading text-base font-bold text-fg">
                   {ann.title}
                 </h3>
 
-                <p className="text-xs text-[#A0A6B0] line-clamp-3 leading-relaxed">
+                <p className="text-xs text-fg-muted line-clamp-3 leading-relaxed">
                   {ann.summary}
                 </p>
 
-                <div className="flex items-center gap-1.5 text-[11px] text-[#A0A6B0]/70 pt-1">
-                  <Calendar className="w-3.5 h-3.5 text-[#D4AF7C]" />
+                <div className="flex items-center gap-1.5 text-[11px] font-mono text-fg-subtle pt-1">
+                  <Calendar className="w-3.5 h-3.5 text-accent" />
                   <span>{ann.date}</span>
                 </div>
               </div>
 
               {/* Bottom Actions */}
-              <div className="pt-4 border-t border-white/10 flex items-center justify-between">
-                <span className="text-xs text-[#D4AF7C] font-semibold">
+              <div className="pt-4 border-t border-border flex items-center justify-between">
+                <span className="text-xs font-mono text-accent font-semibold">
                   Link: {ann.linkText || 'Learn More'}
                 </span>
 
@@ -240,16 +247,18 @@ export default function AdminAnnouncementsTab() {
                   <button
                     type="button"
                     onClick={() => handleOpenEditModal(ann)}
-                    className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[#F5F5F5] border border-white/10 transition cursor-pointer"
+                    className="p-1.5 rounded-sm bg-surface-elevated hover:bg-surface-subtle text-fg border border-border transition-colors cursor-pointer"
                     title="Edit announcement"
+                    aria-label={`Edit ${ann.title}`}
                   >
-                    <Edit className="w-3.5 h-3.5 text-[#D4AF7C]" />
+                    <Edit className="w-3.5 h-3.5 text-accent" />
                   </button>
                   <button
                     type="button"
                     onClick={() => setDeletingAnn(ann)}
-                    className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition cursor-pointer btn-tactile"
+                    className="p-1.5 rounded-sm bg-danger/10 hover:bg-danger/20 text-danger border border-danger/30 transition-colors cursor-pointer"
                     title="Delete announcement"
+                    aria-label={`Delete ${ann.title}`}
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -262,18 +271,23 @@ export default function AdminAnnouncementsTab() {
 
       {/* CREATE / EDIT MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-fadeIn">
-          <div className="w-full max-w-xl bg-[#10141C] border border-white/15 rounded-3xl p-6 sm:p-8 shadow-2xl relative my-8">
-            <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={editingAnn ? 'Edit Club Announcement' : 'Post New Club Notice'}
+          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto"
+        >
+          <div className="w-full max-w-xl bg-surface border border-border-strong rounded-md p-6 sm:p-8 shadow-md relative my-8">
+            <div className="flex items-center justify-between pb-4 border-b border-border mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                <div className="w-10 h-10 rounded-sm bg-success/10 border border-success/30 flex items-center justify-center text-success">
                   <Bell className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-['Montserrat',sans-serif] text-lg font-bold text-[#F5F5F5]">
+                  <h3 className="font-heading text-lg font-bold text-fg">
                     {editingAnn ? 'Edit Club Announcement' : 'Post New Club Notice'}
                   </h3>
-                  <p className="text-xs text-[#A0A6B0]">
+                  <p className="text-xs text-fg-muted">
                     Pushed instantly to the public homepage announcement carousel.
                   </p>
                 </div>
@@ -281,8 +295,9 @@ export default function AdminAnnouncementsTab() {
 
               <button
                 type="button"
+                aria-label="Close modal"
                 onClick={() => setIsModalOpen(false)}
-                className="p-2 rounded-xl text-[#A0A6B0] hover:text-[#F5F5F5] hover:bg-white/5 cursor-pointer"
+                className="p-2 rounded-sm text-fg-muted hover:text-fg hover:bg-surface-subtle cursor-pointer transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -290,85 +305,85 @@ export default function AdminAnnouncementsTab() {
 
             <form onSubmit={handleSave} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-[#A0A6B0] mb-1">Headline / Title *</label>
+                <label className="block text-xs font-semibold text-fg-muted mb-1">Headline / Title *</label>
                 <input
                   type="text"
                   required
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="e.g. Spring Blitz Open Registrations Live"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                  className="w-full px-3.5 py-2 rounded-sm bg-surface-elevated border border-border text-xs text-fg placeholder:text-fg-subtle focus:border-accent"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-[#A0A6B0] mb-1">Category</label>
+                  <label className="block text-xs font-semibold text-fg-muted mb-1">Category</label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value as any })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5]"
+                    className="w-full px-3.5 py-2 rounded-sm bg-surface-elevated border border-border text-xs text-fg focus:border-accent"
                   >
                     {['TOURNAMENT', 'PRACTICE', 'SELECTION', 'GENERAL'].map(c => (
-                      <option key={c} value={c} className="bg-[#10141C]">{c}</option>
+                      <option key={c} value={c} className="bg-surface text-fg">{c}</option>
                     ))}
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#A0A6B0] mb-1">Display Date</label>
+                  <label className="block text-xs font-semibold text-fg-muted mb-1">Display Date</label>
                   <input
                     type="text"
                     value={formData.date}
                     onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5]"
+                    className="w-full px-3.5 py-2 rounded-sm bg-surface-elevated border border-border text-xs text-fg focus:border-accent"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#A0A6B0] mb-1">Summary / Lead-in *</label>
+                <label className="block text-xs font-semibold text-fg-muted mb-1">Summary / Lead-in *</label>
                 <textarea
                   rows={2}
                   required
                   value={formData.summary}
                   onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
                   placeholder="Short 1-2 sentence lead text shown on card..."
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5]"
+                  className="w-full px-3.5 py-2 rounded-sm bg-surface-elevated border border-border text-xs text-fg placeholder:text-fg-subtle focus:border-accent"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#A0A6B0] mb-1">Full Detailed Content</label>
+                <label className="block text-xs font-semibold text-fg-muted mb-1">Full Detailed Content</label>
                 <textarea
                   rows={4}
                   value={formData.content}
                   onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                   placeholder="Complete announcement text displayed when visitors open modal..."
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5]"
+                  className="w-full px-3.5 py-2 rounded-sm bg-surface-elevated border border-border text-xs text-fg placeholder:text-fg-subtle focus:border-accent"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-[#A0A6B0] mb-1">Button / Link Text</label>
+                  <label className="block text-xs font-semibold text-fg-muted mb-1">Button / Link Text</label>
                   <input
                     type="text"
                     value={formData.linkText}
                     onChange={(e) => setFormData({ ...formData, linkText: e.target.value })}
                     placeholder="Register Now"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5]"
+                    className="w-full px-3.5 py-2 rounded-sm bg-surface-elevated border border-border text-xs text-fg placeholder:text-fg-subtle focus:border-accent"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#A0A6B0] mb-1">Button Target URL</label>
+                  <label className="block text-xs font-semibold text-fg-muted mb-1">Button Target URL</label>
                   <input
                     type="text"
                     value={formData.linkUrl}
                     onChange={(e) => setFormData({ ...formData, linkUrl: e.target.value })}
                     placeholder="/register or /upcoming"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5]"
+                    className="w-full px-3.5 py-2 rounded-sm bg-surface-elevated border border-border text-xs text-fg font-mono placeholder:text-fg-subtle focus:border-accent"
                   />
                 </div>
               </div>
@@ -380,26 +395,26 @@ export default function AdminAnnouncementsTab() {
                   id="urgentToggle"
                   checked={formData.isUrgent}
                   onChange={(e) => setFormData({ ...formData, isUrgent: e.target.checked })}
-                  className="w-4 h-4 rounded text-[#D4AF7C] bg-[#080B0F] border-white/20 cursor-pointer"
+                  className="w-4 h-4 rounded-xs text-accent bg-surface-elevated border-border-strong cursor-pointer accent-accent"
                 />
-                <label htmlFor="urgentToggle" className="text-xs font-semibold text-[#F5F5F5] cursor-pointer">
-                  Highlight as Urgent / Breaking Notice (flashing red badge)
+                <label htmlFor="urgentToggle" className="text-xs font-semibold text-fg cursor-pointer">
+                  Highlight as Urgent / Breaking Notice (priority red badge)
                 </label>
               </div>
 
               {/* Actions */}
-              <div className="pt-4 border-t border-white/10 flex items-center justify-end gap-3">
+              <div className="pt-4 border-t border-border flex items-center justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl text-xs font-semibold text-[#A0A6B0] hover:text-white bg-white/5 transition cursor-pointer"
+                  className="px-4 py-2 rounded-sm text-xs font-semibold text-fg-muted hover:text-fg bg-surface-elevated border border-border transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2.5 rounded-xl text-xs font-bold text-[#0B0F14] bg-[#D4AF7C] hover:bg-[#E6C98A] transition cursor-pointer shadow-md shadow-[#D4AF7C]/20 disabled:opacity-50"
+                  className="px-5 py-2 rounded-sm text-xs font-heading font-semibold text-on-accent bg-accent hover:bg-accent-hover transition-colors cursor-pointer disabled:opacity-50"
                 >
                   {saving ? 'Publishing...' : editingAnn ? 'Update Announcement' : 'Publish Notice'}
                 </button>

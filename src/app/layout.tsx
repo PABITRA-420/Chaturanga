@@ -1,40 +1,29 @@
 import type { Metadata, Viewport } from 'next';
-import { Montserrat, Poppins, Inter, Roboto_Mono } from 'next/font/google';
+import { Inter, Roboto_Mono } from 'next/font/google';
 import './globals.css';
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-  themeColor: '#0B0F14',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#FAFAFA' },
+    { media: '(prefers-color-scheme: dark)', color: '#09090B' },
+  ],
   viewportFit: 'cover',
 };
-
-const montserrat = Montserrat({
-  subsets: ['latin'],
-  variable: '--font-montserrat',
-  weight: ['700', '900'],
-  display: 'swap',
-});
-
-const poppins = Poppins({
-  subsets: ['latin'],
-  variable: '--font-poppins',
-  weight: ['400', '600'],
-  display: 'swap',
-});
 
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
-  weight: ['400', '600'],
+  weight: ['400', '500', '600', '700', '800'],
   display: 'swap',
 });
 
 const robotoMono = Roboto_Mono({
   subsets: ['latin'],
   variable: '--font-roboto-mono',
-  weight: ['400', '700'],
+  weight: ['400', '500', '700'],
   display: 'swap',
 });
 
@@ -188,23 +177,26 @@ export default function RootLayout({
     ],
   };
 
+  const themeInitScript = `(function(){try{var t=localStorage.getItem('chaturanga-theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}document.documentElement.dataset.theme=t;document.documentElement.classList.toggle('dark',t==='dark');document.documentElement.style.colorScheme=t;}catch(e){document.documentElement.dataset.theme='dark';document.documentElement.classList.add('dark');}})();`;
+
   return (
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${montserrat.variable} ${poppins.variable} ${inter.variable} ${robotoMono.variable}`}
+      className={`${inter.variable} ${robotoMono.variable}`}
     >
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="bg-[#0B0F14] text-[#F5F5F5] antialiased selection:bg-[#D4AF7C] selection:text-[#0B0F14] pb-16 md:pb-0">
+      <body className="bg-bg text-fg antialiased selection:bg-accent selection:text-on-accent pb-16 md:pb-0 font-body">
         {/* WCAG Skip to Main Content Link */}
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[#D4AF7C] focus:text-[#0B0F14] focus:rounded-xl focus:font-bold focus:shadow-2xl focus:outline-none"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[60] focus:px-4 focus:py-2 focus:bg-primary focus:text-on-primary focus:rounded-sm focus:font-semibold focus:text-xs focus:uppercase focus:tracking-wider focus:border focus:border-border-strong"
         >
           Skip to main content
         </a>

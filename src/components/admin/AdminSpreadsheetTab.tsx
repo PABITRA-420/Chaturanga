@@ -208,27 +208,25 @@ export default function AdminSpreadsheetTab({
   return (
     <section className="space-y-6" data-testid="admin-spreadsheet-view">
       {/* Top Banner & Control Deck */}
-      <div className="p-6 rounded-3xl bg-gradient-to-r from-[#141A24] via-[#10141D] to-[#0A0D14] border border-[#D4AF7C]/30 shadow-2xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#D4AF7C]/5 rounded-full blur-3xl pointer-events-none" />
-
+      <div className="p-6 rounded-md bg-surface border border-border-strong shadow-xs relative">
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold text-[#D4AF7C] bg-[#D4AF7C]/10 border border-[#D4AF7C]/30">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xs text-[11px] font-mono font-bold text-accent bg-accent/10 border border-accent/30">
                 <FileSpreadsheet className="w-3.5 h-3.5" />
                 <span>Live Spreadsheet Data Grid</span>
               </span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-500/30">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xs text-[10px] font-mono text-success bg-success/10 border border-success/30">
+                <span className="w-1.5 h-1.5 rounded-full bg-success" />
                 <span>Google Apps Script Link Active</span>
               </span>
             </div>
 
-            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight font-['Montserrat',sans-serif]">
+            <h2 className="text-2xl sm:text-3xl font-bold text-fg tracking-tight font-heading">
               Master Registration Spreadsheet
             </h2>
 
-            <p className="text-xs text-[#A0A6B0] max-w-2xl leading-relaxed">
+            <p className="text-xs text-fg-muted max-w-2xl leading-relaxed">
               Real-time tabular roster mirroring the Google Sheets master database. Instant cell copy, multi-column search, Swiss-Manager CSV export, and live check-in management.
             </p>
           </div>
@@ -239,26 +237,26 @@ export default function AdminSpreadsheetTab({
               href={GOOGLE_SHEETS_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-[#D4AF7C] bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 hover:bg-[#D4AF7C]/20 transition cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-sm text-xs font-semibold text-accent bg-accent/10 border border-accent/30 hover:bg-accent/20 transition-colors cursor-pointer"
             >
               <ExternalLink className="w-3.5 h-3.5" />
-              <span>Open in Google Sheets ↗</span>
+              <span>Open in Google Sheets</span>
             </a>
 
             <button
               type="button"
               onClick={handleCopyTSV}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-200 bg-white/5 hover:bg-white/10 border border-white/10 transition cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-sm text-xs font-semibold text-fg bg-surface-elevated hover:bg-surface-subtle border border-border transition-colors cursor-pointer"
               title="Copy all rows in Tab-Separated format to paste directly into Excel or Google Sheets"
             >
               {copyTsvSuccess ? (
                 <>
-                  <Check className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="text-emerald-300 font-bold">Copied TSV!</span>
+                  <Check className="w-3.5 h-3.5 text-success" />
+                  <span className="text-success font-bold">Copied TSV!</span>
                 </>
               ) : (
                 <>
-                  <Copy className="w-3.5 h-3.5 text-[#D4AF7C]" />
+                  <Copy className="w-3.5 h-3.5 text-accent" />
                   <span>Copy TSV (for Excel)</span>
                 </>
               )}
@@ -267,7 +265,7 @@ export default function AdminSpreadsheetTab({
             <button
               type="button"
               onClick={handleExportCSV}
-              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold text-black bg-[#D4AF7C] hover:bg-[#E6C98A] transition shadow-md shadow-[#D4AF7C]/20 cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-sm text-xs font-heading font-semibold text-on-accent bg-accent hover:bg-accent-hover transition-colors cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Export CSV</span>
@@ -278,32 +276,34 @@ export default function AdminSpreadsheetTab({
                 type="button"
                 onClick={onRefresh}
                 disabled={loading}
-                className="p-2.5 rounded-xl text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition cursor-pointer"
+                aria-label="Refresh registrations from database"
+                className="p-2 rounded-sm text-fg-muted hover:text-fg bg-surface-elevated hover:bg-surface-subtle border border-border transition-colors cursor-pointer"
                 title="Refresh registrations from database"
               >
-                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-[#D4AF7C]' : ''}`} />
+                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-accent' : ''}`} />
               </button>
             )}
           </div>
         </div>
 
         {/* Filters & Search Toolbar */}
-        <div className="mt-6 pt-5 border-t border-white/10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+        <div className="mt-6 pt-5 border-t border-border grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
           {/* Search Input */}
           <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-fg-subtle pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Filter by name, roll, phone, handle..."
-              className="w-full pl-9 pr-8 py-2 rounded-xl bg-black/50 border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#D4AF7C] transition"
+              className="w-full pl-9 pr-8 py-2 rounded-sm bg-surface-elevated border border-border text-xs text-fg placeholder:text-fg-subtle focus:border-accent transition-colors"
             />
             {searchQuery && (
               <button
                 type="button"
+                aria-label="Clear filter"
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-fg-muted hover:text-fg cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -312,9 +312,10 @@ export default function AdminSpreadsheetTab({
 
           {/* Tournament Dropdown */}
           <select
+            aria-label="Filter by tournament"
             value={selectedTournament}
             onChange={e => setSelectedTournament(e.target.value)}
-            className="w-full px-3 py-2 rounded-xl bg-black/50 border border-white/10 text-xs text-slate-200 focus:outline-none focus:border-[#D4AF7C] transition"
+            className="w-full px-3 py-2 rounded-sm bg-surface-elevated border border-border text-xs text-fg focus:border-accent transition-colors"
           >
             <option value="all">All Tournaments ({participants.length})</option>
             {tournaments.map(t => (
@@ -326,9 +327,10 @@ export default function AdminSpreadsheetTab({
 
           {/* Department Dropdown */}
           <select
+            aria-label="Filter by department"
             value={selectedDepartment}
             onChange={e => setSelectedDepartment(e.target.value)}
-            className="w-full px-3 py-2 rounded-xl bg-black/50 border border-white/10 text-xs text-slate-200 focus:outline-none focus:border-[#D4AF7C] transition"
+            className="w-full px-3 py-2 rounded-sm bg-surface-elevated border border-border text-xs text-fg focus:border-accent transition-colors"
           >
             <option value="all">All Departments (Branches)</option>
             {departmentOptions.map(dept => (
@@ -339,12 +341,12 @@ export default function AdminSpreadsheetTab({
           </select>
 
           {/* Check-in Status Selector */}
-          <div className="flex items-center gap-1.5 bg-black/50 p-1 rounded-xl border border-white/10">
+          <div className="flex items-center gap-1 bg-surface-elevated p-1 rounded-sm border border-border">
             <button
               type="button"
               onClick={() => setStatusFilter('all')}
-              className={`flex-1 py-1 rounded-lg text-[11px] font-semibold transition ${
-                statusFilter === 'all' ? 'bg-white/15 text-white' : 'text-slate-400 hover:text-white'
+              className={`flex-1 py-1 rounded-xs text-[11px] font-semibold transition-colors cursor-pointer ${
+                statusFilter === 'all' ? 'bg-primary text-on-primary' : 'text-fg-muted hover:text-fg'
               }`}
             >
               All ({participants.length})
@@ -352,10 +354,10 @@ export default function AdminSpreadsheetTab({
             <button
               type="button"
               onClick={() => setStatusFilter('checked_in')}
-              className={`flex-1 py-1 rounded-lg text-[11px] font-semibold transition ${
+              className={`flex-1 py-1 rounded-xs text-[11px] font-semibold transition-colors cursor-pointer ${
                 statusFilter === 'checked_in'
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                  : 'text-slate-400 hover:text-emerald-400'
+                  ? 'bg-success/15 text-success border border-success/30'
+                  : 'text-fg-muted hover:text-success'
               }`}
             >
               Checked In ({participants.filter(p => p.checkInStatus === 'checked_in').length})
@@ -363,10 +365,10 @@ export default function AdminSpreadsheetTab({
             <button
               type="button"
               onClick={() => setStatusFilter('confirmed')}
-              className={`flex-1 py-1 rounded-lg text-[11px] font-semibold transition ${
+              className={`flex-1 py-1 rounded-xs text-[11px] font-semibold transition-colors cursor-pointer ${
                 statusFilter === 'confirmed'
-                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                  : 'text-slate-400 hover:text-amber-400'
+                  ? 'bg-warning/15 text-warning border border-warning/30'
+                  : 'text-fg-muted hover:text-warning'
               }`}
             >
               Awaiting ({participants.filter(p => p.checkInStatus !== 'checked_in').length})
@@ -376,21 +378,21 @@ export default function AdminSpreadsheetTab({
       </div>
 
       {/* Spreadsheet Table Container */}
-      <div className="rounded-3xl bg-[#0D1117] border border-white/10 shadow-2xl overflow-hidden">
+      <div className="rounded-md bg-surface border border-border shadow-xs overflow-hidden">
         {/* Table Header Bar / Hint */}
-        <div className="px-5 py-3 bg-[#080B10] border-b border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="px-5 py-3 bg-surface-elevated border-b border-border flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2">
-            <Table2 className="w-4 h-4 text-[#D4AF7C]" />
-            <span className="font-bold text-white uppercase tracking-wider text-[11px]">
+            <Table2 className="w-4 h-4 text-accent" />
+            <span className="font-mono font-bold text-fg uppercase tracking-wider text-[11px] tabular-nums">
               Showing {filteredParticipants.length} of {participants.length} spreadsheet records
             </span>
             {copiedCell && (
-              <span className="ml-2 px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-[10px] font-mono animate-fadeIn">
+              <span className="ml-2 px-2 py-0.5 rounded-xs bg-success/15 border border-success/30 text-success text-[10px] font-mono">
                 Copied cell to clipboard!
               </span>
             )}
           </div>
-          <span className="text-[11px] text-slate-400 hidden sm:inline-block">
+          <span className="text-[11px] text-fg-muted hidden sm:inline-block">
             Tip: Click any table cell to copy its content to clipboard
           </span>
         </div>
@@ -398,40 +400,40 @@ export default function AdminSpreadsheetTab({
         {/* Interactive Data Grid */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
-            <thead className="bg-[#121620] text-[10px] font-mono font-bold uppercase tracking-wider text-[#D4AF7C] border-b border-white/10">
+            <thead className="bg-surface-elevated text-[10px] font-mono font-bold uppercase tracking-wider text-accent border-b border-border">
               <tr>
-                <th className="py-3 px-3 w-12 text-center border-r border-white/5">#</th>
-                <th className="py-3 px-3 border-r border-white/5 min-w-[130px]">Timestamp</th>
-                <th className="py-3 px-3 border-r border-white/5 min-w-[120px]">Ticket ID</th>
-                <th className="py-3 px-4 border-r border-white/5 min-w-[180px]">Tournament</th>
-                <th className="py-3 px-4 border-r border-white/5 min-w-[160px]">Full Name</th>
-                <th className="py-3 px-3 border-r border-white/5 min-w-[110px]">Roll No</th>
-                <th className="py-3 px-3 border-r border-white/5 min-w-[90px]">Dept</th>
-                <th className="py-3 px-3 border-r border-white/5 min-w-[80px]">Year</th>
-                <th className="py-3 px-4 border-r border-white/5 min-w-[140px]">Institution</th>
-                <th className="py-3 px-4 border-r border-white/5 min-w-[160px]">Email</th>
-                <th className="py-3 px-3 border-r border-white/5 min-w-[110px]">Phone</th>
-                <th className="py-3 px-3 border-r border-white/5 min-w-[130px]">Rating Cat</th>
-                <th className="py-3 px-3 border-r border-white/5 min-w-[110px]">Chess Handle</th>
-                <th className="py-3 px-3 border-r border-white/5 min-w-[90px]">FIDE ID</th>
+                <th className="py-3 px-3 w-12 text-center border-r border-border">#</th>
+                <th className="py-3 px-3 border-r border-border min-w-[130px]">Timestamp</th>
+                <th className="py-3 px-3 border-r border-border min-w-[120px]">Ticket ID</th>
+                <th className="py-3 px-4 border-r border-border min-w-[180px]">Tournament</th>
+                <th className="py-3 px-4 border-r border-border min-w-[160px]">Full Name</th>
+                <th className="py-3 px-3 border-r border-border min-w-[110px]">Roll No</th>
+                <th className="py-3 px-3 border-r border-border min-w-[90px]">Dept</th>
+                <th className="py-3 px-3 border-r border-border min-w-[80px]">Year</th>
+                <th className="py-3 px-4 border-r border-border min-w-[140px]">Institution</th>
+                <th className="py-3 px-4 border-r border-border min-w-[160px]">Email</th>
+                <th className="py-3 px-3 border-r border-border min-w-[110px]">Phone</th>
+                <th className="py-3 px-3 border-r border-border min-w-[130px]">Rating Cat</th>
+                <th className="py-3 px-3 border-r border-border min-w-[110px]">Chess Handle</th>
+                <th className="py-3 px-3 border-r border-border min-w-[90px]">FIDE ID</th>
                 <th className="py-3 px-4 text-center min-w-[110px]">Desk Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5 font-mono text-[11px]">
+            <tbody className="divide-y divide-border font-mono text-[11px]">
               {loading ? (
                 <tr>
-                  <td colSpan={15} className="py-16 text-center text-slate-400">
+                  <td colSpan={15} className="py-16 text-center text-fg-muted">
                     <div className="flex flex-col items-center justify-center space-y-3">
-                      <RefreshCw className="w-6 h-6 text-[#D4AF7C] animate-spin" />
+                      <RefreshCw className="w-6 h-6 text-accent animate-spin" />
                       <span className="text-xs font-mono">Synchronizing spreadsheet entries from database...</span>
                     </div>
                   </td>
                 </tr>
               ) : filteredParticipants.length === 0 ? (
                 <tr>
-                  <td colSpan={15} className="py-16 text-center text-slate-400 space-y-2">
-                    <p className="text-sm font-bold text-white">No Spreadsheet Records Found</p>
-                    <p className="text-xs text-slate-500 font-sans max-w-md mx-auto">
+                  <td colSpan={15} className="py-16 text-center text-fg-muted space-y-2">
+                    <p className="text-sm font-bold text-fg font-heading">No Spreadsheet Records Found</p>
+                    <p className="text-xs text-fg-muted font-body max-w-md mx-auto">
                       No registrations matched your search or filters. Reset filters or register a walk-in player.
                     </p>
                     <button
@@ -442,7 +444,7 @@ export default function AdminSpreadsheetTab({
                         setSelectedDepartment('all');
                         setStatusFilter('all');
                       }}
-                      className="mt-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#D4AF7C] bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 hover:bg-[#D4AF7C]/20 transition cursor-pointer"
+                      className="mt-2 px-3 py-1.5 rounded-sm text-xs font-semibold text-accent bg-accent/10 border border-accent/30 hover:bg-accent/20 transition-colors cursor-pointer"
                     >
                       Reset All Filters
                     </button>
@@ -465,17 +467,17 @@ export default function AdminSpreadsheetTab({
                   return (
                     <tr
                       key={p.ticketId || idx}
-                      className="hover:bg-white/[0.03] transition-colors group"
+                      className="hover:bg-surface-elevated/60 transition-colors group"
                     >
                       {/* # Row Number */}
-                      <td className="py-2.5 px-3 text-center text-slate-500 border-r border-white/5 select-none bg-black/20">
+                      <td className="py-2.5 px-3 text-center text-fg-subtle border-r border-border select-none bg-surface-subtle/50 tabular-nums">
                         {rowNum}
                       </td>
 
                       {/* Timestamp */}
                       <td
                         onClick={() => handleCopyCell(dateStr, `time-${p.ticketId}`)}
-                        className="py-2.5 px-3 text-slate-400 border-r border-white/5 cursor-pointer hover:text-white truncate"
+                        className="py-2.5 px-3 text-fg-muted border-r border-border cursor-pointer hover:text-fg truncate"
                         title="Click to copy timestamp"
                       >
                         {dateStr}
@@ -484,7 +486,7 @@ export default function AdminSpreadsheetTab({
                       {/* Ticket ID */}
                       <td
                         onClick={() => handleCopyCell(p.ticketId, `tkt-${p.ticketId}`)}
-                        className="py-2.5 px-3 text-[#D4AF7C] font-bold border-r border-white/5 cursor-pointer hover:underline truncate"
+                        className="py-2.5 px-3 text-accent font-bold border-r border-border cursor-pointer hover:underline truncate tabular-nums"
                         title="Click to copy ticket ID"
                       >
                         {p.ticketId}
@@ -493,7 +495,7 @@ export default function AdminSpreadsheetTab({
                       {/* Tournament */}
                       <td
                         onClick={() => handleCopyCell(p.tournament, `tourn-${p.ticketId}`)}
-                        className="py-2.5 px-4 text-white font-sans font-medium border-r border-white/5 cursor-pointer truncate max-w-[200px]"
+                        className="py-2.5 px-4 text-fg font-body font-medium border-r border-border cursor-pointer truncate max-w-[200px]"
                         title={p.tournament}
                       >
                         {p.tournament}
@@ -502,7 +504,7 @@ export default function AdminSpreadsheetTab({
                       {/* Full Name */}
                       <td
                         onClick={() => handleCopyCell(p.name, `name-${p.ticketId}`)}
-                        className="py-2.5 px-4 text-white font-sans font-bold border-r border-white/5 cursor-pointer hover:text-[#D4AF7C] truncate max-w-[180px]"
+                        className="py-2.5 px-4 text-fg font-body font-semibold border-r border-border cursor-pointer hover:text-accent truncate max-w-[180px]"
                         title="Click to copy name"
                       >
                         {p.name}
@@ -511,7 +513,7 @@ export default function AdminSpreadsheetTab({
                       {/* Roll Number */}
                       <td
                         onClick={() => handleCopyCell(p.rollNumber, `roll-${p.ticketId}`)}
-                        className="py-2.5 px-3 text-slate-300 border-r border-white/5 cursor-pointer hover:text-white truncate"
+                        className="py-2.5 px-3 text-fg-muted border-r border-border cursor-pointer hover:text-fg truncate tabular-nums"
                         title="Click to copy roll number"
                       >
                         {p.rollNumber}
@@ -520,22 +522,22 @@ export default function AdminSpreadsheetTab({
                       {/* Department */}
                       <td
                         onClick={() => handleCopyCell(p.department, `dept-${p.ticketId}`)}
-                        className="py-2.5 px-3 text-slate-300 font-sans border-r border-white/5 cursor-pointer hover:text-white truncate"
+                        className="py-2.5 px-3 text-fg font-body border-r border-border cursor-pointer truncate"
                       >
-                        <span className="px-1.5 py-0.5 rounded bg-white/5 text-[10px] font-mono border border-white/5">
+                        <span className="px-1.5 py-0.5 rounded-xs bg-surface-elevated text-[10px] font-mono border border-border">
                           {p.department || '—'}
                         </span>
                       </td>
 
                       {/* Year */}
-                      <td className="py-2.5 px-3 text-slate-400 border-r border-white/5 truncate">
+                      <td className="py-2.5 px-3 text-fg-muted border-r border-border truncate">
                         {p.year || '—'}
                       </td>
 
                       {/* Institution */}
                       <td
                         onClick={() => handleCopyCell(p.college || 'JGEC', `inst-${p.ticketId}`)}
-                        className="py-2.5 px-4 text-slate-300 font-sans border-r border-white/5 cursor-pointer truncate max-w-[140px]"
+                        className="py-2.5 px-4 text-fg-muted font-body border-r border-border cursor-pointer truncate max-w-[140px]"
                         title={p.college}
                       >
                         {p.college || 'JGEC'}
@@ -544,7 +546,7 @@ export default function AdminSpreadsheetTab({
                       {/* Email */}
                       <td
                         onClick={() => handleCopyCell(p.email || '', `email-${p.ticketId}`)}
-                        className="py-2.5 px-4 text-slate-300 border-r border-white/5 cursor-pointer hover:text-white truncate max-w-[160px]"
+                        className="py-2.5 px-4 text-fg-muted border-r border-border cursor-pointer hover:text-fg truncate max-w-[160px]"
                         title={p.email}
                       >
                         {p.email || '—'}
@@ -553,21 +555,21 @@ export default function AdminSpreadsheetTab({
                       {/* Phone */}
                       <td
                         onClick={() => handleCopyCell(p.phone || '', `phone-${p.ticketId}`)}
-                        className="py-2.5 px-3 text-slate-300 border-r border-white/5 cursor-pointer hover:text-white truncate"
+                        className="py-2.5 px-3 text-fg-muted border-r border-border cursor-pointer hover:text-fg truncate tabular-nums"
                         title={p.phone}
                       >
                         {p.phone || '—'}
                       </td>
 
                       {/* Rating Category */}
-                      <td className="py-2.5 px-3 text-slate-400 font-sans border-r border-white/5 truncate max-w-[130px]">
+                      <td className="py-2.5 px-3 text-fg-muted font-body border-r border-border truncate max-w-[130px]">
                         {p.ratingCategory || 'Unrated'}
                       </td>
 
                       {/* Chess Username */}
                       <td
                         onClick={() => handleCopyCell(p.chessUsername || '', `user-${p.ticketId}`)}
-                        className="py-2.5 px-3 text-amber-300 border-r border-white/5 cursor-pointer hover:underline truncate"
+                        className="py-2.5 px-3 text-accent border-r border-border cursor-pointer hover:underline truncate"
                         title={p.chessUsername}
                       >
                         {p.chessUsername || '—'}
@@ -576,7 +578,7 @@ export default function AdminSpreadsheetTab({
                       {/* FIDE ID */}
                       <td
                         onClick={() => handleCopyCell(p.fideId || '', `fide-${p.ticketId}`)}
-                        className="py-2.5 px-3 text-slate-400 border-r border-white/5 cursor-pointer hover:text-white truncate"
+                        className="py-2.5 px-3 text-fg-muted border-r border-border cursor-pointer hover:text-fg truncate tabular-nums"
                       >
                         {p.fideId || '—'}
                       </td>
@@ -587,20 +589,20 @@ export default function AdminSpreadsheetTab({
                           type="button"
                           disabled={togglingTicketId === p.ticketId}
                           onClick={() => handleToggleCheckIn(p.ticketId, p.checkInStatus)}
-                          className={`px-2.5 py-1 rounded-lg text-[10px] font-sans font-bold transition inline-flex items-center gap-1 cursor-pointer active:scale-95 ${
+                          className={`px-2.5 py-1 rounded-xs text-[10px] font-body font-semibold transition-colors inline-flex items-center gap-1 cursor-pointer ${
                             isCheckedIn
-                              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30'
-                              : 'bg-white/5 text-slate-400 border border-white/10 hover:text-white hover:bg-white/10'
+                              ? 'bg-success/15 text-success border border-success/30 hover:bg-success/25'
+                              : 'bg-surface-elevated text-fg-muted border border-border hover:text-fg hover:bg-surface-subtle'
                           }`}
                         >
                           {isCheckedIn ? (
                             <>
-                              <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                              <CheckCircle2 className="w-3 h-3 text-success" />
                               <span>Checked</span>
                             </>
                           ) : (
                             <>
-                              <Clock className="w-3 h-3 text-amber-400" />
+                              <Clock className="w-3 h-3 text-warning" />
                               <span>Check In</span>
                             </>
                           )}
@@ -615,19 +617,19 @@ export default function AdminSpreadsheetTab({
         </div>
 
         {/* Spreadsheet Footer Status Bar */}
-        <div className="px-5 py-3 bg-[#080B10] border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-[11px] font-mono text-slate-400">
-          <div className="flex items-center gap-4">
+        <div className="px-5 py-3 bg-surface-elevated border-t border-border flex flex-wrap items-center justify-between gap-3 text-[11px] font-mono text-fg-muted">
+          <div className="flex items-center gap-4 tabular-nums">
             <span>
-              Total Rows: <strong className="text-white">{participants.length}</strong>
+              Total Rows: <strong className="text-fg">{participants.length}</strong>
             </span>
             <span>•</span>
             <span>
-              Filtered: <strong className="text-[#D4AF7C]">{filteredParticipants.length}</strong>
+              Filtered: <strong className="text-accent">{filteredParticipants.length}</strong>
             </span>
             <span>•</span>
             <span>
               Checked In:{' '}
-              <strong className="text-emerald-400">
+              <strong className="text-success">
                 {filteredParticipants.filter(p => p.checkInStatus === 'checked_in').length}
               </strong>
             </span>
@@ -635,7 +637,7 @@ export default function AdminSpreadsheetTab({
 
           <div className="flex items-center gap-2 text-[10px]">
             <span>Formula/Sync:</span>
-            <span className="text-slate-300">
+            <span className="text-fg">
               =GOOGLEFINANCE / AppsScript(v1.2) • Supabase PostgreSQL v15
             </span>
           </div>

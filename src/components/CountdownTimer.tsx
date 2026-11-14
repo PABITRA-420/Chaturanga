@@ -52,8 +52,8 @@ export default function CountdownTimer({ targetDate }: CountdownTimerProps) {
 
   if (timeLeft.isPast) {
     return (
-      <div suppressHydrationWarning className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-500/10 border border-red-500/30 text-xs font-semibold text-red-400">
-        <span className="w-2 h-2 rounded-full bg-red-400 animate-ping" />
+      <div suppressHydrationWarning className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xs bg-danger/10 border border-danger/40 text-xs font-mono font-semibold text-danger">
+        <span className="w-2 h-2 rounded-full bg-danger shrink-0" aria-hidden="true" />
         <span>Event Live or Concluded</span>
       </div>
     );
@@ -70,19 +70,19 @@ export default function CountdownTimer({ targetDate }: CountdownTimerProps) {
     <div suppressHydrationWarning className="flex flex-wrap items-center gap-2 sm:gap-3 select-none">
       {units.map((unit, index) => (
         <div key={unit.label} className="flex items-center">
-          <div className="flex flex-col items-center justify-center min-w-[54px] sm:min-w-[62px] py-2 px-2.5 rounded-xl bg-black/60 border border-[#D4AF7C]/30 shadow-inner backdrop-blur-md">
+          <div className="flex flex-col items-center justify-center min-w-[54px] sm:min-w-[64px] py-2 px-2.5 rounded-sm bg-surface border border-border">
             <span
               suppressHydrationWarning
-              className="font-['Montserrat',sans-serif] font-black text-lg sm:text-2xl text-[#D4AF7C] tabular-nums leading-none"
+              className="font-mono font-bold text-lg sm:text-2xl text-accent tabular-nums leading-none"
             >
               {String(unit.value).padStart(2, '0')}
             </span>
-            <span className="text-[9px] font-bold tracking-widest text-[#A0A6B0] mt-1">
+            <span className="text-[9px] font-mono font-bold tracking-widest text-fg-muted mt-1.5">
               {unit.label}
             </span>
           </div>
           {index < units.length - 1 && (
-            <span className="text-[#D4AF7C]/60 font-bold text-lg sm:text-xl mx-0.5 sm:mx-1 animate-pulse">
+            <span className="text-fg-muted font-mono font-bold text-lg sm:text-xl mx-0.5 sm:mx-1">
               :
             </span>
           )}

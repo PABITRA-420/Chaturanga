@@ -126,12 +126,12 @@ export default function HomeView() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0F14] text-[#F5F5F5] antialiased selection:bg-[#D4AF7C] selection:text-[#0B0F14] relative overflow-x-hidden">
+    <div className="min-h-screen bg-bg text-fg antialiased selection:bg-accent selection:text-on-accent relative overflow-x-hidden">
       {/* NAVBAR */}
       <Navbar onRegisterClick={handleRegisterClick} />
 
       {/* MAIN SECTIONS */}
-      <main id="main-content" className="w-full pt-20 space-y-4">
+      <main id="main-content" className="w-full pt-20 space-y-2">
         
         {/* 1. Hero */}
         <HeroSection

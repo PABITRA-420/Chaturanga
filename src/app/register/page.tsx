@@ -9,6 +9,7 @@ import { Calendar, ArrowRight } from 'lucide-react';
 import { useRegistration } from '@/hooks/useRegistration';
 import DigitalPassCard from '@/components/register/DigitalPassCard';
 import RegistrationWizard from '@/components/register/RegistrationWizard';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 function RegisterForm() {
   const searchParams = useSearchParams();
@@ -37,40 +38,40 @@ function RegisterForm() {
     duplicateTicket,
     errorMsg,
     isSubmitting,
-    sheetStatus
+    sheetStatus,
   } = useRegistration(eventParam);
 
   if (loadingEvents) {
     return (
-      <div className="p-12 rounded-3xl bg-[#12161D] border border-white/10 text-center space-y-4 max-w-xl mx-auto my-12 animate-pulse">
-        <div className="w-14 h-14 rounded-2xl bg-white/5 mx-auto" />
-        <div className="h-6 w-48 bg-white/10 rounded-full mx-auto" />
-        <div className="h-4 w-72 bg-white/5 rounded-full mx-auto" />
+      <div className="p-12 rounded-md bg-surface border border-border text-center space-y-4 max-w-xl mx-auto my-12">
+        <Skeleton className="w-12 h-12 mx-auto" />
+        <Skeleton className="h-6 w-48 mx-auto" />
+        <Skeleton className="h-4 w-72 mx-auto" />
       </div>
     );
   }
 
   if (events.length === 0 || !currentEvent) {
     return (
-      <div className="p-10 sm:p-14 rounded-3xl bg-[#12161D] border border-white/10 text-center space-y-4 max-w-xl mx-auto my-12 shadow-xl">
-        <div className="w-16 h-16 rounded-2xl bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 flex items-center justify-center mx-auto text-[#D4AF7C]">
-          <Calendar className="w-8 h-8" />
+      <div className="p-10 sm:p-14 rounded-md bg-surface border border-border text-center space-y-4 max-w-xl mx-auto my-12">
+        <div className="w-14 h-14 rounded-sm bg-surface-elevated border border-border flex items-center justify-center mx-auto text-accent">
+          <Calendar className="w-7 h-7" aria-hidden="true" />
         </div>
         <div className="space-y-2">
-          <h3 className="font-['Montserrat',sans-serif] font-bold text-xl text-[#F5F5F5]">
+          <h3 className="font-heading font-bold text-xl text-fg">
             No Open Tournament Registrations
           </h3>
-          <p className="text-xs sm:text-sm text-[#A0A6B0] leading-relaxed">
+          <p className="text-xs sm:text-sm text-fg-muted leading-relaxed font-body">
             There are currently no scheduled tournaments accepting registrations. Please check back soon or browse our tournament calendar for upcoming announcements.
           </p>
         </div>
         <div className="pt-2">
           <Link
             href="/upcoming"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-bold text-[#0B0F14] bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] hover:brightness-110 shadow-md transition"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xs text-xs font-bold uppercase tracking-wider text-on-accent bg-accent hover:bg-accent-hover transition-colors"
           >
             <span>View Tournament Calendar</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4" aria-hidden="true" />
           </Link>
         </div>
       </div>
@@ -119,14 +120,14 @@ function RegisterForm() {
 
 export default function RegisterPage() {
   return (
-    <div className="min-h-screen bg-[#070A0E] text-[#F5F5F5] font-['Inter',sans-serif] selection:bg-[#D4AF7C] selection:text-[#0B0F14]">
+    <div className="min-h-screen bg-bg text-fg font-ui selection:bg-accent selection:text-on-accent flex flex-col">
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
+      <main id="main-content" className="flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
         <Suspense fallback={
-          <div className="p-12 rounded-3xl bg-[#12161D] border border-white/10 text-center space-y-4 max-w-xl mx-auto my-12 animate-pulse">
-            <div className="w-14 h-14 rounded-2xl bg-white/5 mx-auto" />
-            <div className="h-6 w-48 bg-white/10 rounded-full mx-auto" />
+          <div className="p-12 rounded-md bg-surface border border-border text-center space-y-4 max-w-xl mx-auto my-12">
+            <Skeleton className="w-12 h-12 mx-auto" />
+            <Skeleton className="h-6 w-48 mx-auto" />
           </div>
         }>
           <RegisterForm />

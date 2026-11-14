@@ -1,47 +1,178 @@
 @import "tailwindcss";
 
-@theme {
-  --color-gold: #D4AF7C;
-  --color-gold-hover: #E6C98A;
-  --color-gold-light: #F3E2B8;
-  --color-bg-dark: #0B0F14;
-  --color-card-dark: #12161D;
-  --color-card-surface: #181D26;
-  --color-white-soft: #F5F5F5;
-  --color-muted: #A0A6B0;
+/* ==========================================================================
+   Minimalism & Swiss Style — Semantic Token Architecture (Light & Dark Modes)
+   ========================================================================== */
 
-  --font-heading: var(--font-montserrat), sans-serif;
-  --font-body: var(--font-poppins), sans-serif;
-  --font-ui: var(--font-inter), sans-serif;
-  --font-mono: var(--font-roboto-mono), monospace;
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Swiss Architectural Surfaces & Ink */
+  --bg: #FAFAFA;
+  --surface: #FFFFFF;
+  --surface-elevated: #F4F4F5;
+  --surface-subtle: #F1F1F4;
+  --fg: #09090B;
+  --fg-muted: #52525B;
+  --fg-subtle: #666670;
+  --border: #E4E4E7;
+  --border-strong: #18181B;
+  --scrim: #09090B;
+
+  /* Primary & Single Swiss Heritage Accent (High-Contrast WCAG AA/AAA) */
+  --primary: #18181B;
+  --on-primary: #FAFAFA;
+  --accent: #8F6415;
+  --accent-hover: #734E0E;
+  --accent-subtle: #B5852A;
+  --on-accent: #FFFFFF;
+
+  /* Semantic Status Colors */
+  --success: #15803D;
+  --on-success: #FFFFFF;
+  --warning: #B45309;
+  --on-warning: #FFFFFF;
+  --danger: #B91C1C;
+  --on-danger: #FFFFFF;
+  --info: #1D4ED8;
+  --on-info: #FFFFFF;
+  --ring: #18181B;
+
+  /* Elevation & Micro-Shadows (Sharp Swiss Discipline) */
+  --shadow-sm: 0 1px 2px rgba(9, 9, 11, 0.05);
+  --shadow-md: 0 6px 16px -4px rgba(9, 9, 11, 0.10);
+  --grid-line: rgba(9, 9, 11, 0.05);
 }
+
+[data-theme="dark"],
+.dark {
+  color-scheme: dark;
+
+  /* Deep Obsidian Swiss Surfaces & Crisp Off-White Ink */
+  --bg: #09090B;
+  --surface: #111114;
+  --surface-elevated: #18181B;
+  --surface-subtle: #141418;
+  --fg: #FAFAFA;
+  --fg-muted: #A1A1AA;
+  --fg-subtle: #8C8C96;
+  --border: #27272A;
+  --border-strong: #52525B;
+  --scrim: #09090B;
+
+  /* Primary & Single Swiss Heritage Accent */
+  --primary: #FAFAFA;
+  --on-primary: #09090B;
+  --accent: #D4AF7C;
+  --accent-hover: #E5C89B;
+  --accent-subtle: #F3E2B8;
+  --on-accent: #09090B;
+
+  /* Semantic Status Colors */
+  --success: #4ADE80;
+  --on-success: #09090B;
+  --warning: #FBBF24;
+  --on-warning: #09090B;
+  --danger: #F87171;
+  --on-danger: #09090B;
+  --info: #60A5FA;
+  --on-info: #09090B;
+  --ring: #D4AF7C;
+
+  /* Elevation & Micro-Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 10px 24px -6px rgba(0, 0, 0, 0.65);
+  --grid-line: rgba(250, 250, 250, 0.04);
+}
+
+@theme inline {
+  /* Core Semantic Color Tokens */
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-scrim: var(--scrim);
+
+  /* Brand, Primary & Accent Tokens */
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-subtle: var(--accent-subtle);
+  --color-on-accent: var(--on-accent);
+  --color-ring: var(--ring);
+
+  /* Semantic Status Colors */
+  --color-success: var(--success);
+  --color-on-success: var(--on-success);
+  --color-warning: var(--warning);
+  --color-on-warning: var(--on-warning);
+  --color-danger: var(--danger);
+  --color-on-danger: var(--on-danger);
+  --color-info: var(--info);
+  --color-on-info: var(--on-info);
+
+  /* Existing Token Aliases Preserved & Updated for Theme Switching */
+  --color-gold: var(--accent);
+  --color-gold-hover: var(--accent-hover);
+  --color-gold-light: var(--accent-subtle);
+  --color-bg-dark: var(--bg);
+  --color-card-dark: var(--surface);
+  --color-card-surface: var(--surface-elevated);
+  --color-white-soft: var(--fg);
+  --color-muted: var(--fg-muted);
+
+  /* Swiss Typography Scale Tokens */
+  --font-heading: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-body: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-ui: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-roboto-mono), ui-monospace, SFMono-Regular, monospace;
+
+  /* Swiss Precision Radii Scale (Geometric & Crisp) */
+  --radius-xs: 2px;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 4px;
+  --radius-xl: 4px;
+  --radius-2xl: 6px;
+  --radius-3xl: 6px;
+}
+
+/* ==========================================================================
+   Global Base, Focus & Performance Layer
+   ========================================================================== */
 
 html {
-  color-scheme: dark;
+  scroll-padding-top: 5.5rem;
 }
 
-/* GPU hardware compositing layer */
 .gpu-layer {
   transform: translateZ(0);
   backface-visibility: hidden;
 }
 
-/* Offscreen section virtualization for smooth 60-120fps scrolling on low-end hardware */
 .content-visibility-auto {
   content-visibility: auto;
   contain-intrinsic-size: 1px 700px;
 }
 
 body {
-  font-family: var(--font-poppins), sans-serif;
-  background-color: #0B0F14;
-  color: #F5F5F5;
+  font-family: var(--font-body);
+  background-color: var(--bg);
+  color: var(--fg);
   overflow-x: hidden;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   padding-left: env(safe-area-inset-left, 0px);
   padding-right: env(safe-area-inset-right, 0px);
+  transition: background-color 150ms ease, color 150ms ease;
 }
 
 h1,
@@ -50,7 +181,8 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-montserrat), sans-serif;
+  font-family: var(--font-heading);
+  letter-spacing: -0.025em;
 }
 
 button,
@@ -58,70 +190,106 @@ input,
 select,
 textarea,
 nav {
-  font-family: var(--font-inter), sans-serif;
+  font-family: var(--font-ui);
 }
 
-/* Custom scrollbar matching gold luxury palette */
+/* Minimal Scrollbar */
 ::-webkit-scrollbar {
   width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0B0F14;
+  background: var(--bg);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #232936;
-  border-radius: 4px;
+  background: var(--border);
+  border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #D4AF7C;
+  background: var(--fg-muted);
 }
 
-/* Luxury visual utilities */
-.glass-panel {
-  background: rgba(18, 22, 29, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+/* Accessible High-Contrast Keyboard Focus Ring */
+*:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
 }
 
-.gold-glow {
-  box-shadow: 0 0 30px rgba(212, 175, 124, 0.18);
+* {
+  -webkit-tap-highlight-color: transparent;
 }
 
-.gold-glow-lg {
-  box-shadow: 0 0 50px rgba(212, 175, 124, 0.28);
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 1rem);
 }
 
-.gold-glow-sm {
-  box-shadow: 0 0 15px rgba(212, 175, 124, 0.15);
+/* ==========================================================================
+   Swiss Style Structural Utilities (Updating Existing Class Contracts)
+   ========================================================================== */
+
+.swiss-card,
+.glass-panel,
+.hud-glass-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.hud-gold-border,
+.gold-foil-border {
+  border: 1px solid var(--border-strong);
+}
+
+.gold-glow,
+.gold-glow-lg,
+.gold-glow-sm,
+.glow-gold {
+  box-shadow: var(--shadow-sm);
 }
 
 .gold-gradient-text {
-  background: linear-gradient(135deg, #FFFFFF 0%, #F3E2B8 35%, #D4AF7C 70%, #AA8246 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--accent);
 }
 
-/* Subtle luxury chess board pattern */
+/* Subtle Swiss Architectural Hairline Grid */
 .chess-bg-pattern {
-  background-image: radial-gradient(rgba(212, 175, 124, 0.06) 1px, transparent 1px),
-                    linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-                    linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
-  background-size: 32px 32px, 64px 64px, 64px 64px;
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 48px 48px;
 }
 
-/* Metallic gold foil border */
-.gold-foil-border {
-  position: relative;
-  background: linear-gradient(#12161D, #12161D) padding-box,
-              linear-gradient(135deg, #D4AF7C, rgba(212, 175, 124, 0.2), #F3E2B8, rgba(212, 175, 124, 0.1)) border-box;
-  border: 1px solid transparent;
+/* ==========================================================================
+   Crisp Skeleton Loading Utility (Theme-Aware)
+   ========================================================================== */
+
+@keyframes skeletonPulse {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
-/* Animated subtle light sweep across cards */
+.skeleton-hud {
+  background: linear-gradient(
+    90deg,
+    var(--surface-elevated) 0%,
+    color-mix(in srgb, var(--fg) 7%, var(--surface-elevated)) 50%,
+    var(--surface-elevated) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonPulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ==========================================================================
+   Swiss Motion & Micro-Interaction Primitives (Subtle, Non-Jank, Accessible)
+   ========================================================================== */
+
 @keyframes shimmer {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(200%); }
@@ -136,20 +304,20 @@ nav {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(212, 175, 124, 0.06),
+    color-mix(in srgb, var(--accent) 45%, transparent),
     transparent
   );
-  animation: shimmer 6s infinite;
+  animation: shimmer 2.8s infinite;
   pointer-events: none;
 }
 
 @keyframes pulseSlow {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.06); }
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
 }
 
 .animate-pulse-slow {
-  animation: pulseSlow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: pulseSlow 3s ease-in-out infinite;
 }
 
 @keyframes spinReverse {
@@ -161,16 +329,6 @@ nav {
   animation: spinReverse linear infinite;
 }
 
-/* Smooth card hover lift */
-.hover-lift {
-  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.28s ease;
-}
-
-.hover-lift:hover {
-  transform: translateY(-4px);
-}
-
-/* Continuous smooth hardware-accelerated marquee for ticker */
 @keyframes marquee {
   0% { transform: translateX(0%); }
   100% { transform: translateX(-50%); }
@@ -187,160 +345,39 @@ nav {
   animation-play-state: paused;
 }
 
-/* Accessible focus ring for keyboard navigation */
-*:focus-visible {
-  outline: 2px solid #D4AF7C;
-  outline-offset: 2px;
-}
-
-/* Glassmorphism HUD Card & Gold Glow Utilities */
-.hud-glass-card {
-  background: rgba(18, 22, 29, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-.hud-gold-border {
-  border-color: rgba(212, 175, 124, 0.35);
-  box-shadow: 0 0 20px rgba(212, 175, 124, 0.12);
-}
-
-.glow-gold {
-  box-shadow: 0 0 25px -5px rgba(212, 175, 124, 0.3);
-}
-
-.pb-safe {
-  padding-bottom: env(safe-area-inset-bottom, 1rem);
-}
-
-/* Glassmorphism Obsidian-Gold Skeleton Utilities */
-@keyframes skeletonPulse {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-.skeleton-hud {
-  background: linear-gradient(
-    90deg,
-    rgba(18, 22, 29, 0.7) 0%,
-    rgba(212, 175, 124, 0.08) 35%,
-    rgba(255, 255, 255, 0.05) 50%,
-    rgba(212, 175, 124, 0.08) 65%,
-    rgba(18, 22, 29, 0.7) 100%
-  );
-  background-size: 200% 100%;
-  animation: skeletonPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* ==========================================================================
-   Tactile Click & Tap Physics (Humanized Micro-interactions)
-   ========================================================================== */
-* {
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Tactile push button physics: snappy mechanical press on click */
-.btn-tactile {
-  position: relative;
-  transition: transform 0.14s cubic-bezier(0.2, 0.8, 0.2, 1),
-              filter 0.14s ease,
-              box-shadow 0.14s ease,
-              border-color 0.14s ease;
-  user-select: none;
-  touch-action: manipulation;
-  cursor: pointer;
-}
-
-.btn-tactile:hover {
-  filter: brightness(1.08);
-  transform: translateY(-1.5px);
-}
-
-.btn-tactile:active {
-  transform: translateY(1.5px) scale(0.975);
-  filter: brightness(0.95);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.35);
-}
-
-/* Card tactile feedback */
-.card-tactile {
-  transition: transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1),
-              box-shadow 0.24s cubic-bezier(0.2, 0.8, 0.2, 1),
-              border-color 0.2s ease;
-  touch-action: manipulation;
-}
-
-.card-tactile:hover {
-  transform: translateY(-3px);
-}
-
-.card-tactile:active {
-  transform: translateY(0px) scale(0.99);
-}
-
-/* Pill & badge click physics */
-.pill-tactile {
-  transition: transform 0.12s cubic-bezier(0.2, 0.8, 0.2, 1),
-              background-color 0.15s ease,
-              border-color 0.15s ease;
-  touch-action: manipulation;
-  cursor: pointer;
-}
-
-.pill-tactile:hover {
-  transform: scale(1.04);
-}
-
-.pill-tactile:active {
-  transform: scale(0.94);
-}
-
-/* ==========================================================================
-   Elevated Luxury Hover States (Universal Interactive Micro-interactions)
-   ========================================================================== */
+/* Subtle Interactive Transitions (200ms) */
+.hover-lift,
 .hover-lift-gold {
-  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.24s ease,
-              background-color 0.24s ease;
+  transition: border-color 180ms ease, background-color 180ms ease, transform 180ms ease;
 }
 
+.hover-lift:hover,
 .hover-lift-gold:hover {
-  transform: translateY(-4px);
-  border-color: rgba(212, 175, 124, 0.45);
-  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.8), 0 0 25px rgba(212, 175, 124, 0.16);
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
 }
 
 .hover-glow-gold {
-  transition: box-shadow 0.24s ease, border-color 0.24s ease, transform 0.2s ease;
+  transition: border-color 180ms ease, background-color 180ms ease;
 }
 
 .hover-glow-gold:hover {
-  border-color: rgba(212, 175, 124, 0.5);
-  box-shadow: 0 0 20px rgba(212, 175, 124, 0.22);
+  border-color: var(--accent);
 }
 
-/* Table row interactive gold edge highlight on hover */
 .hover-row {
   position: relative;
-  transition: background-color 0.18s ease, color 0.18s ease;
+  transition: background-color 150ms ease, color 150ms ease;
 }
 
 .hover-row:hover {
-  background-color: rgba(212, 175, 124, 0.05);
+  background-color: var(--surface-elevated);
 }
 
-/* Text link with animated golden beam expansion */
 .hover-link-gold {
   position: relative;
   display: inline-block;
-  transition: color 0.2s ease;
+  transition: color 180ms ease;
 }
 
 .hover-link-gold::after {
@@ -350,13 +387,36 @@ nav {
   left: 0;
   width: 0;
   height: 1.5px;
-  background: linear-gradient(90deg, #D4AF7C, #F3E2B8);
-  transition: width 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
-  border-radius: 9999px;
+  background: var(--accent);
+  transition: width 200ms ease;
 }
 
 .hover-link-gold:hover::after {
   width: 100%;
+}
+
+/* Tactile Click States (Zero Blur / Stable Layout Bounds) */
+.btn-tactile {
+  position: relative;
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease, opacity 150ms ease;
+  user-select: none;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+.btn-tactile:active {
+  opacity: 0.88;
+}
+
+.card-tactile {
+  transition: border-color 180ms ease, background-color 180ms ease;
+  touch-action: manipulation;
+}
+
+.pill-tactile {
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+  touch-action: manipulation;
+  cursor: pointer;
 }
 
 /* Modal Animations */
@@ -366,14 +426,26 @@ nav {
 }
 
 @keyframes scaleUp {
-  from { opacity: 0; transform: scale(0.96) translateY(-8px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeIn 160ms ease-out forwards;
 }
 
 .animate-scale-up {
-  animation: scaleUp 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: scaleUp 180ms ease-out forwards;
+}
+
+/* Respect OS Reduced Motion Preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

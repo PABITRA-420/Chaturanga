@@ -1,14 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { WifiOff, Wifi, X, Sparkles } from 'lucide-react';
+import { WifiOff, X } from 'lucide-react';
 
 export default function SlowNetworkIndicator() {
   const [isOffline, setIsOffline] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
 
   useEffect(() => {
-    // Check initial online status
     if (typeof navigator !== 'undefined') {
       setIsOffline(!navigator.onLine);
     }
@@ -40,18 +39,19 @@ export default function SlowNetworkIndicator() {
     <div
       role="status"
       aria-live="polite"
-      className="fixed bottom-20 md:bottom-6 right-4 z-50 max-w-sm p-3.5 rounded-2xl bg-[#12161D]/95 border border-[#D4AF7C]/40 shadow-2xl backdrop-blur-md text-[#F5F5F5] flex items-center justify-between gap-3 animate-fade-in"
+      style={{ boxShadow: 'var(--shadow-md)' }}
+      className="fixed bottom-20 md:bottom-6 right-4 z-50 max-w-sm p-3.5 rounded-sm bg-surface border border-warning/60 text-fg flex items-center justify-between gap-3 animate-fade-in"
     >
       <div className="flex items-center gap-2.5">
-        <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
-          <WifiOff className="w-4 h-4" />
+        <div className="w-8 h-8 rounded-sm bg-warning/10 border border-warning/30 flex items-center justify-center text-warning shrink-0">
+          <WifiOff className="w-4 h-4" aria-hidden="true" />
         </div>
         <div>
-          <div className="text-xs font-bold text-[#F5F5F5] flex items-center gap-1.5">
+          <div className="text-xs font-bold text-fg flex items-center gap-1.5">
             <span>Offline Resilience Active</span>
-            <span className="text-[10px] font-mono text-amber-400 font-normal">• Time Trouble Mode</span>
+            <span className="text-[10px] font-mono text-warning font-normal">• Cached</span>
           </div>
-          <p className="text-[11px] text-[#A0A6B0] leading-tight">
+          <p className="text-[11px] text-fg-muted leading-tight">
             Serving cached Swiss tournaments &amp; local standings. Passes saved safely offline.
           </p>
         </div>
@@ -60,7 +60,7 @@ export default function SlowNetworkIndicator() {
       <button
         type="button"
         onClick={() => setIsDismissed(true)}
-        className="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-[#A0A6B0] hover:text-white transition shrink-0 btn-tactile"
+        className="w-7 h-7 rounded-sm bg-surface-elevated hover:bg-surface-subtle border border-border flex items-center justify-center text-fg-muted hover:text-fg transition shrink-0 btn-tactile"
         aria-label="Dismiss offline alert"
       >
         <X className="w-3.5 h-3.5" />

@@ -17,7 +17,30 @@ export interface ToastNotice {
   message: string;
 }
 
+export type ThemeMode = 'light' | 'dark';
+
+function applyThemeToDom(theme: ThemeMode) {
+  if (typeof document !== 'undefined') {
+    const root = document.documentElement;
+    root.dataset.theme = theme;
+    root.classList.toggle('dark', theme === 'dark');
+    root.style.colorScheme = theme;
+  }
+  if (typeof window !== 'undefined') {
+    try {
+      window.localStorage.setItem('chaturanga-theme', theme);
+    } catch {
+      // Ignore storage quota / private mode restrictions
+    }
+  }
+}
+
 interface UIState {
+  // Light / Dark Theme Mode
+  theme: ThemeMode;
+  setTheme: (theme: ThemeMode) => void;
+  toggleTheme: () => void;
+
   // Floating Contact Desk Drawer
   isContactOpen: boolean;
   setContactOpen: (open: boolean) => void;
@@ -39,6 +62,18 @@ interface UIState {
 let toastTimer: ReturnType<typeof setTimeout> | null = null;
 
 export const useUIStore = create<UIState>((set, get) => ({
+  // Theme Mode
+  theme: 'dark',
+  setTheme: (theme: ThemeMode) => {
+    applyThemeToDom(theme);
+    set({ theme });
+  },
+  toggleTheme: () => {
+    const next: ThemeMode = get().theme === 'dark' ? 'light' : 'dark';
+    applyThemeToDom(next);
+    set({ theme: next });
+  },
+
   // Contact Drawer
   isContactOpen: false,
   setContactOpen: (open: boolean) => set({ isContactOpen: open }),

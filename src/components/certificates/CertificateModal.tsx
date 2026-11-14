@@ -71,27 +71,32 @@ export default function CertificateModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-4xl bg-[#0F141C] border border-white/10 rounded-2xl shadow-2xl overflow-hidden my-auto">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Digital Certificate of Excellence"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-xs overflow-y-auto"
+    >
+      <div className="relative w-full max-w-4xl bg-surface border border-border-strong rounded-md shadow-md overflow-hidden my-auto">
         {/* Header Bar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[#070A0E]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-surface-elevated">
           <div className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+            <div className="w-8 h-8 rounded-sm bg-success/10 border border-success/30 flex items-center justify-center text-success">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-white flex items-center">
+              <h2 className="font-heading text-sm font-bold text-fg flex items-center">
                 Digital Certificate of Excellence
                 {certificate.role === 'winner' && (
-                  <Sparkles className="w-3.5 h-3.5 ml-1.5 text-amber-400 fill-amber-400" />
+                  <Sparkles className="w-3.5 h-3.5 ml-1.5 text-accent" />
                 )}
               </h2>
-              <p className="text-xs text-slate-400 font-mono">{certificate.certificate_id}</p>
+              <p className="text-xs text-fg-muted font-mono tabular-nums">{certificate.certificate_id}</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
+            className="p-1.5 text-fg-muted hover:text-fg rounded-sm hover:bg-surface-subtle transition-colors"
             aria-label="Close Modal"
           >
             <X className="w-5 h-5" />
@@ -99,8 +104,8 @@ export default function CertificateModal({
         </div>
 
         {/* Certificate Canvas Preview Area */}
-        <div className="p-4 sm:p-6 flex flex-col items-center justify-center bg-[#070A0E]/50 overflow-x-auto">
-          <div className="max-w-full overflow-hidden shadow-2xl rounded-xl border border-white/10">
+        <div className="p-4 sm:p-6 flex flex-col items-center justify-center bg-bg/60 overflow-x-auto">
+          <div className="max-w-full overflow-hidden rounded-sm border border-border-strong">
             <CertificateCanvas
               certificate={certificate}
               width={760}
@@ -111,19 +116,19 @@ export default function CertificateModal({
         </div>
 
         {/* Footer Actions */}
-        <div className="px-6 py-4 bg-[#070A0E] border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
+        <div className="px-6 py-4 bg-surface-elevated border-t border-border flex flex-wrap items-center justify-between gap-3">
           <button
             onClick={handleCopyLink}
-            className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+            className="inline-flex items-center px-3 py-1.5 rounded-sm text-xs font-medium text-fg bg-surface hover:bg-surface-subtle border border-border transition-colors"
           >
             {copiedLink ? (
               <>
-                <Check className="w-3.5 h-3.5 mr-1.5 text-emerald-400" />
+                <Check className="w-3.5 h-3.5 mr-1.5 text-success" />
                 Copied Link!
               </>
             ) : (
               <>
-                <Copy className="w-3.5 h-3.5 mr-1.5 text-slate-400" />
+                <Copy className="w-3.5 h-3.5 mr-1.5 text-fg-muted" />
                 Copy Verification Link
               </>
             )}
@@ -133,16 +138,16 @@ export default function CertificateModal({
             <button
               onClick={handleSavePng}
               disabled={!activeCanvas}
-              className="inline-flex items-center px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-200 bg-white/5 hover:bg-white/10 border border-white/10 transition-colors disabled:opacity-50"
+              className="inline-flex items-center px-3.5 py-2 rounded-sm text-xs font-semibold text-fg bg-surface hover:bg-surface-subtle border border-border-strong transition-colors disabled:opacity-50"
             >
-              <ImageIcon className="w-4 h-4 mr-1.5 text-[#D4AF7C]" />
+              <ImageIcon className="w-4 h-4 mr-1.5 text-accent" />
               Save Image (PNG)
             </button>
 
             <button
               onClick={handleDownloadPdf}
               disabled={!activeCanvas || isExportingPdf}
-              className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-bold text-[#070A0E] bg-gradient-to-r from-[#D4AF7C] to-[#E5C396] hover:brightness-110 shadow-lg shadow-[#D4AF7C]/15 transition-all disabled:opacity-50"
+              className="inline-flex items-center px-4 py-2 rounded-sm text-xs font-semibold text-on-accent bg-accent hover:bg-accent-hover transition-colors disabled:opacity-50"
             >
               <Download className="w-4 h-4 mr-1.5" />
               {isExportingPdf ? 'Exporting PDF...' : 'Download Certificate (PDF)'}

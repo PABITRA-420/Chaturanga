@@ -17,34 +17,38 @@ export function FormAlert({
   title,
   message,
   onDismiss,
-  className = ''
+  className = '',
 }: FormAlertProps) {
   const config = {
     error: {
       icon: AlertCircle,
-      bg: 'bg-red-500/10 border-red-500/30 text-red-200',
-      iconColor: 'text-red-400',
+      bg: 'bg-surface border-danger/50 text-fg',
+      accentStripe: 'bg-danger',
+      iconColor: 'text-danger',
       title: title || 'Submission Error',
       role: 'alert',
     },
     success: {
       icon: CheckCircle2,
-      bg: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200',
-      iconColor: 'text-emerald-400',
+      bg: 'bg-surface border-success/50 text-fg',
+      accentStripe: 'bg-success',
+      iconColor: 'text-success',
       title: title || 'Success',
       role: 'status',
     },
     warning: {
       icon: AlertTriangle,
-      bg: 'bg-amber-500/10 border-amber-500/30 text-amber-200',
-      iconColor: 'text-amber-400',
+      bg: 'bg-surface border-warning/50 text-fg',
+      accentStripe: 'bg-warning',
+      iconColor: 'text-warning',
       title: title || 'Attention Required',
       role: 'alert',
     },
     info: {
       icon: Info,
-      bg: 'bg-[#D4AF7C]/10 border-[#D4AF7C]/30 text-[#F5F5F5]',
-      iconColor: 'text-[#D4AF7C]',
+      bg: 'bg-surface border-accent/50 text-fg',
+      accentStripe: 'bg-accent',
+      iconColor: 'text-accent',
       title: title || 'Information',
       role: 'status',
     },
@@ -56,26 +60,29 @@ export function FormAlert({
     <div
       role={config.role}
       aria-live="polite"
-      className={`p-4 rounded-2xl border backdrop-blur-md flex items-start gap-3 text-xs shadow-lg transition-all animate-fade-in ${config.bg} ${className}`}
+      style={{ boxShadow: 'var(--shadow-sm)' }}
+      className={`relative overflow-hidden p-4 rounded-sm border flex items-start gap-3 text-xs transition-colors animate-fade-in ${config.bg} ${className}`}
     >
-      <div className="shrink-0 mt-0.5">
-        <Icon className={`w-4 h-4 ${config.iconColor}`} />
+      <div className={`absolute left-0 top-0 bottom-0 w-1 ${config.accentStripe}`} aria-hidden="true" />
+
+      <div className="shrink-0 mt-0.5 pl-1">
+        <Icon className={`w-4 h-4 ${config.iconColor}`} aria-hidden="true" />
       </div>
 
       <div className="flex-1 space-y-0.5 min-w-0">
         {title && (
-          <p className="font-bold font-['Montserrat',sans-serif] tracking-wide">
+          <p className="font-bold font-heading tracking-wide text-fg">
             {config.title}
           </p>
         )}
-        <p className="leading-relaxed opacity-90">{message}</p>
+        <p className="leading-relaxed text-fg-muted">{message}</p>
       </div>
 
       {onDismiss && (
         <button
           type="button"
           onClick={onDismiss}
-          className="p-1 -mr-1 -mt-1 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition"
+          className="p-1 -mr-1 -mt-1 rounded-sm text-fg-muted hover:text-fg hover:bg-surface-elevated transition"
           aria-label="Dismiss alert"
         >
           <X className="w-3.5 h-3.5" />
@@ -106,35 +113,34 @@ export function FormField({
   helperText,
   id,
   children,
-  className = ''
+  className = '',
 }: FormFieldProps) {
   const hasError = Boolean(error);
 
   return (
     <div className={`space-y-1.5 ${className}`}>
       <div className="flex items-center justify-between text-[11px] font-medium">
-        <label htmlFor={id} className="text-[#A0A6B0] flex items-center gap-1">
+        <label htmlFor={id} className="text-fg-muted flex items-center gap-1 font-ui">
           <span>{label}</span>
-          {required && <span className="text-[#D4AF7C]">*</span>}
+          {required && <span className="text-accent">*</span>}
         </label>
 
-        {/* Live validation indicator */}
         <div className="flex items-center gap-1.5 text-[10px]">
           {isValidating && (
-            <span className="text-[#D4AF7C] flex items-center gap-1">
+            <span className="text-accent flex items-center gap-1 font-mono">
               <LoadingSpinner size="xs" />
               <span>Checking...</span>
             </span>
           )}
           {!isValidating && isValid && (
-            <span className="text-emerald-400 flex items-center gap-1 font-semibold">
-              <CheckCircle2 className="w-3 h-3" />
+            <span className="text-success flex items-center gap-1 font-semibold font-mono">
+              <CheckCircle2 className="w-3 h-3" aria-hidden="true" />
               <span>Valid</span>
             </span>
           )}
           {!isValidating && hasError && (
-            <span className="text-red-400 flex items-center gap-1 font-semibold">
-              <AlertCircle className="w-3 h-3" />
+            <span className="text-danger flex items-center gap-1 font-semibold font-mono">
+              <AlertCircle className="w-3 h-3" aria-hidden="true" />
               <span>Invalid</span>
             </span>
           )}
@@ -146,14 +152,13 @@ export function FormField({
       </div>
 
       {hasError ? (
-        <p className="text-[11px] text-red-400 flex items-center gap-1 animate-fade-in">
-          <AlertCircle className="w-3 h-3 shrink-0" />
+        <p className="text-[11px] text-danger flex items-center gap-1 animate-fade-in">
+          <AlertCircle className="w-3 h-3 shrink-0" aria-hidden="true" />
           <span>{error}</span>
         </p>
       ) : helperText ? (
-        <p className="text-[10px] text-[#A0A6B0]/70">{helperText}</p>
+        <p className="text-[10px] text-fg-muted">{helperText}</p>
       ) : null}
     </div>
   );
 }
-

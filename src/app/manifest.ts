@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'Official Chess Club of Jalpaiguri Government Engineering College. Live Swiss pairings, Elo ratings, and tournament passes.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#0B0F14',
-    theme_color: '#0B0F14',
+    background_color: '#09090B',
+    theme_color: '#09090B',
     icons: [
       {
         src: '/icon.svg',

@@ -5,11 +5,10 @@ import Link from 'next/link';
 import { useLiveTournament } from '@/hooks/useLiveTournament';
 import { RoundCountdownClock } from '@/components/chess/RoundCountdownClock';
 import { PgnViewer } from '@/components/chess/PgnViewer';
-import { Skeleton, SkeletonCard, SkeletonTable } from '@/components/ui/Skeleton';
+import { Skeleton, SkeletonCard } from '@/components/ui/Skeleton';
 import { SEED_GAMES } from '@/lib/pgnParser';
 import {
   Trophy,
-  Users,
   Clock,
   Radio,
   RefreshCw,
@@ -17,13 +16,11 @@ import {
   ChevronRight,
   Eye,
   ArrowLeft,
-  Calendar,
   MapPin,
   Flame,
   Search,
   Compass,
   Coffee,
-  CheckCircle2,
   X,
 } from 'lucide-react';
 
@@ -40,8 +37,6 @@ export const LiveTournamentView: React.FC<LiveTournamentViewProps> = ({ tourname
     standings,
     loading,
     isLiveSyncing,
-    error,
-    lastSyncedAt,
     refetch,
   } = useLiveTournament(tournamentId);
 
@@ -49,16 +44,13 @@ export const LiveTournamentView: React.FC<LiveTournamentViewProps> = ({ tourname
   const [selectedBoardNumber, setSelectedBoardNumber] = useState<number>(1);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  // Selected match for live inspection
   const selectedMatch = matches.find(m => m.board_number === selectedBoardNumber) || matches[0];
 
-  // Active PGN to display in viewer: from selected match, or tournament seed, or default
   const activePgn =
     selectedMatch?.pgn ||
     SEED_GAMES.find(g => g.tournament_id === tournamentId)?.pgn ||
     SEED_GAMES[0].pgn;
 
-  // Filter matches based on "Where Is My Board?" locator search
   const filteredMatches = useMemo(() => {
     if (!searchQuery.trim()) return matches;
     const q = searchQuery.toLowerCase().trim();
@@ -70,7 +62,6 @@ export const LiveTournamentView: React.FC<LiveTournamentViewProps> = ({ tourname
     );
   }, [matches, searchQuery]);
 
-  // Direct player assignment badge if exact single match or clear hit
   const directHit = useMemo(() => {
     if (!searchQuery.trim() || filteredMatches.length === 0) return null;
     const q = searchQuery.toLowerCase().trim();
@@ -83,25 +74,21 @@ export const LiveTournamentView: React.FC<LiveTournamentViewProps> = ({ tourname
 
   if (loading && !tournament) {
     return (
-      <div className="space-y-8 animate-pulse" data-testid="live-tournament-skeleton">
-        {/* Header Skeleton */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-[#121620] border border-[#D4AF7C]/20 shadow-2xl space-y-4">
-          <Skeleton className="w-32 h-5 rounded-full" />
-          <Skeleton className="w-2/3 h-10 rounded-xl" />
+      <div className="space-y-8" data-testid="live-tournament-skeleton">
+        <div className="p-6 sm:p-8 rounded-md bg-surface border border-border space-y-4">
+          <Skeleton className="w-32 h-5" />
+          <Skeleton className="w-2/3 h-10" />
           <div className="flex gap-4">
-            <Skeleton className="w-36 h-5 rounded-lg" />
-            <Skeleton className="w-36 h-5 rounded-lg" />
+            <Skeleton className="w-36 h-5" />
+            <Skeleton className="w-36 h-5" />
           </div>
         </div>
-        {/* Central Clock Skeleton */}
-        <Skeleton className="w-full h-24 rounded-2xl" />
-        {/* Tabs Skeleton */}
+        <Skeleton className="w-full h-24" />
         <div className="flex gap-2">
-          <Skeleton className="w-40 h-10 rounded-full" />
-          <Skeleton className="w-40 h-10 rounded-full" />
-          <Skeleton className="w-40 h-10 rounded-full" />
+          <Skeleton className="w-40 h-10" />
+          <Skeleton className="w-40 h-10" />
+          <Skeleton className="w-40 h-10" />
         </div>
-        {/* Board Cards Skeleton */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <SkeletonCard />
           <SkeletonCard />
@@ -113,64 +100,62 @@ export const LiveTournamentView: React.FC<LiveTournamentViewProps> = ({ tourname
 
   return (
     <div className="space-y-8" data-testid="live-tournament-view">
-      {/* Top Breadcrumb & Live Broadcast Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-[#121620] via-[#0E121A] to-[#080B10] border border-[#D4AF7C]/30 shadow-2xl relative overflow-hidden">
-        {/* Ambient Gold Glow */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-[#D4AF7C]/5 rounded-full blur-3xl pointer-events-none" />
+      {/* Broadcast Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 sm:p-8 rounded-md bg-surface border border-border relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-1 bg-accent" aria-hidden="true" />
 
         <div className="space-y-3 relative z-10">
           <div className="flex flex-wrap items-center gap-2.5">
             <Link
               href="/upcoming"
-              className="inline-flex items-center gap-1.5 text-xs text-[#A0A6B0] hover:text-white transition font-medium"
+              className="inline-flex items-center gap-1.5 text-xs font-mono text-fg-muted hover:text-fg transition-colors font-medium"
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
+              <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" />
               <span>Tournaments</span>
             </Link>
-            <span className="text-white/20">•</span>
+            <span className="text-border-strong">/</span>
 
-            <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-bold text-red-400 bg-red-950/40 border border-red-500/30">
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xs text-[10px] font-mono font-bold text-danger bg-danger/10 border border-danger/30">
+              <span className="w-1.5 h-1.5 rounded-full bg-danger shrink-0" aria-hidden="true" />
               <span>LIVE BROADCAST</span>
             </span>
 
             {isLiveSyncing && (
-              <span className="text-[10px] font-mono text-emerald-400 flex items-center gap-1">
-                <RefreshCw className="w-2.5 h-2.5 animate-spin" /> Auto-syncing
+              <span className="text-[10px] font-mono text-success flex items-center gap-1">
+                <RefreshCw className="w-2.5 h-2.5 animate-spin" aria-hidden="true" /> Auto-syncing
               </span>
             )}
           </div>
 
-          <h1 className="font-['Montserrat',sans-serif] text-2xl sm:text-4xl font-black text-white tracking-tight">
+          <h1 className="font-heading text-2xl sm:text-4xl font-extrabold text-fg tracking-tight">
             {tournament?.title || 'Chaturanga Championship'}
           </h1>
 
-          <div className="flex flex-wrap items-center gap-4 text-xs text-[#A0A6B0]">
+          <div className="flex flex-wrap items-center gap-4 text-xs text-fg-muted font-mono">
             <div className="flex items-center gap-1.5">
-              <Trophy className="w-4 h-4 text-[#D4AF7C]" />
+              <Trophy className="w-4 h-4 text-accent" aria-hidden="true" />
               <span>{tournament?.format || 'Swiss System Rapid'}</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <MapPin className="w-4 h-4 text-[#D4AF7C]" />
+              <MapPin className="w-4 h-4 text-accent" aria-hidden="true" />
               <span>{tournament?.venue || 'Main Auditorium, JGEC'}</span>
             </div>
             {currentRound && (
-              <div className="flex items-center gap-1.5 text-white font-semibold">
-                <Flame className="w-4 h-4 text-amber-400" />
+              <div className="flex items-center gap-1.5 text-fg font-semibold">
+                <Flame className="w-4 h-4 text-warning" aria-hidden="true" />
                 <span>Round {currentRound.round_number} of {rounds.length || 7}</span>
               </div>
             )}
           </div>
         </div>
 
-        {/* Sync Status Button */}
         <div className="flex items-center gap-3 relative z-10">
           <button
             type="button"
             onClick={() => refetch()}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xs text-xs font-mono font-semibold text-fg-muted hover:text-fg bg-surface-elevated hover:bg-surface-subtle border border-border hover:border-border-strong transition-colors cursor-pointer"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${isLiveSyncing ? 'animate-spin text-[#D4AF7C]' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${isLiveSyncing ? 'animate-spin text-accent' : ''}`} aria-hidden="true" />
             <span>Refresh</span>
           </button>
         </div>
@@ -186,7 +171,7 @@ export const LiveTournamentView: React.FC<LiveTournamentViewProps> = ({ tourname
       )}
 
       {/* Broadcast Tab Selector */}
-      <div className="flex items-center gap-2 border-b border-white/10 pb-4 overflow-x-auto">
+      <div className="flex items-center gap-2 border-b border-border pb-4 overflow-x-auto">
         {[
           { id: 'boards', label: `Active Board Pairings (${matches.length})`, icon: Radio },
           { id: 'standings', label: `Live Standings & Tiebreaks (${standings.length})`, icon: Award },
@@ -199,13 +184,13 @@ export const LiveTournamentView: React.FC<LiveTournamentViewProps> = ({ tourname
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-5 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0 ${
+              className={`px-4 py-2.5 rounded-xs text-xs font-mono font-bold transition-colors flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0 border ${
                 isActive
-                  ? 'bg-[#D4AF7C] text-black shadow-lg shadow-[#D4AF7C]/20'
-                  : 'text-[#A0A6B0] hover:text-white bg-white/5 hover:bg-white/10 border border-white/10'
+                  ? 'bg-primary text-on-primary border-primary'
+                  : 'text-fg-muted hover:text-fg bg-surface hover:bg-surface-elevated border-border'
               }`}
             >
-              <Icon className="w-4 h-4" />
+              <Icon className="w-3.5 h-3.5" aria-hidden="true" />
               <span>{tab.label}</span>
             </button>
           );
@@ -217,45 +202,46 @@ export const LiveTournamentView: React.FC<LiveTournamentViewProps> = ({ tourname
         <div className="space-y-6">
           {matches.length > 0 ? (
             <>
-              {/* "Where Is My Board?" Quick Finder Bar */}
+              {/* Quick Board Finder */}
               <div
                 data-testid="where-is-my-board-finder"
-                className="p-5 rounded-2xl bg-gradient-to-r from-[#141A24] via-[#10141D] to-[#0A0D14] border border-[#D4AF7C]/30 shadow-xl space-y-3"
+                className="p-5 rounded-md bg-surface border border-border-strong space-y-3"
               >
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-[#D4AF7C]/15 border border-[#D4AF7C]/30 flex items-center justify-center text-[#D4AF7C] shrink-0">
-                      <Compass className="w-5 h-5" />
+                    <div className="w-10 h-10 rounded-xs bg-surface-elevated border border-border flex items-center justify-center text-accent shrink-0">
+                      <Compass className="w-5 h-5" aria-hidden="true" />
                     </div>
                     <div>
-                      <div className="text-xs sm:text-sm font-bold text-white tracking-wide flex items-center gap-2">
+                      <div className="text-xs sm:text-sm font-bold text-fg tracking-tight flex items-center gap-2 flex-wrap">
                         <span>Where Is My Board? Instant Quick Finder</span>
-                        <span className="hidden sm:inline-block px-2 py-0.5 rounded text-[10px] font-mono text-amber-300 bg-amber-950/40 border border-amber-500/30">
+                        <span className="hidden sm:inline-block px-2 py-0.5 rounded-xs text-[10px] font-mono text-warning bg-warning/10 border border-warning/30">
                           Live Round {currentRound?.round_number || 1}
                         </span>
                       </div>
-                      <p className="text-[11px] text-[#A0A6B0]">
+                      <p className="text-[11px] text-fg-muted font-body">
                         Find your table number, assigned piece color, and opponent in one tap
                       </p>
                     </div>
                   </div>
 
                   <div className="relative flex-1 sm:max-w-xs">
-                    <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-fg-muted" aria-hidden="true" />
                     <input
                       type="text"
                       data-testid="board-search-input"
                       value={searchQuery}
                       onChange={e => setSearchQuery(e.target.value)}
                       placeholder="Type your name or board #..."
-                      className="w-full pl-9 pr-8 py-2 rounded-xl bg-black/50 border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#D4AF7C] transition"
+                      className="w-full pl-9 pr-8 py-2 rounded-xs bg-bg border border-border text-xs text-fg placeholder:text-fg-subtle focus:border-border-strong transition-colors"
                     />
                     {searchQuery && (
                       <button
                         type="button"
                         onClick={() => setSearchQuery('')}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs cursor-pointer"
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-fg-muted hover:text-fg text-xs cursor-pointer"
                         title="Clear search"
+                        aria-label="Clear search"
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>
@@ -263,27 +249,27 @@ export const LiveTournamentView: React.FC<LiveTournamentViewProps> = ({ tourname
                   </div>
                 </div>
 
-                {/* Instant Player Board Match Banner */}
+                {/* Direct Hit Banner */}
                 {searchQuery.trim() && directHit && (
                   <div
                     data-testid="board-direct-hit-banner"
-                    className="mt-2 p-3.5 rounded-xl bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs animate-fadeIn"
+                    className="mt-2 p-3.5 rounded-xs bg-accent/10 border border-accent/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs animate-fade-in"
                   >
                     <div className="flex items-center gap-2.5">
-                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping shrink-0" />
+                      <span className="w-2 h-2 rounded-full bg-success shrink-0" aria-hidden="true" />
                       <div>
-                        <span className="font-bold text-white">Board {directHit.board_number}: </span>
-                        <span className="text-[#D4AF7C] font-semibold">{directHit.white_player_name}</span>
-                        <span className="text-slate-400 text-[11px]"> (White) </span>
-                        <span className="text-white/40">vs</span>{' '}
-                        <span className="text-white font-semibold">
+                        <span className="font-mono font-bold text-fg">Board {directHit.board_number}: </span>
+                        <span className="text-accent font-semibold">{directHit.white_player_name}</span>
+                        <span className="text-fg-muted text-[11px]"> (White) </span>
+                        <span className="text-fg-muted">vs</span>{' '}
+                        <span className="text-fg font-semibold">
                           {directHit.black_player_name || 'BYE'}
                         </span>
-                        <span className="text-slate-400 text-[11px]"> (Black)</span>
+                        <span className="text-fg-muted text-[11px]"> (Black)</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-[11px] font-mono text-slate-300 px-2 py-0.5 rounded bg-black/40 border border-white/10">
+                      <span className="text-[11px] font-mono text-fg-muted px-2 py-0.5 rounded-xs bg-surface border border-border">
                         {directHit.board_number <= 5
                           ? 'Auditorium Tier A (Boards 1-5)'
                           : directHit.board_number <= 15
@@ -296,7 +282,7 @@ export const LiveTournamentView: React.FC<LiveTournamentViewProps> = ({ tourname
                           setSelectedBoardNumber(directHit.board_number);
                           if (directHit.pgn) setActiveTab('featured');
                         }}
-                        className="px-3 py-1 rounded-lg bg-[#D4AF7C] text-black text-[11px] font-bold hover:bg-[#E6C98A] transition cursor-pointer"
+                        className="px-3 py-1.5 rounded-xs bg-accent hover:bg-accent-hover text-on-accent text-[11px] font-mono font-bold transition-colors cursor-pointer"
                       >
                         {directHit.pgn ? 'Open PGN' : 'Select Board'}
                       </button>
@@ -305,7 +291,7 @@ export const LiveTournamentView: React.FC<LiveTournamentViewProps> = ({ tourname
                 )}
               </div>
 
-              {/* Board Cards Grid or No-Match State */}
+              {/* Board Cards Grid */}
               {filteredMatches.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {filteredMatches.map(m => {
@@ -320,48 +306,47 @@ export const LiveTournamentView: React.FC<LiveTournamentViewProps> = ({ tourname
                         : 'Hall Zone C';
 
                     return (
-                      <div
+                      <button
                         key={m.id}
+                        type="button"
                         onClick={() => {
                           setSelectedBoardNumber(m.board_number);
                           if (m.pgn) setActiveTab('featured');
                         }}
-                        className={`p-4 rounded-2xl border transition-all cursor-pointer relative overflow-hidden group hover:scale-[1.01] ${
+                        className={`p-4 rounded-sm border transition-colors cursor-pointer relative overflow-hidden group text-left ${
                           isSelected
-                            ? 'bg-[#151B26] border-[#D4AF7C] shadow-lg shadow-[#D4AF7C]/10'
-                            : 'bg-[#0E121A] border-white/10 hover:border-white/20'
+                            ? 'bg-surface-elevated border-accent'
+                            : 'bg-surface border-border hover:border-border-strong'
                         }`}
                       >
-                        {/* Top: Board Number, Zone Tag & Result Status */}
-                        <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-white/5 text-xs">
+                        <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-border text-xs">
                           <div className="flex items-center gap-2">
-                            <span className="font-mono font-bold text-[#D4AF7C]">
+                            <span className="font-mono font-bold text-accent">
                               Board {m.board_number}
                             </span>
-                            <span className="text-[10px] text-slate-400 font-mono hidden sm:inline-block">
+                            <span className="text-[10px] text-fg-muted font-mono hidden sm:inline-block">
                               • {zoneTag}
                             </span>
                           </div>
 
                           <span
-                            className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
+                            className={`px-2 py-0.5 rounded-xs text-[10px] font-mono font-bold uppercase border ${
                               isPending
-                                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                                : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                                ? 'bg-warning/10 text-warning border-warning/30'
+                                : 'bg-success/10 text-success border-success/30'
                             }`}
                           >
                             {isPending ? 'In Progress' : m.result === '0.5-0.5' ? '½-½' : m.result}
                           </span>
                         </div>
 
-                        {/* Players Matchup */}
                         <div className="space-y-2 text-xs">
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 font-semibold text-white">
-                              <span className="w-2.5 h-2.5 rounded-full bg-white border border-slate-400 shrink-0" />
+                            <div className="flex items-center gap-2 font-semibold text-fg">
+                              <span className="w-2.5 h-2.5 rounded-full bg-white border border-border-strong shrink-0" />
                               <span className="truncate max-w-[180px]">{m.white_player_name}</span>
                             </div>
-                            <span className="font-mono font-bold text-slate-300">
+                            <span className="font-mono font-bold text-fg tabular-nums">
                               {m.result === '1-0' || m.result === '1-0_bye' || m.result === '1F-0F'
                                 ? '1'
                                 : m.result === '0.5-0.5'
@@ -373,17 +358,17 @@ export const LiveTournamentView: React.FC<LiveTournamentViewProps> = ({ tourname
                           </div>
 
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 font-semibold text-white">
-                              <span className="w-2.5 h-2.5 rounded-full bg-slate-900 border border-slate-600 shrink-0" />
+                            <div className="flex items-center gap-2 font-semibold text-fg">
+                              <span className="w-2.5 h-2.5 rounded-full bg-[#18181B] border border-border-strong shrink-0" />
                               <span
                                 className={`truncate max-w-[180px] ${
-                                  isBye ? 'text-amber-400/80 italic' : ''
+                                  isBye ? 'text-warning italic' : ''
                                 }`}
                               >
                                 {m.black_player_name || 'BYE'}
                               </span>
                             </div>
-                            <span className="font-mono font-bold text-slate-300">
+                            <span className="font-mono font-bold text-fg tabular-nums">
                               {m.result === '0-1' || m.result === '0F-1F'
                                 ? '1'
                                 : m.result === '0.5-0.5'
@@ -395,35 +380,33 @@ export const LiveTournamentView: React.FC<LiveTournamentViewProps> = ({ tourname
                           </div>
                         </div>
 
-                        {/* Bottom Action Hint */}
-                        <div className="mt-3 pt-2.5 border-t border-white/5 flex items-center justify-between text-[11px] text-[#A0A6B0]">
+                        <div className="mt-3 pt-2.5 border-t border-border flex items-center justify-between text-[11px] font-mono text-fg-muted">
                           <span>{m.pgn ? 'PGN Available' : 'Digital Clock Sync'}</span>
-                          <span className="text-[#D4AF7C] group-hover:translate-x-0.5 transition-transform flex items-center gap-1 font-semibold">
+                          <span className="text-accent group-hover:translate-x-0.5 transition-transform flex items-center gap-1 font-semibold">
                             <span>Inspect</span>
-                            <ChevronRight className="w-3 h-3" />
+                            <ChevronRight className="w-3 h-3" aria-hidden="true" />
                           </span>
                         </div>
-                      </div>
+                      </button>
                     );
                   })}
                 </div>
               ) : (
-                /* No match for search query */
                 <div
                   data-testid="no-board-found-state"
-                  className="p-10 text-center rounded-2xl bg-[#0E121A] border border-white/10 space-y-3"
+                  className="p-10 text-center rounded-md bg-surface border border-border space-y-3"
                 >
-                  <Search className="w-8 h-8 text-[#D4AF7C]/40 mx-auto" />
-                  <div className="text-sm font-bold text-white">
-                    No Board Found for "{searchQuery}"
+                  <Search className="w-8 h-8 text-accent mx-auto opacity-60" aria-hidden="true" />
+                  <div className="text-sm font-bold text-fg">
+                    No Board Found for &quot;{searchQuery}&quot;
                   </div>
-                  <p className="text-xs text-[#A0A6B0] max-w-md mx-auto leading-relaxed">
-                    Double-check spelling or try searching by board number. If you just checked in at the desk, your table assignment may still be synchronizing.
+                  <p className="text-xs text-fg-muted max-w-md mx-auto leading-relaxed font-body">
+                    Double-check spelling or try searching by board number.
                   </p>
                   <button
                     type="button"
                     onClick={() => setSearchQuery('')}
-                    className="px-4 py-1.5 rounded-xl text-xs font-semibold text-[#D4AF7C] bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 hover:bg-[#D4AF7C]/20 transition cursor-pointer"
+                    className="px-4 py-1.5 rounded-xs text-xs font-mono font-semibold text-accent bg-surface-elevated border border-border hover:border-border-strong transition-colors cursor-pointer"
                   >
                     View All Active Boards
                   </button>
@@ -431,25 +414,24 @@ export const LiveTournamentView: React.FC<LiveTournamentViewProps> = ({ tourname
               )}
             </>
           ) : (
-            /* Conversational Empty State when no pairings published yet */
             <div
               data-testid="pairings-preparing-state"
-              className="p-12 text-center rounded-3xl bg-gradient-to-b from-[#121620] to-[#0A0D14] border border-[#D4AF7C]/20 space-y-4 shadow-2xl relative overflow-hidden"
+              className="p-12 text-center rounded-md bg-surface border border-border space-y-4"
             >
-              <div className="w-14 h-14 rounded-2xl bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 flex items-center justify-center mx-auto text-[#D4AF7C]">
-                <Coffee className="w-7 h-7" />
+              <div className="w-12 h-12 rounded-sm bg-surface-elevated border border-border flex items-center justify-center mx-auto text-accent">
+                <Coffee className="w-6 h-6" aria-hidden="true" />
               </div>
               <div className="space-y-1.5">
-                <h3 className="text-base font-bold text-white tracking-wide">
-                  Round Pairings in Preparation ☕
+                <h3 className="text-base font-heading font-bold text-fg tracking-tight">
+                  Round Pairings in Preparation
                 </h3>
-                <p className="text-xs text-[#A0A6B0] max-w-md mx-auto leading-relaxed">
-                  The Chief Arbiter desk is pairing the round according to FIDE Swiss regulations. Grab a chai while tables are assigned — pairings will broadcast right here in real time!
+                <p className="text-xs text-fg-muted max-w-md mx-auto leading-relaxed font-body">
+                  The Chief Arbiter desk is pairing the round according to FIDE Swiss regulations. Pairings will broadcast here in real time.
                 </p>
               </div>
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] font-mono text-amber-300 bg-amber-950/40 border border-amber-500/30">
-                <Clock className="w-3.5 h-3.5" />
-                <span>Desk Status: Verifying Player Check-ins & Seeding</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xs text-[11px] font-mono text-warning bg-warning/10 border border-warning/30">
+                <Clock className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>Desk Status: Verifying Player Check-ins &amp; Seeding</span>
               </div>
             </div>
           )}
@@ -458,14 +440,14 @@ export const LiveTournamentView: React.FC<LiveTournamentViewProps> = ({ tourname
 
       {/* TAB 2: LIVE STANDINGS & TIEBREAKS */}
       {activeTab === 'standings' && (
-        <div className="rounded-3xl border border-white/10 bg-[#0E121A] overflow-hidden shadow-2xl">
-          <div className="p-5 bg-black/40 border-b border-white/10 flex items-center justify-between">
+        <div className="rounded-md border border-border bg-surface overflow-hidden">
+          <div className="p-5 bg-surface-elevated border-b border-border flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                <Trophy className="w-4 h-4 text-[#D4AF7C]" />
+              <h3 className="text-sm font-heading font-bold text-fg uppercase tracking-wider flex items-center gap-2">
+                <Trophy className="w-4 h-4 text-accent" aria-hidden="true" />
                 <span>Collegiate FIDE Standings Crosstable</span>
               </h3>
-              <p className="text-xs text-[#A0A6B0] mt-0.5">
+              <p className="text-xs font-mono text-fg-muted mt-0.5">
                 Tie-break order: Total Points → Buchholz Cut 1 → Direct Encounter → Sonneborn-Berger
               </p>
             </div>
@@ -474,7 +456,7 @@ export const LiveTournamentView: React.FC<LiveTournamentViewProps> = ({ tourname
           {standings.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-white/[0.03] text-[11px] uppercase tracking-wider text-[#D4AF7C] font-semibold border-b border-white/10">
+                <thead className="bg-surface-elevated text-[11px] font-mono uppercase tracking-wider text-accent font-semibold border-b border-border">
                   <tr>
                     <th className="py-3 px-4 text-center">Rank</th>
                     <th className="py-3 px-4">Player</th>
@@ -485,7 +467,7 @@ export const LiveTournamentView: React.FC<LiveTournamentViewProps> = ({ tourname
                     <th className="py-3 px-4 font-mono text-center">Buchholz (Total)</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-border">
                   {standings.map(s => {
                     const isPodium = s.rank <= 3;
                     const rankBadge =
@@ -494,29 +476,29 @@ export const LiveTournamentView: React.FC<LiveTournamentViewProps> = ({ tourname
                     return (
                       <tr
                         key={s.playerId}
-                        className={`hover:bg-white/[0.02] transition-colors ${
-                          isPodium ? 'bg-[#D4AF7C]/5' : ''
+                        className={`hover:bg-surface-elevated transition-colors ${
+                          isPodium ? 'bg-accent/10' : ''
                         }`}
                       >
-                        <td className="py-3 px-4 text-center font-bold text-[#D4AF7C]">
+                        <td className="py-3 px-4 text-center font-mono font-bold text-accent">
                           {rankBadge}
                         </td>
-                        <td className="py-3 px-4 font-semibold text-white">
+                        <td className="py-3 px-4 font-semibold text-fg">
                           <span>{s.playerName}</span>
                         </td>
-                        <td className="py-3 px-4 font-mono font-bold text-center text-amber-300 text-sm">
+                        <td className="py-3 px-4 font-mono font-bold text-center text-accent text-sm tabular-nums">
                           {s.points}
                         </td>
-                        <td className="py-3 px-4 font-mono text-center text-slate-300">
+                        <td className="py-3 px-4 font-mono text-center text-fg tabular-nums">
                           {s.matchesPlayed}
                         </td>
-                        <td className="py-3 px-4 font-mono text-center font-bold text-slate-200">
+                        <td className="py-3 px-4 font-mono text-center font-bold text-fg tabular-nums">
                           {s.tieBreaks.buchholzCut1}
                         </td>
-                        <td className="py-3 px-4 font-mono text-center text-slate-400">
+                        <td className="py-3 px-4 font-mono text-center text-fg-muted tabular-nums">
                           {s.tieBreaks.sonnebornBerger}
                         </td>
-                        <td className="py-3 px-4 font-mono text-center text-slate-400">
+                        <td className="py-3 px-4 font-mono text-center text-fg-muted tabular-nums">
                           {s.tieBreaks.buchholz}
                         </td>
                       </tr>
@@ -528,13 +510,13 @@ export const LiveTournamentView: React.FC<LiveTournamentViewProps> = ({ tourname
           ) : (
             <div
               data-testid="standings-inactive-state"
-              className="p-12 text-center space-y-3 bg-[#0B0E14]"
+              className="p-12 text-center space-y-3 bg-surface"
             >
-              <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto text-[#D4AF7C]/60">
-                <Trophy className="w-6 h-6" />
+              <div className="w-12 h-12 rounded-sm bg-surface-elevated border border-border flex items-center justify-center mx-auto text-accent">
+                <Trophy className="w-6 h-6 opacity-60" aria-hidden="true" />
               </div>
-              <div className="text-sm font-bold text-white">Standings Crosstable Inactive</div>
-              <p className="text-xs text-[#A0A6B0] max-w-md mx-auto leading-relaxed">
+              <div className="text-sm font-bold text-fg">Standings Crosstable Inactive</div>
+              <p className="text-xs text-fg-muted max-w-md mx-auto leading-relaxed font-body">
                 Collegiate FIDE standings and Buchholz tiebreak calculations will automatically populate as soon as Round 1 matches conclude.
               </p>
             </div>

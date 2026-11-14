@@ -52,10 +52,9 @@ describe('Navbar Component (Navbar.tsx)', () => {
 
     render(<Navbar />);
 
-    // In Navbar, active link text is contained inside a Link with class containing bg-[#D4AF7C]/15
     const leaderboardLinks = screen.getAllByRole('link', { name: /Leaderboard/i });
-    const activeDesktopLink = leaderboardLinks.find((el) =>
-      el.className.includes('bg-[#D4AF7C]/15')
+    const activeDesktopLink = leaderboardLinks.find(
+      (el) => el.getAttribute('aria-current') === 'page' && el.className.includes('bg-accent/15')
     );
     expect(activeDesktopLink).toBeDefined();
   });
@@ -72,7 +71,7 @@ describe('Navbar Component (Navbar.tsx)', () => {
 
     // Click to open
     fireEvent.click(toggleButton);
-    expect(drawer?.className).toContain('max-h-[500px]');
+    expect(drawer?.className).toContain('max-h-[520px]');
 
     // Click again to close
     fireEvent.click(toggleButton);
@@ -103,7 +102,8 @@ describe('Navbar Component (Navbar.tsx)', () => {
     render(<Navbar />);
     const header = screen.getByRole('banner');
 
-    expect(header.className).toContain('bg-[#0B0F14]/70');
+    expect(header.getAttribute('data-scrolled')).toBe('false');
+    expect(header.className).toContain('bg-bg/85');
 
     // Simulate scroll past 15px
     act(() => {
@@ -111,8 +111,8 @@ describe('Navbar Component (Navbar.tsx)', () => {
       window.dispatchEvent(new Event('scroll'));
     });
 
-    expect(header.className).toContain('bg-[#0B0F14]/90');
-    expect(header.className).toContain('shadow-2xl');
+    expect(header.getAttribute('data-scrolled')).toBe('true');
+    expect(header.className).toContain('bg-bg/95');
 
     // Scroll back to top
     act(() => {
@@ -120,6 +120,17 @@ describe('Navbar Component (Navbar.tsx)', () => {
       window.dispatchEvent(new Event('scroll'));
     });
 
-    expect(header.className).toContain('bg-[#0B0F14]/70');
+    expect(header.getAttribute('data-scrolled')).toBe('false');
+    expect(header.className).toContain('bg-bg/85');
+  });
+
+  it('toggles light and dark theme mode via the header theme switcher', () => {
+    render(<Navbar />);
+    const themeToggleBtn = screen.getByTestId('theme-toggle-btn');
+
+    const initialTheme = document.documentElement.dataset.theme || 'dark';
+    fireEvent.click(themeToggleBtn);
+    const nextTheme = initialTheme === 'dark' ? 'light' : 'dark';
+    expect(document.documentElement.dataset.theme).toBe(nextTheme);
   });
 });

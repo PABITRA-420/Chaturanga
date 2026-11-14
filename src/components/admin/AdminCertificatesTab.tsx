@@ -136,37 +136,37 @@ export default function AdminCertificatesTab({ tournaments }: AdminCertificatesT
     switch (role) {
       case 'winner':
         return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+          <span className="inline-flex items-center px-2 py-0.5 rounded-xs text-[11px] font-mono font-bold bg-accent/15 text-accent border border-accent/30">
             <Sparkles className="w-3 h-3 mr-1" /> Champion (1st)
           </span>
         );
       case 'runner_up':
         return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-300/20 text-slate-200 border border-slate-300/30">
+          <span className="inline-flex items-center px-2 py-0.5 rounded-xs text-[11px] font-mono font-semibold bg-surface-elevated text-fg border border-border-strong">
             Runner-up (2nd)
           </span>
         );
       case 'second_runner_up':
         return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-700/20 text-amber-400 border border-amber-700/30">
+          <span className="inline-flex items-center px-2 py-0.5 rounded-xs text-[11px] font-mono font-semibold bg-warning/15 text-warning border border-warning/30">
             3rd Place
           </span>
         );
       case 'top_board':
         return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+          <span className="inline-flex items-center px-2 py-0.5 rounded-xs text-[11px] font-mono font-semibold bg-info/15 text-info border border-info/30">
             Top Board
           </span>
         );
       case 'merit':
         return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+          <span className="inline-flex items-center px-2 py-0.5 rounded-xs text-[11px] font-mono font-semibold bg-success/15 text-success border border-success/30">
             Merit
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-white/10 text-slate-300">
+          <span className="inline-flex items-center px-2 py-0.5 rounded-xs text-[11px] font-mono font-medium bg-surface-elevated border border-border text-fg-muted">
             Participant
           </span>
         );
@@ -177,50 +177,50 @@ export default function AdminCertificatesTab({ tournaments }: AdminCertificatesT
     <div className="space-y-6">
       {/* Top Banner and Summary Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-[#0F141C] border border-white/10 rounded-2xl p-4 flex items-center space-x-3.5">
-          <div className="w-10 h-10 rounded-xl bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 flex items-center justify-center text-[#D4AF7C]">
+        <div className="bg-surface border border-border rounded-md p-4 flex items-center space-x-3.5">
+          <div className="w-10 h-10 rounded-sm bg-accent/10 border border-accent/30 flex items-center justify-center text-accent">
             <Award className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[11px] uppercase tracking-wider text-slate-400 font-medium">Issued In Event</span>
-            <p className="text-xl font-bold text-white">{certificates.length}</p>
+            <span className="text-[11px] font-mono uppercase tracking-wider text-fg-muted font-medium">Issued In Event</span>
+            <p className="text-xl font-heading font-bold text-fg tabular-nums">{certificates.length}</p>
           </div>
         </div>
 
-        <div className="bg-[#0F141C] border border-white/10 rounded-2xl p-4 flex items-center space-x-3.5">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+        <div className="bg-surface border border-border rounded-md p-4 flex items-center space-x-3.5">
+          <div className="w-10 h-10 rounded-sm bg-success/10 border border-success/30 flex items-center justify-center text-success">
             <CheckCircle2 className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[11px] uppercase tracking-wider text-slate-400 font-medium">Cryptographically Signed</span>
-            <p className="text-xl font-bold text-white">100%</p>
+            <span className="text-[11px] font-mono uppercase tracking-wider text-fg-muted font-medium">Cryptographically Signed</span>
+            <p className="text-xl font-heading font-bold text-fg tabular-nums">100%</p>
           </div>
         </div>
 
-        <div className="bg-[#0F141C] border border-white/10 rounded-2xl p-4 flex items-center space-x-3.5">
-          <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400">
+        <div className="bg-surface border border-border rounded-md p-4 flex items-center space-x-3.5">
+          <div className="w-10 h-10 rounded-sm bg-info/10 border border-info/30 flex items-center justify-center text-info">
             <FileText className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[11px] uppercase tracking-wider text-slate-400 font-medium">Matching Filter</span>
-            <p className="text-xl font-bold text-white">{filteredCertificates.length}</p>
+            <span className="text-[11px] font-mono uppercase tracking-wider text-fg-muted font-medium">Matching Filter</span>
+            <p className="text-xl font-heading font-bold text-fg tabular-nums">{filteredCertificates.length}</p>
           </div>
         </div>
       </div>
 
       {/* Control Bar: Filters & Export Actions */}
-      <div className="bg-[#0F141C] border border-white/10 rounded-2xl p-4 sm:p-5 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+      <div className="bg-surface border border-border rounded-md p-4 sm:p-5 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
         {/* Filters Group */}
         <div className="flex flex-wrap items-center gap-3">
           {/* Tournament Selector */}
           <select
             value={selectedTournamentId}
             onChange={(e) => setSelectedTournamentId(e.target.value)}
-            className="bg-[#141A24] border border-white/10 text-xs font-semibold text-white rounded-xl px-3 py-2 outline-none focus:border-[#D4AF7C]"
+            className="bg-surface-elevated border border-border text-xs font-semibold text-fg rounded-sm px-3 py-2 focus:border-accent transition-colors"
             aria-label="Select Tournament"
           >
             {tournaments.map((t) => (
-              <option key={t.id} value={t.id}>
+              <option key={t.id} value={t.id} className="bg-surface text-fg">
                 {t.title}
               </option>
             ))}
@@ -230,7 +230,7 @@ export default function AdminCertificatesTab({ tournaments }: AdminCertificatesT
           <select
             value={selectedDepartment}
             onChange={(e) => setSelectedDepartment(e.target.value)}
-            className="bg-[#141A24] border border-white/10 text-xs text-slate-300 rounded-xl px-3 py-2 outline-none focus:border-[#D4AF7C]"
+            className="bg-surface-elevated border border-border text-xs text-fg rounded-sm px-3 py-2 focus:border-accent transition-colors"
             aria-label="Filter Department"
           >
             <option value="all">All Departments</option>
@@ -245,7 +245,7 @@ export default function AdminCertificatesTab({ tournaments }: AdminCertificatesT
           <select
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value)}
-            className="bg-[#141A24] border border-white/10 text-xs text-slate-300 rounded-xl px-3 py-2 outline-none focus:border-[#D4AF7C]"
+            className="bg-surface-elevated border border-border text-xs text-fg rounded-sm px-3 py-2 focus:border-accent transition-colors"
             aria-label="Filter Role"
           >
             <option value="all">All Award Categories</option>
@@ -259,13 +259,13 @@ export default function AdminCertificatesTab({ tournaments }: AdminCertificatesT
 
           {/* Search Box */}
           <div className="relative">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-3.5 h-3.5 text-fg-subtle absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               placeholder="Search player or serial..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-[#141A24] border border-white/10 text-xs text-white placeholder-slate-500 rounded-xl pl-8 pr-3 py-2 outline-none focus:border-[#D4AF7C] w-48"
+              className="bg-surface-elevated border border-border text-xs text-fg placeholder:text-fg-subtle rounded-sm pl-8 pr-3 py-2 focus:border-accent w-48 transition-colors"
             />
           </div>
         </div>
@@ -273,18 +273,20 @@ export default function AdminCertificatesTab({ tournaments }: AdminCertificatesT
         {/* Action Buttons */}
         <div className="flex items-center space-x-2.5">
           <button
+            type="button"
             onClick={handleExportPodium}
             disabled={isExporting || certificates.length === 0}
-            className="inline-flex items-center px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-200 bg-white/5 hover:bg-white/10 border border-white/10 transition-colors disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center px-3.5 py-2 rounded-sm text-xs font-semibold text-fg bg-surface-elevated hover:bg-surface-subtle border border-border transition-colors disabled:opacity-50 cursor-pointer"
           >
-            <Award className="w-3.5 h-3.5 mr-1.5 text-amber-400" />
+            <Award className="w-3.5 h-3.5 mr-1.5 text-accent" />
             Export Podium Only (PDF)
           </button>
 
           <button
+            type="button"
             onClick={handleExportAll}
             disabled={isExporting || filteredCertificates.length === 0}
-            className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-bold text-[#070A0E] bg-gradient-to-r from-[#D4AF7C] to-[#E5C396] hover:brightness-110 shadow-lg shadow-[#D4AF7C]/15 transition-all disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center px-4 py-2 rounded-sm text-xs font-heading font-semibold text-on-accent bg-accent hover:bg-accent-hover transition-colors disabled:opacity-50 cursor-pointer"
           >
             <Download className="w-4 h-4 mr-1.5" />
             Export All Matching ({filteredCertificates.length})
@@ -293,10 +295,10 @@ export default function AdminCertificatesTab({ tournaments }: AdminCertificatesT
       </div>
 
       {/* Participants & Certificates Table */}
-      <div className="bg-[#0F141C] border border-white/10 rounded-2xl overflow-hidden shadow-xl">
+      <div className="bg-surface border border-border rounded-md overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#070A0E] border-b border-white/10 text-slate-400 uppercase tracking-wider font-semibold">
+            <thead className="bg-surface-elevated border-b border-border text-fg-muted font-mono uppercase text-[10px] tracking-wider font-semibold">
               <tr>
                 <th className="py-3 px-4">Participant</th>
                 <th className="py-3 px-4">Department</th>
@@ -306,43 +308,44 @@ export default function AdminCertificatesTab({ tournaments }: AdminCertificatesT
                 <th className="py-3 px-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-border">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-slate-400">
-                    <Loader2 className="w-6 h-6 animate-spin text-[#D4AF7C] mx-auto mb-2" />
-                    Loading certificate registry...
+                  <td colSpan={6} className="py-12 text-center text-fg-muted">
+                    <Loader2 className="w-6 h-6 animate-spin text-accent mx-auto mb-2" />
+                    <span className="font-mono">Loading certificate registry...</span>
                   </td>
                 </tr>
               ) : filteredCertificates.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-slate-400">
+                  <td colSpan={6} className="py-12 text-center text-fg-muted">
                     No certificate records match the selected filter.
                   </td>
                 </tr>
               ) : (
                 filteredCertificates.map((cert) => (
-                  <tr key={cert.certificate_id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="py-3.5 px-4 font-bold text-white">
+                  <tr key={cert.certificate_id} className="hover:bg-surface-elevated/60 transition-colors">
+                    <td className="py-3.5 px-4 font-semibold text-fg">
                       {cert.recipient_name}
-                      {cert.rank ? <span className="text-[10px] text-slate-400 font-normal ml-1.5">(Rank #{cert.rank})</span> : ''}
+                      {cert.rank ? <span className="text-[10px] font-mono text-fg-muted font-normal ml-1.5">(Rank #{cert.rank})</span> : ''}
                     </td>
-                    <td className="py-3.5 px-4 text-slate-300">
+                    <td className="py-3.5 px-4 text-fg-muted">
                       {cert.recipient_department || 'General'}
                     </td>
                     <td className="py-3.5 px-4">{getRoleBadge(cert.role)}</td>
-                    <td className="py-3.5 px-4 font-mono text-slate-400 text-[11px]">
+                    <td className="py-3.5 px-4 font-mono text-fg-muted text-[11px] tabular-nums">
                       {cert.certificate_id}
                     </td>
-                    <td className="py-3.5 px-4 font-mono text-[10px] text-emerald-400/80">
+                    <td className="py-3.5 px-4 font-mono text-[10px] text-success">
                       {cert.verification_hash ? `${cert.verification_hash.substring(0, 16)}...` : 'Pending'}
                     </td>
                     <td className="py-3.5 px-4 text-right">
                       <button
+                        type="button"
                         onClick={() => setPreviewCert(cert)}
-                        className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+                        className="inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-semibold text-fg bg-surface-elevated hover:bg-surface-subtle border border-border transition-colors cursor-pointer"
                       >
-                        <Eye className="w-3.5 h-3.5 mr-1 text-[#D4AF7C]" />
+                        <Eye className="w-3.5 h-3.5 mr-1 text-accent" />
                         Preview
                       </button>
                     </td>
@@ -356,31 +359,36 @@ export default function AdminCertificatesTab({ tournaments }: AdminCertificatesT
 
       {/* Bulk Export Progress Modal Overlay */}
       {isExporting && exportProgress && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#0F141C] border border-[#D4AF7C]/30 rounded-2xl p-6 shadow-2xl max-w-md w-full space-y-4">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Compiling Consolidated PDF Book"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs"
+        >
+          <div className="bg-surface border border-border-strong rounded-md p-6 shadow-md max-w-md w-full space-y-4">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-xl bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 flex items-center justify-center text-[#D4AF7C] animate-pulse">
+              <div className="w-10 h-10 rounded-sm bg-accent/10 border border-accent/30 flex items-center justify-center text-accent">
                 <Download className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-white">Compiling Consolidated PDF Book</h3>
-                <p className="text-xs text-slate-400">
+                <h3 className="font-heading text-sm font-bold text-fg">Compiling Consolidated PDF Book</h3>
+                <p className="text-xs font-mono text-fg-muted tabular-nums">
                   Processing certificate {exportProgress.current} of {exportProgress.total}
                 </p>
               </div>
             </div>
 
             {/* Progress bar */}
-            <div className="w-full bg-black/50 rounded-full h-3 overflow-hidden border border-white/10">
+            <div className="w-full bg-surface-subtle rounded-xs h-2.5 overflow-hidden border border-border">
               <div
-                className="bg-gradient-to-r from-[#D4AF7C] to-emerald-400 h-full transition-all duration-150"
+                className="bg-accent h-full transition-all duration-150"
                 style={{ width: `${exportProgress.percent}%` }}
               />
             </div>
 
-            <div className="flex justify-between items-center text-xs text-slate-400">
-              <span className="truncate max-w-[240px] text-slate-300">{exportProgress.recipientName}</span>
-              <span className="font-mono font-bold text-white">{exportProgress.percent}%</span>
+            <div className="flex justify-between items-center text-xs text-fg-muted">
+              <span className="truncate max-w-[240px] text-fg">{exportProgress.recipientName}</span>
+              <span className="font-mono font-bold text-fg tabular-nums">{exportProgress.percent}%</span>
             </div>
           </div>
         </div>

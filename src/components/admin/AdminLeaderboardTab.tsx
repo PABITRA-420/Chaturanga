@@ -311,18 +311,17 @@ export default function AdminLeaderboardTab() {
 
   return (
     <div className="space-y-6">
-      
       {/* Header & Quick Action Hub */}
-      <div className="p-6 rounded-3xl bg-[#10141C] border border-white/10 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-6 rounded-md bg-surface border border-border shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold text-[#D4AF7C] bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xs text-[11px] font-mono font-bold text-accent bg-accent/10 border border-accent/30 mb-2">
             <Crown className="w-3.5 h-3.5" />
-            <span>COLLEGIATE ELO RATINGS & LEADERBOARD</span>
+            <span>COLLEGIATE ELO RATINGS &amp; LEADERBOARD</span>
           </div>
-          <h2 className="font-['Montserrat',sans-serif] text-xl sm:text-2xl font-black text-[#F5F5F5]">
-            Player Database & Live Chess.com Sync
+          <h2 className="font-heading text-xl sm:text-2xl font-bold text-fg tracking-tight">
+            Player Database &amp; Live Chess.com Sync
           </h2>
-          <p className="text-xs text-[#A0A6B0] mt-1 max-w-2xl font-['Poppins',sans-serif]">
+          <p className="text-xs text-fg-muted mt-1 max-w-2xl">
             Directly manage ranked club players, edit Elo ratings, and synchronize with live Chess.com statistics in one click without touching code.
           </p>
         </div>
@@ -333,10 +332,10 @@ export default function AdminLeaderboardTab() {
             type="button"
             onClick={handleSyncAllChess}
             disabled={syncingAll}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 transition cursor-pointer disabled:opacity-50 shadow-md shadow-cyan-500/10"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-sm text-xs font-semibold text-info bg-info/10 hover:bg-info/20 border border-info/30 transition-colors cursor-pointer disabled:opacity-50"
             title="Fetch latest Blitz & Rapid ratings from Chess.com for all players with handles"
           >
-            <Zap className={`w-4 h-4 text-cyan-400 ${syncingAll ? 'animate-bounce' : ''}`} />
+            <Zap className={`w-4 h-4 text-info ${syncingAll ? 'animate-spin' : ''}`} />
             <span>{syncingAll ? 'Syncing with Chess.com...' : 'Sync All with Chess.com'}</span>
           </button>
 
@@ -344,7 +343,7 @@ export default function AdminLeaderboardTab() {
           <button
             type="button"
             onClick={handleOpenCreateModal}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-[#0B0F14] bg-[#D4AF7C] hover:bg-[#E6C98A] transition cursor-pointer shadow-md shadow-[#D4AF7C]/20"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-sm text-xs font-heading font-semibold text-on-accent bg-accent hover:bg-accent-hover transition-colors cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Add Rated Player</span>
@@ -354,31 +353,43 @@ export default function AdminLeaderboardTab() {
 
       {/* Sync / Notification Alert */}
       {syncNotice && (
-        <div className={`p-4 rounded-2xl border text-xs flex items-center justify-between gap-3 animate-fadeIn ${
-          syncNotice.type === 'success'
-            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-            : 'bg-red-500/10 border-red-500/30 text-red-300'
-        }`}>
+        <div
+          role="status"
+          className={`p-4 rounded-sm border text-xs flex items-center justify-between gap-3 ${
+            syncNotice.type === 'success'
+              ? 'bg-success/10 border-success/30 text-success'
+              : 'bg-danger/10 border-danger/30 text-danger'
+          }`}
+        >
           <div className="flex items-center gap-2">
-            {syncNotice.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" /> : <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />}
+            {syncNotice.type === 'success' ? (
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-success" />
+            ) : (
+              <AlertCircle className="w-4 h-4 shrink-0 text-danger" />
+            )}
             <span className="font-semibold">{syncNotice.text}</span>
           </div>
-          <button onClick={() => setSyncNotice(null)} className="p-1 hover:opacity-70 cursor-pointer">
+          <button
+            type="button"
+            aria-label="Dismiss notification"
+            onClick={() => setSyncNotice(null)}
+            className="p-1 hover:opacity-70 cursor-pointer"
+          >
             <X className="w-4 h-4" />
           </button>
         </div>
       )}
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-[#10141C] border border-white/10">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-md bg-surface border border-border">
         <div className="relative w-full sm:w-80">
-          <Search className="w-4 h-4 text-[#A0A6B0] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Search className="w-4 h-4 text-fg-subtle absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             placeholder="Search players by name, roll, chess handle..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] placeholder-[#A0A6B0]/50 focus:outline-none focus:border-[#D4AF7C]"
+            className="w-full pl-9 pr-4 py-2 rounded-sm bg-surface-elevated border border-border text-xs text-fg placeholder:text-fg-subtle focus:border-accent transition-colors"
           />
         </div>
 
@@ -386,12 +397,13 @@ export default function AdminLeaderboardTab() {
         <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
           {DEPARTMENTS.map(dept => (
             <button
+              type="button"
               key={dept}
               onClick={() => setSelectedDept(dept)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
+              className={`px-3 py-1.5 rounded-sm text-xs font-mono font-semibold transition-colors cursor-pointer ${
                 selectedDept === dept
-                  ? 'bg-[#D4AF7C]/20 border border-[#D4AF7C]/50 text-[#D4AF7C]'
-                  : 'bg-[#080B0F] border border-white/10 text-[#A0A6B0] hover:text-[#F5F5F5]'
+                  ? 'bg-accent text-on-accent'
+                  : 'bg-surface-elevated border border-border text-fg-muted hover:text-fg'
               }`}
             >
               {dept}
@@ -401,15 +413,15 @@ export default function AdminLeaderboardTab() {
       </div>
 
       {/* Mobile Swipe Notice */}
-      <div className="sm:hidden text-[10px] text-[#A0A6B0] flex items-center gap-1.5 px-4 py-1.5 bg-black/40 border border-white/5 rounded-xl">
+      <div className="sm:hidden text-[10px] font-mono text-fg-muted flex items-center gap-1.5 px-4 py-1.5 bg-surface-elevated border border-border rounded-sm">
         <span>← Swipe horizontally to view full Elo ratings and Chess.com status →</span>
       </div>
 
       {/* Leaderboard Players Table */}
-      <div className="p-1 rounded-3xl bg-[#10141C] border border-white/10 shadow-2xl overflow-hidden">
+      <div className="rounded-md bg-surface border border-border shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[860px] text-left text-xs text-[#F5F5F5]">
-            <thead className="bg-[#080B0F]/70 text-[#A0A6B0] uppercase text-[10px] tracking-wider border-b border-white/10">
+          <table className="w-full min-w-[860px] text-left text-xs text-fg">
+            <thead className="bg-surface-elevated text-fg-muted font-mono uppercase text-[10px] tracking-wider border-b border-border">
               <tr>
                 <th className="py-3 px-4">Rank &amp; Player</th>
                 <th className="py-3 px-4">Roll &amp; Dept</th>
@@ -421,17 +433,17 @@ export default function AdminLeaderboardTab() {
                 <th className="py-3 px-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-border">
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-[#A0A6B0]">
-                    <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-[#D4AF7C]" />
-                    <span>Loading club leaderboard...</span>
+                  <td colSpan={8} className="py-12 text-center text-fg-muted">
+                    <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-accent" />
+                    <span className="font-mono">Loading club leaderboard...</span>
                   </td>
                 </tr>
               ) : filteredPlayers.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-[#A0A6B0]">
+                  <td colSpan={8} className="py-12 text-center text-fg-muted">
                     No players found matching your criteria.
                   </td>
                 </tr>
@@ -441,28 +453,33 @@ export default function AdminLeaderboardTab() {
                   const hasChessHandle = Boolean(player.chessComUsername || player.chessUsername);
 
                   return (
-                    <tr key={player.id} className="hover:bg-white/[0.02] transition-colors">
+                    <tr key={player.id} className="hover:bg-surface-elevated/60 transition-colors">
                       {/* Rank & Player Info */}
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-3">
-                          <span className={`w-6 h-6 rounded-lg flex items-center justify-center font-black text-xs shrink-0 ${
-                            index === 0 ? 'bg-[#D4AF7C] text-[#0B0F14]' :
-                            index === 1 ? 'bg-slate-300 text-[#0B0F14]' :
-                            index === 2 ? 'bg-amber-600 text-white' :
-                            'bg-white/5 text-[#A0A6B0]'
-                          }`}>
+                          <span
+                            className={`w-6 h-6 rounded-xs flex items-center justify-center font-mono font-bold text-xs shrink-0 tabular-nums ${
+                              index === 0
+                                ? 'bg-accent text-on-accent'
+                                : index === 1
+                                ? 'bg-primary text-on-primary'
+                                : index === 2
+                                ? 'bg-warning text-on-warning'
+                                : 'bg-surface-elevated border border-border text-fg-muted'
+                            }`}
+                          >
                             {index + 1}
                           </span>
                           <div>
-                            <div className="font-bold text-sm text-[#F5F5F5] flex items-center gap-2">
+                            <div className="font-semibold text-sm text-fg flex items-center gap-2">
                               <span>{player.name}</span>
                               {player.title && (
-                                <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-[#D4AF7C]/15 text-[#D4AF7C] border border-[#D4AF7C]/30">
+                                <span className="text-[10px] px-2 py-0.5 rounded-xs font-mono font-semibold bg-accent/10 text-accent border border-accent/30">
                                   {player.title}
                                 </span>
                               )}
                             </div>
-                            <div className="text-[11px] text-[#A0A6B0]">
+                            <div className="text-[11px] font-mono text-fg-muted">
                               {player.year} • FIDE: {player.fideId || 'Unrated'}
                             </div>
                           </div>
@@ -471,37 +488,40 @@ export default function AdminLeaderboardTab() {
 
                       {/* Roll & Dept */}
                       <td className="py-3.5 px-4">
-                        <div className="font-mono text-xs text-[#F5F5F5]">{player.rollNumber}</div>
-                        <span className="text-[10px] font-bold text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded border border-cyan-500/20">
+                        <div className="font-mono text-xs text-fg tabular-nums">{player.rollNumber}</div>
+                        <span className="text-[10px] font-mono font-bold text-info bg-info/10 px-1.5 py-0.5 rounded-xs border border-info/30">
                           {player.department}
                         </span>
                       </td>
 
                       {/* Rapid Elo */}
                       <td className="py-3.5 px-4 text-center">
-                        <span className="font-bold font-mono text-sm text-[#D4AF7C]">
+                        <span className="font-bold font-mono text-sm text-accent tabular-nums">
                           {player.rating.rapid}
                         </span>
                       </td>
 
                       {/* Blitz Elo */}
                       <td className="py-3.5 px-4 text-center">
-                        <span className="font-mono text-xs text-amber-300">
+                        <span className="font-mono text-xs text-warning tabular-nums">
                           {player.rating.blitz}
                         </span>
                       </td>
 
                       {/* Peak Elo */}
                       <td className="py-3.5 px-4 text-center">
-                        <span className="font-mono text-xs text-emerald-400 font-bold">
+                        <span className="font-mono text-xs text-success font-bold tabular-nums">
                           {player.rating.peak}
                         </span>
                       </td>
 
                       {/* Matches / Win Rate */}
                       <td className="py-3.5 px-4 text-center">
-                        <div className="font-bold text-xs text-[#F5F5F5]">{player.stats.winRate}%</div>
-                        <div className="text-[10px] text-[#A0A6B0]">{player.stats.matchesPlayed} games • {player.stats.tournamentsWon} 🏆</div>
+                        <div className="font-mono font-bold text-xs text-fg tabular-nums">{player.stats.winRate}%</div>
+                        <div className="text-[10px] font-mono text-fg-muted flex items-center justify-center gap-1 tabular-nums">
+                          <span>{player.stats.matchesPlayed} games • {player.stats.tournamentsWon}</span>
+                          <Trophy className="w-3 h-3 text-accent shrink-0" />
+                        </div>
                       </td>
 
                       {/* Chess.com Status */}
@@ -512,19 +532,19 @@ export default function AdminLeaderboardTab() {
                               href={`https://www.chess.com/member/${player.chessComUsername || player.chessUsername}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="font-mono text-xs text-cyan-400 hover:underline inline-flex items-center gap-1"
+                              className="font-mono text-xs text-info hover:underline inline-flex items-center gap-1"
                             >
                               <span>{player.chessComUsername || player.chessUsername}</span>
-                              <ExternalLink className="w-3 h-3 text-[#A0A6B0]" />
+                              <ExternalLink className="w-3 h-3 text-fg-muted" />
                             </a>
                             {player.chessComLastSyncedAt && (
-                              <div className="text-[9px] text-[#A0A6B0]">
+                              <div className="text-[9px] font-mono text-fg-subtle">
                                 Synced {new Date(player.chessComLastSyncedAt).toLocaleDateString()}
                               </div>
                             )}
                           </div>
                         ) : (
-                          <span className="text-[11px] text-[#A0A6B0]/50 italic">None</span>
+                          <span className="text-[11px] text-fg-subtle italic">None</span>
                         )}
                       </td>
 
@@ -537,8 +557,9 @@ export default function AdminLeaderboardTab() {
                               type="button"
                               onClick={() => handleSyncPlayerChess(player)}
                               disabled={isSyncingThis}
-                              className="p-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 transition cursor-pointer"
+                              className="p-1.5 rounded-sm bg-info/10 hover:bg-info/20 text-info border border-info/30 transition-colors cursor-pointer"
                               title="Sync live ratings from Chess.com"
+                              aria-label={`Sync ${player.name} from Chess.com`}
                             >
                               <RefreshCw className={`w-3.5 h-3.5 ${isSyncingThis ? 'animate-spin' : ''}`} />
                             </button>
@@ -548,18 +569,20 @@ export default function AdminLeaderboardTab() {
                           <button
                             type="button"
                             onClick={() => handleOpenEditModal(player)}
-                            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[#F5F5F5] border border-white/10 transition cursor-pointer"
+                            className="p-1.5 rounded-sm bg-surface-elevated hover:bg-surface-subtle text-fg border border-border transition-colors cursor-pointer"
                             title="Edit player ratings and info"
+                            aria-label={`Edit ${player.name}`}
                           >
-                            <Edit className="w-3.5 h-3.5 text-[#D4AF7C]" />
+                            <Edit className="w-3.5 h-3.5 text-accent" />
                           </button>
 
                           {/* Delete Button */}
                           <button
                             type="button"
                             onClick={() => handleDeletePlayer(player)}
-                            className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition cursor-pointer"
+                            className="p-1.5 rounded-sm bg-danger/10 hover:bg-danger/20 text-danger border border-danger/30 transition-colors cursor-pointer"
                             title="Delete player from leaderboard"
+                            aria-label={`Delete ${player.name}`}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -576,18 +599,23 @@ export default function AdminLeaderboardTab() {
 
       {/* CREATE / EDIT PLAYER MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-fadeIn">
-          <div className="w-full max-w-2xl bg-[#10141C] border border-white/15 rounded-3xl p-6 sm:p-8 shadow-2xl relative my-8">
-            <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={editingPlayer ? 'Edit Rated Player and Statistics' : 'Add New Rated Player'}
+          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto"
+        >
+          <div className="w-full max-w-2xl bg-surface border border-border-strong rounded-md p-6 sm:p-8 shadow-md relative my-8">
+            <div className="flex items-center justify-between pb-4 border-b border-border mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-[#D4AF7C]/15 border border-[#D4AF7C]/30 flex items-center justify-center text-[#D4AF7C]">
+                <div className="w-10 h-10 rounded-sm bg-accent/10 border border-accent/30 flex items-center justify-center text-accent">
                   <Crown className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-['Montserrat',sans-serif] text-lg font-bold text-[#F5F5F5]">
+                  <h3 className="font-heading text-lg font-bold text-fg">
                     {editingPlayer ? 'Edit Rated Player & Statistics' : 'Add New Rated Player'}
                   </h3>
-                  <p className="text-xs text-[#A0A6B0]">
+                  <p className="text-xs text-fg-muted">
                     Configured ratings and handles are stored directly in Supabase PostgreSQL.
                   </p>
                 </div>
@@ -595,80 +623,80 @@ export default function AdminLeaderboardTab() {
 
               <button
                 type="button"
+                aria-label="Close modal"
                 onClick={() => setIsModalOpen(false)}
-                className="p-2 rounded-xl text-[#A0A6B0] hover:text-[#F5F5F5] hover:bg-white/5 cursor-pointer"
+                className="p-2 rounded-sm text-fg-muted hover:text-fg hover:bg-surface-subtle cursor-pointer transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {formError && (
-              <div className="p-3 mb-5 rounded-xl bg-red-500/15 border border-red-500/30 text-red-300 text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
+              <div className="p-3 mb-5 rounded-sm bg-danger/10 border border-danger/30 text-danger text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 text-danger" />
                 <span>{formError}</span>
               </div>
             )}
 
             <form onSubmit={handleSavePlayer} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                
                 {/* Full Name */}
                 <div>
-                  <label className="block text-xs font-semibold text-[#A0A6B0] mb-1">Full Legal Name *</label>
+                  <label className="block text-xs font-semibold text-fg-muted mb-1">Full Legal Name *</label>
                   <input
                     type="text"
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="e.g. Aritra Sen"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                    className="w-full px-3.5 py-2 rounded-sm bg-surface-elevated border border-border text-xs text-fg placeholder:text-fg-subtle focus:border-accent"
                   />
                 </div>
 
                 {/* Roll Number */}
                 <div>
-                  <label className="block text-xs font-semibold text-[#A0A6B0] mb-1">College Roll Number *</label>
+                  <label className="block text-xs font-semibold text-fg-muted mb-1">College Roll Number *</label>
                   <input
                     type="text"
                     required
                     value={formData.rollNumber}
                     onChange={(e) => setFormData({ ...formData, rollNumber: e.target.value })}
                     placeholder="e.g. 22101104012"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                    className="w-full px-3.5 py-2 rounded-sm bg-surface-elevated border border-border text-xs text-fg font-mono placeholder:text-fg-subtle focus:border-accent"
                   />
                 </div>
 
                 {/* Department */}
                 <div>
-                  <label className="block text-xs font-semibold text-[#A0A6B0] mb-1">Department / Branch</label>
+                  <label className="block text-xs font-semibold text-fg-muted mb-1">Department / Branch</label>
                   <select
                     value={formData.department}
                     onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                    className="w-full px-3.5 py-2 rounded-sm bg-surface-elevated border border-border text-xs text-fg focus:border-accent"
                   >
                     {['CSE', 'IT', 'ECE', 'ME', 'CE', 'EE'].map(d => (
-                      <option key={d} value={d} className="bg-[#10141C]">{d}</option>
+                      <option key={d} value={d} className="bg-surface text-fg">{d}</option>
                     ))}
                   </select>
                 </div>
 
                 {/* Academic Year */}
                 <div>
-                  <label className="block text-xs font-semibold text-[#A0A6B0] mb-1">Academic Year</label>
+                  <label className="block text-xs font-semibold text-fg-muted mb-1">Academic Year</label>
                   <select
                     value={formData.year}
                     onChange={(e) => setFormData({ ...formData, year: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                    className="w-full px-3.5 py-2 rounded-sm bg-surface-elevated border border-border text-xs text-fg focus:border-accent"
                   >
                     {['1st Year', '2nd Year', '3rd Year', '4th Year', 'Alumni'].map(y => (
-                      <option key={y} value={y} className="bg-[#10141C]">{y}</option>
+                      <option key={y} value={y} className="bg-surface text-fg">{y}</option>
                     ))}
                   </select>
                 </div>
 
                 {/* Chess.com Username */}
                 <div>
-                  <label className="block text-xs font-semibold text-[#A0A6B0] mb-1">
+                  <label className="block text-xs font-semibold text-fg-muted mb-1">
                     Chess.com Handle (For Live Sync)
                   </label>
                   <input
@@ -676,92 +704,92 @@ export default function AdminLeaderboardTab() {
                     value={formData.chessComUsername}
                     onChange={(e) => setFormData({ ...formData, chessComUsername: e.target.value })}
                     placeholder="e.g. aritra_gambit"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                    className="w-full px-3.5 py-2 rounded-sm bg-surface-elevated border border-border text-xs text-fg font-mono placeholder:text-fg-subtle focus:border-accent"
                   />
                 </div>
 
                 {/* FIDE ID */}
                 <div>
-                  <label className="block text-xs font-semibold text-[#A0A6B0] mb-1">Official FIDE ID</label>
+                  <label className="block text-xs font-semibold text-fg-muted mb-1">Official FIDE ID</label>
                   <input
                     type="text"
                     value={formData.fideId}
                     onChange={(e) => setFormData({ ...formData, fideId: e.target.value })}
                     placeholder="e.g. 50291844 or Unrated"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                    className="w-full px-3.5 py-2 rounded-sm bg-surface-elevated border border-border text-xs text-fg font-mono placeholder:text-fg-subtle focus:border-accent"
                   />
                 </div>
 
                 {/* Club Title */}
                 <div>
-                  <label className="block text-xs font-semibold text-[#A0A6B0] mb-1">Honorary Club Title</label>
+                  <label className="block text-xs font-semibold text-fg-muted mb-1">Honorary Club Title</label>
                   <select
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                    className="w-full px-3.5 py-2 rounded-sm bg-surface-elevated border border-border text-xs text-fg focus:border-accent"
                   >
                     {['Club Champion', 'Candidate Master', 'Collegiate Master', 'Arbiter', 'Club Expert', 'Club Member'].map(t => (
-                      <option key={t} value={t} className="bg-[#10141C]">{t}</option>
+                      <option key={t} value={t} className="bg-surface text-fg">{t}</option>
                     ))}
                   </select>
                 </div>
 
                 {/* Chess Piece Icon */}
                 <div>
-                  <label className="block text-xs font-semibold text-[#A0A6B0] mb-1">Chess Piece Badge</label>
+                  <label className="block text-xs font-semibold text-fg-muted mb-1">Chess Piece Badge</label>
                   <select
                     value={formData.chessPiece}
                     onChange={(e) => setFormData({ ...formData, chessPiece: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                    className="w-full px-3.5 py-2 rounded-sm bg-surface-elevated border border-border text-xs text-fg focus:border-accent"
                   >
                     {['King', 'Queen', 'Rook', 'Bishop', 'Knight'].map(p => (
-                      <option key={p} value={p} className="bg-[#10141C]">{p}</option>
+                      <option key={p} value={p} className="bg-surface text-fg">{p}</option>
                     ))}
                   </select>
                 </div>
               </div>
 
               {/* RATINGS SECTION */}
-              <div className="p-4 rounded-2xl bg-[#080B0F] border border-white/10 space-y-3">
-                <div className="text-xs font-bold text-[#D4AF7C] uppercase tracking-wider flex items-center gap-1.5">
+              <div className="p-4 rounded-sm bg-surface-elevated border border-border space-y-3">
+                <div className="text-xs font-mono font-bold text-accent uppercase tracking-wider flex items-center gap-1.5">
                   <TrendingUp className="w-3.5 h-3.5" />
                   <span>Calibrated Ratings</span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   <div>
-                    <label className="block text-[11px] text-[#A0A6B0] mb-1">Rapid Elo</label>
+                    <label className="block text-[11px] text-fg-muted mb-1">Rapid Elo</label>
                     <input
                       type="number"
                       value={formData.rapid}
                       onChange={(e) => setFormData({ ...formData, rapid: Number(e.target.value) })}
-                      className="w-full px-3 py-2 rounded-xl bg-[#10141C] border border-white/10 text-xs text-[#F5F5F5] font-mono"
+                      className="w-full px-3 py-2 rounded-sm bg-surface border border-border text-xs text-fg font-mono tabular-nums focus:border-accent"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] text-[#A0A6B0] mb-1">Blitz Elo</label>
+                    <label className="block text-[11px] text-fg-muted mb-1">Blitz Elo</label>
                     <input
                       type="number"
                       value={formData.blitz}
                       onChange={(e) => setFormData({ ...formData, blitz: Number(e.target.value) })}
-                      className="w-full px-3 py-2 rounded-xl bg-[#10141C] border border-white/10 text-xs text-[#F5F5F5] font-mono"
+                      className="w-full px-3 py-2 rounded-sm bg-surface border border-border text-xs text-fg font-mono tabular-nums focus:border-accent"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] text-[#A0A6B0] mb-1">Classical Elo</label>
+                    <label className="block text-[11px] text-fg-muted mb-1">Classical Elo</label>
                     <input
                       type="number"
                       value={formData.classical}
                       onChange={(e) => setFormData({ ...formData, classical: Number(e.target.value) })}
-                      className="w-full px-3 py-2 rounded-xl bg-[#10141C] border border-white/10 text-xs text-[#F5F5F5] font-mono"
+                      className="w-full px-3 py-2 rounded-sm bg-surface border border-border text-xs text-fg font-mono tabular-nums focus:border-accent"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] text-[#A0A6B0] mb-1">Peak Rating</label>
+                    <label className="block text-[11px] text-fg-muted mb-1">Peak Rating</label>
                     <input
                       type="number"
                       value={formData.peak}
                       onChange={(e) => setFormData({ ...formData, peak: Number(e.target.value) })}
-                      className="w-full px-3 py-2 rounded-xl bg-[#10141C] border border-white/10 text-xs text-[#F5F5F5] font-mono"
+                      className="w-full px-3 py-2 rounded-sm bg-surface border border-border text-xs text-fg font-mono tabular-nums focus:border-accent"
                     />
                   </div>
                 </div>
@@ -770,65 +798,65 @@ export default function AdminLeaderboardTab() {
               {/* STATS SECTION */}
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2">
                 <div>
-                  <label className="block text-[11px] text-[#A0A6B0] mb-1">Matches</label>
+                  <label className="block text-[11px] text-fg-muted mb-1">Matches</label>
                   <input
                     type="number"
                     value={formData.matchesPlayed}
                     onChange={(e) => setFormData({ ...formData, matchesPlayed: Number(e.target.value) })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] font-mono"
+                    className="w-full px-3 py-2 rounded-sm bg-surface-elevated border border-border text-xs text-fg font-mono tabular-nums focus:border-accent"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] text-[#A0A6B0] mb-1">Wins</label>
+                  <label className="block text-[11px] text-fg-muted mb-1">Wins</label>
                   <input
                     type="number"
                     value={formData.wins}
                     onChange={(e) => setFormData({ ...formData, wins: Number(e.target.value) })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] font-mono"
+                    className="w-full px-3 py-2 rounded-sm bg-surface-elevated border border-border text-xs text-fg font-mono tabular-nums focus:border-accent"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] text-[#A0A6B0] mb-1">Draws</label>
+                  <label className="block text-[11px] text-fg-muted mb-1">Draws</label>
                   <input
                     type="number"
                     value={formData.draws}
                     onChange={(e) => setFormData({ ...formData, draws: Number(e.target.value) })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] font-mono"
+                    className="w-full px-3 py-2 rounded-sm bg-surface-elevated border border-border text-xs text-fg font-mono tabular-nums focus:border-accent"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] text-[#A0A6B0] mb-1">Losses</label>
+                  <label className="block text-[11px] text-fg-muted mb-1">Losses</label>
                   <input
                     type="number"
                     value={formData.losses}
                     onChange={(e) => setFormData({ ...formData, losses: Number(e.target.value) })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] font-mono"
+                    className="w-full px-3 py-2 rounded-sm bg-surface-elevated border border-border text-xs text-fg font-mono tabular-nums focus:border-accent"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] text-[#A0A6B0] mb-1">Titles Won</label>
+                  <label className="block text-[11px] text-fg-muted mb-1">Titles Won</label>
                   <input
                     type="number"
                     value={formData.tournamentsWon}
                     onChange={(e) => setFormData({ ...formData, tournamentsWon: Number(e.target.value) })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] font-mono"
+                    className="w-full px-3 py-2 rounded-sm bg-surface-elevated border border-border text-xs text-fg font-mono tabular-nums focus:border-accent"
                   />
                 </div>
               </div>
 
               {/* Buttons */}
-              <div className="pt-4 border-t border-white/10 flex items-center justify-end gap-3">
+              <div className="pt-4 border-t border-border flex items-center justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl text-xs font-semibold text-[#A0A6B0] hover:text-white bg-white/5 transition cursor-pointer"
+                  className="px-4 py-2 rounded-sm text-xs font-semibold text-fg-muted hover:text-fg bg-surface-elevated border border-border transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2.5 rounded-xl text-xs font-bold text-[#0B0F14] bg-[#D4AF7C] hover:bg-[#E6C98A] transition cursor-pointer shadow-md shadow-[#D4AF7C]/20 disabled:opacity-50"
+                  className="px-5 py-2 rounded-sm text-xs font-heading font-semibold text-on-accent bg-accent hover:bg-accent-hover transition-colors cursor-pointer disabled:opacity-50"
                 >
                   {saving ? 'Saving...' : editingPlayer ? 'Update Player' : 'Create Player'}
                 </button>
@@ -837,7 +865,6 @@ export default function AdminLeaderboardTab() {
           </div>
         </div>
       )}
-
     </div>
   );
 }

@@ -18,10 +18,10 @@ export default async function LiveTournamentPage({
   const { id } = await params;
 
   return (
-    <div className="min-h-screen bg-[#070A0E] text-[#F5F5F5] font-['Inter',sans-serif] flex flex-col selection:bg-[#D4AF7C] selection:text-[#0B0F14]">
+    <div className="min-h-screen bg-bg text-fg font-ui flex flex-col selection:bg-accent selection:text-on-accent">
       <Navbar />
 
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <main id="main-content" className="flex-1 max-w-[1440px] mx-auto w-full px-4 sm:px-6 lg:px-8 pt-28 pb-12">
         <LiveTournamentView tournamentId={id} />
       </main>
 

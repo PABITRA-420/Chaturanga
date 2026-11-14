@@ -39,6 +39,11 @@ pnpm-debug.log*
 .gemini/
 .claude/
 .cursor/
+.kiro/
+.qoder/
+.qodor/
+.roo/
+.windsurf/
 
 # Editor & OS Files
 .vscode/*

@@ -19,9 +19,9 @@ const RANKS = ['8', '7', '6', '5', '4', '3', '2', '1'];
  */
 function ChessPiece({ piece, color }: { piece: string; color: 'w' | 'b' }) {
   const isWhite = color === 'w';
-  const fill = isWhite ? '#FFF7ED' : '#0B0F15';
-  const stroke = isWhite ? '#D4AF7C' : '#94A3B8';
-  const secondaryFill = isWhite ? '#D4AF7C' : '#334155';
+  const fill = isWhite ? '#FAFAFA' : '#18181B';
+  const stroke = isWhite ? '#18181B' : '#D4D4D8';
+  const secondaryFill = isWhite ? '#D4AF7C' : '#3F3F46';
 
   const type = piece.toLowerCase();
 
@@ -155,10 +155,10 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
 
   return (
     <div
-      className={`relative select-none aspect-square w-full max-w-[520px] mx-auto rounded-xl overflow-hidden border border-amber-500/30 shadow-[0_8px_30px_rgb(0,0,0,0.5)] bg-[#070A0E] p-2 sm:p-3 ${className}`}
+      className={`relative select-none aspect-square w-full max-w-[520px] mx-auto rounded-sm overflow-hidden border border-border-strong bg-surface p-2 sm:p-3 ${className}`}
       data-testid="chess-board"
     >
-      <div className="grid grid-cols-8 grid-rows-8 w-full h-full rounded-lg overflow-hidden border border-[#D4AF7C]/20 shadow-inner">
+      <div className="grid grid-cols-8 grid-rows-8 w-full h-full rounded-xs overflow-hidden border border-border">
         {displayRanks.map(rIndex =>
           displayFiles.map(fIndex => {
             const squareName = `${FILES[fIndex]}${RANKS[rIndex]}`;
@@ -170,19 +170,18 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
 
             const pieceData = boardMatrix[rIndex][fIndex];
 
-            // Color scheme: Dark gold glassmorphism
+            // Minimalism & Swiss high-contrast chessboard squares
             let squareBg = isLightSquare
-              ? 'bg-[#222A36]' // Sleek charcoal light square with gold warmth
-              : 'bg-[#10141C]'; // Deep midnight obsidian dark square
+              ? 'bg-[#E4E4E7]'
+              : 'bg-[#52525B]';
 
             if (isLastMoveSource || isLastMoveDest) {
-              squareBg = isLightSquare ? 'bg-[#93753E]/60' : 'bg-[#705628]/70';
+              squareBg = isLightSquare ? 'bg-[#D4AF7C]/70' : 'bg-[#8F6415]/80';
             }
             if (isCheck) {
-              squareBg = 'bg-red-900/60 ring-2 ring-red-500 inset-0';
+              squareBg = 'bg-danger/70 ring-2 ring-danger inset-0';
             }
 
-            // Labels: rank coordinate on leftmost column of board, file coordinate on bottom row
             const showRank = isWhite ? fIndex === 0 : fIndex === 7;
             const showFile = isWhite ? rIndex === 7 : rIndex === 0;
 
@@ -191,13 +190,12 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                 key={squareName}
                 data-square={squareName}
                 onClick={() => onSquareClick?.(squareName)}
-                className={`relative flex items-center justify-center cursor-pointer transition-colors duration-150 ${squareBg} hover:opacity-90`}
+                className={`relative flex items-center justify-center cursor-pointer transition-colors duration-150 ${squareBg} hover:opacity-95`}
               >
-                {/* Board edge coordinate annotations */}
                 {showRank && (
                   <span
                     className={`absolute top-0.5 left-1 text-[9px] sm:text-[11px] font-mono font-semibold pointer-events-none ${
-                      isLightSquare ? 'text-[#8492A6]' : 'text-[#566375]'
+                      isLightSquare ? 'text-[#27272A]' : 'text-[#E4E4E7]'
                     }`}
                   >
                     {RANKS[rIndex]}
@@ -206,14 +204,13 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                 {showFile && (
                   <span
                     className={`absolute bottom-0.5 right-1 text-[9px] sm:text-[11px] font-mono font-semibold pointer-events-none ${
-                      isLightSquare ? 'text-[#8492A6]' : 'text-[#566375]'
+                      isLightSquare ? 'text-[#27272A]' : 'text-[#E4E4E7]'
                     }`}
                   >
                     {FILES[fIndex]}
                   </span>
                 )}
 
-                {/* Chess Piece Vector */}
                 {pieceData && (
                   <div className="w-[82%] h-[82%] flex items-center justify-center transition-transform transform active:scale-95">
                     <ChessPiece piece={pieceData.piece} color={pieceData.color} />
