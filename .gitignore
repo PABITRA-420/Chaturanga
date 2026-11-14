@@ -44,6 +44,8 @@ pnpm-debug.log*
 .qodor/
 .roo/
 .windsurf/
+.github/prompts/
+.agents/
 
 # Editor & OS Files
 .vscode/*
