@@ -2,31 +2,24 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import { 
-  Calendar as CalendarIcon, 
-  ChevronLeft, 
-  ChevronRight, 
-  Trophy, 
-  Clock, 
-  MapPin, 
-  Users, 
-  ArrowRight, 
-  Sparkles,
-  Zap,
-  CheckCircle2,
-  Filter,
-  BookmarkCheck,
-  ChevronDown,
-  Info
+import {
+  Calendar as CalendarIcon,
+  ChevronLeft,
+  ChevronRight,
+  Trophy,
+  Clock,
+  MapPin,
+  ArrowRight,
+  Info,
 } from 'lucide-react';
 
 export interface CalendarEvent {
   id: string;
   title: string;
-  dateStr: string; // "2026-11-07"
-  dateFormatted: string; // "Saturday, November 7, 2026"
+  dateStr: string;
+  dateFormatted: string;
   year: number;
-  month: number; // 0-11
+  month: number;
   day: number;
   time: string;
   venue: string;
@@ -41,16 +34,15 @@ export interface CalendarEvent {
 
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
+  "July", "August", "September", "October", "November", "December",
 ];
 
 const WEEKDAY_NAMES = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
 export default function TournamentCalendar() {
   const [eventsList, setEventsList] = useState<CalendarEvent[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [, setLoading] = useState<boolean>(true);
 
-  // Navigation State
   const today = new Date();
   const [currentYear, setCurrentYear] = useState<number>(today.getFullYear());
   const [currentMonth, setCurrentMonth] = useState<number>(today.getMonth());
@@ -58,7 +50,6 @@ export default function TournamentCalendar() {
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [filterMode, setFilterMode] = useState<'all' | 'upcoming' | 'past'>('all');
 
-  // Fetch live tournaments from Supabase / API
   useEffect(() => {
     fetch('/api/tournaments')
       .then(res => res.json())
@@ -90,7 +81,9 @@ export default function TournamentCalendar() {
               description: t.description || '',
               isUpcoming: !isPast,
               category,
-              badgeColor: isPast ? 'bg-slate-300 text-[#0B0F14]' : category === 'Rapid' ? 'bg-[#D4AF7C] text-[#0B0F14]' : 'bg-amber-400 text-[#0B0F14]'
+              badgeColor: isPast
+                ? 'bg-surface-elevated text-fg-muted border border-border'
+                : 'bg-accent text-on-accent',
             };
           });
           setEventsList(mapped);
@@ -107,7 +100,6 @@ export default function TournamentCalendar() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Month navigation
   const handlePrevMonth = () => {
     if (currentMonth === 0) {
       setCurrentMonth(11);
@@ -155,12 +147,10 @@ export default function TournamentCalendar() {
     setSelectedEvent(evt);
   };
 
-  // Days in month calculation
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-  const firstDayWeekday = new Date(currentYear, currentMonth, 1).getDay(); // 0 = Sun
+  const firstDayWeekday = new Date(currentYear, currentMonth, 1).getDay();
   const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
 
-  // Filtered event pool
   const filteredEvents = useMemo(() => {
     return eventsList.filter((e) => {
       if (filterMode === 'upcoming') return e.isUpcoming;
@@ -169,7 +159,6 @@ export default function TournamentCalendar() {
     });
   }, [eventsList, filterMode]);
 
-  // Events occurring in current viewed month
   const eventsInThisMonth = useMemo(() => {
     return filteredEvents.filter(
       (e) => e.year === currentYear && e.month === currentMonth
@@ -186,9 +175,8 @@ export default function TournamentCalendar() {
     setSelectedEvent(evt || null);
   };
 
-  // Find next/prev event for quick arrows in inspector
-  const currentEventIndex = selectedEvent 
-    ? eventsList.findIndex(e => e.id === selectedEvent.id) 
+  const currentEventIndex = selectedEvent
+    ? eventsList.findIndex(e => e.id === selectedEvent.id)
     : -1;
 
   const handleCycleEvent = (direction: 'prev' | 'next') => {
@@ -200,18 +188,17 @@ export default function TournamentCalendar() {
   };
 
   return (
-    <div className="w-full space-y-5 font-['Inter',sans-serif]">
+    <div className="w-full space-y-5 font-ui">
       
-      {/* 1. PROFESSIONAL GOOGLE CALENDAR TOOLBAR */}
-      <div className="p-4 sm:p-5 rounded-3xl bg-[#12161D] border border-white/10 shadow-xl flex flex-wrap items-center justify-between gap-4">
+      {/* 1. TOOLBAR */}
+      <div className="p-4 sm:p-5 rounded-md bg-surface border border-border flex flex-wrap items-center justify-between gap-4">
         
-        {/* Left: Month Title & Navigation Controls */}
         <div className="flex items-center gap-3 sm:gap-4">
           <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={handleRealTodayJump}
-              className="min-h-[44px] sm:min-h-[36px] px-3.5 py-2 sm:py-1.5 rounded-xl bg-white/5 hover:bg-white/15 border border-white/15 hover:border-[#D4AF7C]/40 text-xs font-semibold text-[#F5F5F5] transition cursor-pointer active:scale-95 shadow-sm flex items-center justify-center"
+              className="min-h-[38px] px-3.5 py-1.5 rounded-sm bg-surface-elevated hover:bg-surface-subtle border border-border hover:border-border-strong text-xs font-semibold text-fg transition-colors cursor-pointer flex items-center justify-center"
               title="Jump to Current Month and Date"
               aria-label="Jump to Current Date"
             >
@@ -221,7 +208,7 @@ export default function TournamentCalendar() {
             <button
               type="button"
               onClick={handleNextEventJump}
-              className="min-h-[44px] sm:min-h-[36px] px-3.5 py-2 sm:py-1.5 rounded-xl bg-[#D4AF7C]/15 hover:bg-[#D4AF7C]/25 border border-[#D4AF7C]/30 text-xs font-bold text-[#D4AF7C] transition cursor-pointer active:scale-95 shadow-sm flex items-center justify-center"
+              className="min-h-[38px] px-3.5 py-1.5 rounded-sm bg-accent/15 hover:bg-accent/25 border border-accent/40 text-xs font-bold text-accent transition-colors cursor-pointer flex items-center justify-center"
               title="Jump to Nearest Upcoming Championship"
               aria-label="Jump to Nearest Upcoming Tournament"
             >
@@ -231,37 +218,36 @@ export default function TournamentCalendar() {
             <button
               type="button"
               onClick={handlePrevMonth}
-              className="min-w-[44px] min-h-[44px] w-11 h-11 sm:w-9 sm:h-9 sm:min-w-[36px] sm:min-h-[36px] rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-[#A0A6B0] hover:text-[#F5F5F5] flex items-center justify-center transition cursor-pointer active:scale-95"
+              className="w-9 h-9 rounded-sm bg-surface-elevated hover:bg-surface-subtle border border-border hover:border-border-strong text-fg-muted hover:text-fg flex items-center justify-center transition-colors cursor-pointer"
               aria-label="Previous month"
             >
-              <ChevronLeft className="w-5 h-5 sm:w-4 sm:h-4" />
+              <ChevronLeft className="w-4 h-4" />
             </button>
 
             <button
               type="button"
               onClick={handleNextMonth}
-              className="min-w-[44px] min-h-[44px] w-11 h-11 sm:w-9 sm:h-9 sm:min-w-[36px] sm:min-h-[36px] rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-[#A0A6B0] hover:text-[#F5F5F5] flex items-center justify-center transition cursor-pointer active:scale-95"
+              className="w-9 h-9 rounded-sm bg-surface-elevated hover:bg-surface-subtle border border-border hover:border-border-strong text-fg-muted hover:text-fg flex items-center justify-center transition-colors cursor-pointer"
               aria-label="Next month"
             >
-              <ChevronRight className="w-5 h-5 sm:w-4 sm:h-4" />
+              <ChevronRight className="w-4 h-4" />
             </button>
           </div>
 
-          <div className="h-6 w-[1px] bg-white/10 hidden sm:block" />
+          <div className="h-6 w-px bg-border hidden sm:block" />
 
-          {/* Month / Year Display */}
           <div className="flex items-baseline gap-2">
-            <h3 className="font-['Montserrat',sans-serif] font-black text-xl sm:text-2xl text-[#F5F5F5] tracking-tight">
+            <h3 className="font-heading font-extrabold text-xl sm:text-2xl text-fg tracking-tight">
               {MONTH_NAMES[currentMonth]}
             </h3>
-            <span className="font-mono text-sm sm:text-base font-bold text-[#D4AF7C]">
+            <span className="font-mono text-sm sm:text-base font-bold text-accent tabular-nums">
               {currentYear}
             </span>
           </div>
         </div>
 
-        {/* Right: Event Filters (All / Upcoming / Past) */}
-        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-black/40 border border-white/10 text-xs w-full sm:w-auto overflow-x-auto scrollbar-none whitespace-nowrap">
+        {/* Event Filters */}
+        <div className="flex items-center gap-1 p-1 rounded-sm bg-surface-elevated border border-border text-xs w-full sm:w-auto overflow-x-auto whitespace-nowrap">
           {[
             { id: 'all', label: `All Events (${eventsList.length})` },
             { id: 'upcoming', label: `Upcoming (${eventsList.filter(e => e.isUpcoming).length})` },
@@ -271,10 +257,10 @@ export default function TournamentCalendar() {
               key={tab.id}
               type="button"
               onClick={() => setFilterMode(tab.id as any)}
-              className={`px-3 py-1.5 rounded-xl font-medium transition cursor-pointer whitespace-nowrap shrink-0 ${
+              className={`px-3 py-1.5 rounded-xs font-semibold transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
                 filterMode === tab.id
-                  ? 'bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] text-[#0B0F14] font-bold shadow-sm'
-                  : 'text-[#A0A6B0] hover:text-[#F5F5F5] hover:bg-white/5'
+                  ? 'bg-primary text-on-primary'
+                  : 'text-fg-muted hover:text-fg'
               }`}
             >
               {tab.label}
@@ -284,16 +270,15 @@ export default function TournamentCalendar() {
 
       </div>
 
-      {/* 2. FAST JUMP HORIZONTAL STRIP: ALL UPCOMING & PAST TOURNAMENTS */}
+      {/* 2. QUICK ROSTER JUMP STRIP */}
       <div className="px-1 overflow-x-auto no-scrollbar py-1">
         <div className="flex items-center gap-2 whitespace-nowrap text-xs">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-[#D4AF7C] flex items-center gap-1.5 mr-1 shrink-0">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Tournament Roster:</span>
+          <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-accent mr-1 shrink-0">
+            Roster:
           </span>
 
           {filteredEvents.length === 0 ? (
-            <span className="text-xs text-[#A0A6B0] italic py-1">
+            <span className="text-xs text-fg-muted italic py-1">
               No tournaments scheduled matching this view
             </span>
           ) : (
@@ -304,17 +289,17 @@ export default function TournamentCalendar() {
                   key={evt.id}
                   type="button"
                   onClick={() => jumpToEvent(evt)}
-                  className={`px-3.5 py-1.5 rounded-full text-xs transition cursor-pointer flex items-center gap-2 shrink-0 ${
+                  className={`px-3 py-1.5 rounded-xs text-xs transition-colors cursor-pointer flex items-center gap-2 shrink-0 border ${
                     isMatch
-                      ? 'bg-[#D4AF7C] text-[#0B0F14] font-bold shadow-md shadow-[#D4AF7C]/30 scale-[1.02]'
+                      ? 'bg-accent text-on-accent border-accent font-bold'
                       : evt.isUpcoming
-                      ? 'bg-white/5 hover:bg-white/15 text-[#F5F5F5] border border-white/10 hover:border-[#D4AF7C]/40'
-                      : 'bg-black/40 hover:bg-white/5 text-[#A0A6B0] border border-white/5'
+                      ? 'bg-surface hover:bg-surface-elevated text-fg border-border hover:border-border-strong'
+                      : 'bg-surface-elevated text-fg-muted border-border'
                   }`}
                 >
-                  <span className={`w-2 h-2 rounded-full ${evt.isUpcoming ? 'bg-emerald-400' : 'bg-slate-400'}`} />
-                  <span>{MONTH_NAMES[evt.month].slice(0, 3)} {evt.day}, {evt.year}</span>
-                  <span className="opacity-70 font-mono text-[11px]">({evt.title.split(' ')[0]})</span>
+                  <span className={`w-1.5 h-1.5 rounded-full ${isMatch ? 'bg-on-accent' : evt.isUpcoming ? 'bg-success' : 'bg-fg-muted'}`} aria-hidden="true" />
+                  <span className="font-mono">{MONTH_NAMES[evt.month].slice(0, 3)} {evt.day}, {evt.year}</span>
+                  <span className="opacity-75 font-mono text-[11px]">({evt.title.split(' ')[0]})</span>
                 </button>
               );
             })
@@ -322,107 +307,100 @@ export default function TournamentCalendar() {
         </div>
       </div>
 
-      {/* 3. MAIN WORKSPACE: GOOGLE CALENDAR GRID + EVENT INSPECTOR PANEL */}
+      {/* 3. WORKSPACE GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        {/* Left: Google Calendar High-Precision 7-Day Month Grid (7 Columns) */}
-        <div className="lg:col-span-7 rounded-3xl bg-[#12161D] border border-white/10 p-4 sm:p-6 shadow-2xl space-y-3">
+        {/* Left: 7-Day Architectural Grid */}
+        <div className="lg:col-span-7 rounded-md bg-surface border border-border p-4 sm:p-6 space-y-3">
           
-          {/* Weekday Column Headers (SUN - SAT) */}
-          <div className="grid grid-cols-7 border-b border-white/10 pb-2 text-center text-[11px] font-bold text-[#A0A6B0] tracking-wider select-none">
+          <div className="grid grid-cols-7 border-b border-border pb-2 text-center text-[11px] font-mono font-bold text-fg-muted tracking-wider select-none">
             {WEEKDAY_NAMES.map((dayName, idx) => (
-              <div 
+              <div
                 key={dayName}
-                className={idx === 0 || idx === 6 ? 'text-[#D4AF7C]' : ''}
+                className={idx === 0 || idx === 6 ? 'text-accent' : ''}
               >
                 {dayName}
               </div>
             ))}
           </div>
 
-          {/* Month Cells Grid (Google Calendar Matrix) */}
-          <div className="grid grid-cols-7 gap-[1px] bg-white/5 rounded-2xl overflow-hidden border border-white/10">
+          <div className="grid grid-cols-7 gap-px bg-border rounded-sm overflow-hidden border border-border">
             
-            {/* 1. Leading Inactive Days from Previous Month */}
             {Array.from({ length: firstDayWeekday }).map((_, idx) => {
               const prevDayNum = daysInPrevMonth - firstDayWeekday + idx + 1;
               return (
                 <div
                   key={`prev-${idx}`}
-                  className="min-h-[52px] sm:min-h-[88px] p-1.5 sm:p-2 bg-[#0B0F14]/70 text-[#A0A6B0]/25 text-xs flex flex-col justify-between select-none cursor-default"
+                  className="min-h-[52px] sm:min-h-[84px] p-1.5 sm:p-2 bg-bg text-fg-subtle opacity-50 text-xs flex flex-col justify-between select-none"
                 >
                   <span className="font-mono text-[10px] sm:text-[11px]">{prevDayNum}</span>
                 </div>
               );
             })}
 
-            {/* 2. Active Month Days */}
             {Array.from({ length: daysInMonth }).map((_, idx) => {
               const dayNum = idx + 1;
               const evt = getEventForDay(dayNum);
               const isSelected = selectedDay === dayNum;
 
               return (
-                <div
+                <button
                   key={`day-${dayNum}`}
+                  type="button"
                   onClick={() => handleDaySelect(dayNum)}
-                  className={`min-h-[52px] sm:min-h-[88px] p-1 sm:p-2 bg-[#0E1218] hover:bg-[#161B24] text-xs flex flex-col justify-between transition-colors duration-150 cursor-pointer relative group select-none ${
+                  aria-label={`${MONTH_NAMES[currentMonth]} ${dayNum}, ${currentYear}${evt ? ` - ${evt.title}` : ''}`}
+                  className={`min-h-[52px] sm:min-h-[84px] p-1.5 sm:p-2 text-left text-xs flex flex-col justify-between transition-colors duration-150 cursor-pointer relative group ${
                     isSelected
-                      ? 'ring-2 ring-inset ring-[#D4AF7C] bg-[#161B24] z-10'
-                      : ''
+                      ? 'bg-surface-elevated ring-2 ring-inset ring-accent z-10'
+                      : 'bg-surface hover:bg-surface-elevated'
                   }`}
                 >
-                  {/* Day Number Header / Google Calendar Date Bubble */}
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between w-full">
                     <span
-                      className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center font-mono text-[11px] sm:text-xs font-bold transition-all ${
+                      className={`w-6 h-6 rounded-xs flex items-center justify-center font-mono text-[11px] sm:text-xs font-bold ${
                         isSelected
-                          ? 'bg-[#D4AF7C] text-[#0B0F14] shadow-md shadow-[#D4AF7C]/30'
+                          ? 'bg-accent text-on-accent'
                           : evt
-                          ? 'text-[#F3E2B8] bg-[#D4AF7C]/15 border border-[#D4AF7C]/40'
-                          : 'text-[#F5F5F5]'
+                          ? 'text-accent bg-accent/15 border border-accent/40'
+                          : 'text-fg'
                       }`}
                     >
                       {dayNum}
                     </span>
 
                     {evt && (
-                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-400 animate-ping shrink-0" title="Live / Scheduled Tournament" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-success shrink-0" title="Scheduled Tournament" aria-hidden="true" />
                     )}
                   </div>
 
-                  {/* Google Calendar Event Pill */}
                   {evt ? (
-                    <div className="mt-1 space-y-1">
-                      {/* Mobile compact glowing dot indicator */}
+                    <div className="mt-1 space-y-0.5 w-full">
                       <div className="sm:hidden flex items-center justify-center pt-0.5">
-                        <span className="w-2 h-2 rounded-full bg-[#D4AF7C] shadow-[0_0_8px_#D4AF7C]" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-accent" />
                       </div>
-                      {/* Tablet / Desktop text pill */}
-                      <div className={`hidden sm:block px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold truncate shadow-sm ${evt.badgeColor}`}>
+                      <div className={`hidden sm:block px-1.5 py-0.5 rounded-xs text-[9px] sm:text-[10px] font-bold truncate ${evt.badgeColor}`}>
                         {evt.title.split(' ')[0]} {evt.title.split(' ')[1] || ''}
                       </div>
-                      <div className="text-[8px] sm:text-[9px] text-[#A0A6B0] hidden sm:block truncate font-mono">
+                      <div className="text-[9px] text-fg-muted hidden sm:block truncate font-mono">
                         {evt.time.split('–')[0].trim()}
                       </div>
                     </div>
                   ) : (
-                    <div className="text-[9px] text-white/10 hidden sm:block truncate mt-auto">
+                    <div className="text-[9px] text-fg-subtle opacity-40 hidden sm:block truncate mt-auto font-mono">
                       Practice
                     </div>
                   )}
-                </div>
+                </button>
               );
             })}
 
-            {/* 3. Trailing Inactive Days from Next Month */}
             {(() => {
               const totalOccupied = firstDayWeekday + daysInMonth;
               const remainingCells = (7 - (totalOccupied % 7)) % 7;
               return Array.from({ length: remainingCells }).map((_, idx) => (
                 <div
                   key={`next-${idx}`}
-                  className="min-h-[52px] sm:min-h-[88px] p-1.5 sm:p-2 bg-[#0B0F14]/70 text-[#A0A6B0]/25 text-xs flex flex-col justify-between select-none cursor-default"
+                  className="min-h-[52px] sm:min-h-[84px] p-1.5 sm:p-2 bg-bg text-fg-subtle opacity-50 text-xs flex flex-col justify-between select-none"
                 >
                   <span className="font-mono text-[10px] sm:text-[11px]">{idx + 1}</span>
                 </div>
@@ -431,177 +409,156 @@ export default function TournamentCalendar() {
 
           </div>
 
-          {/* Bottom Footnote / Google Calendar Legend */}
-          <div className="pt-2 border-t border-white/5 flex flex-wrap items-center justify-between text-[11px] text-[#A0A6B0] gap-2">
-            <div className="flex items-center gap-3">
+          <div className="pt-2 border-t border-border flex flex-wrap items-center justify-between text-[11px] font-mono text-fg-muted gap-2">
+            <div className="flex items-center gap-4">
               <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#D4AF7C]" />
+                <span className="w-2 h-2 rounded-xs bg-accent" aria-hidden="true" />
                 <span>Tournament Date</span>
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                <span className="w-2 h-2 rounded-xs bg-success" aria-hidden="true" />
                 <span>Registration Live</span>
               </span>
             </div>
 
-            <span className="font-mono text-[10px] text-[#D4AF7C]">
-              FIDE Tournament Rules Apply
+            <span className="text-[10px] text-accent">
+              FIDE Rules Apply
             </span>
           </div>
 
         </div>
 
-        {/* Right: Google Calendar Event Inspector Card (5 Columns) */}
-        <div className="lg:col-span-5 rounded-3xl bg-gradient-to-b from-[#181D26] to-[#0F131A] border-2 border-[#D4AF7C]/40 p-6 sm:p-7 shadow-2xl relative overflow-hidden space-y-6">
-          
-          {/* Subtle Accent Glow */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#D4AF7C]/10 rounded-full blur-3xl pointer-events-none" />
-
+        {/* Right: Event Inspector Card */}
+        <div className="lg:col-span-5 rounded-md bg-surface border border-border-strong p-6 sm:p-7 space-y-6">
           {selectedEvent ? (
-            <div className="space-y-6 relative z-10">
+            <div className="space-y-6">
               
-              {/* Event Inspector Header */}
-              <div className="flex items-start justify-between gap-3 border-b border-white/10 pb-4">
+              <div className="flex items-start justify-between gap-3 border-b border-border pb-4">
                 <div>
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold text-[#0B0F14] bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] uppercase tracking-wider shadow-sm">
-                      <Trophy className="w-3 h-3" />
-                      <span>{selectedEvent.isUpcoming ? 'UPCOMING TOURNAMENT' : 'CONCLUDED ARCHIVE'}</span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xs text-[10px] font-mono font-bold text-on-accent bg-accent uppercase tracking-wider">
+                      <Trophy className="w-3 h-3" aria-hidden="true" />
+                      <span>{selectedEvent.isUpcoming ? 'UPCOMING' : 'ARCHIVED'}</span>
                     </span>
 
-                    <span className="text-[10px] font-semibold text-[#A0A6B0] px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10">
-                      {selectedEvent.category} Time Control
+                    <span className="text-[10px] font-mono font-semibold text-fg-muted px-2 py-1 rounded-xs bg-surface-elevated border border-border">
+                      {selectedEvent.category}
                     </span>
                   </div>
 
-                  <h3 className="font-['Montserrat',sans-serif] font-black text-xl sm:text-2xl text-[#F5F5F5] mt-2.5 leading-snug">
+                  <h3 className="font-heading font-extrabold text-xl sm:text-2xl text-fg mt-2.5 leading-snug">
                     {selectedEvent.title}
                   </h3>
                 </div>
 
-                {/* Next / Prev Event Mini Switcher */}
-                <div className="flex items-center gap-1.5 shrink-0">
+                <div className="flex items-center gap-1 shrink-0">
                   <button
                     type="button"
                     onClick={() => handleCycleEvent('prev')}
-                    className="min-w-[44px] min-h-[44px] w-11 h-11 sm:w-8 sm:h-8 sm:min-w-[32px] sm:min-h-[32px] rounded-lg bg-white/5 hover:bg-white/15 text-[#A0A6B0] hover:text-[#F5F5F5] flex items-center justify-center transition cursor-pointer active:scale-95"
+                    className="w-8 h-8 rounded-xs bg-surface-elevated hover:bg-surface-subtle border border-border text-fg-muted hover:text-fg flex items-center justify-center transition-colors cursor-pointer"
                     title="Previous Tournament"
                     aria-label="Previous Tournament"
                   >
-                    <ChevronLeft className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+                    <ChevronLeft className="w-4 h-4" />
                   </button>
                   <button
                     type="button"
                     onClick={() => handleCycleEvent('next')}
-                    className="min-w-[44px] min-h-[44px] w-11 h-11 sm:w-8 sm:h-8 sm:min-w-[32px] sm:min-h-[32px] rounded-lg bg-white/5 hover:bg-white/15 text-[#A0A6B0] hover:text-[#F5F5F5] flex items-center justify-center transition cursor-pointer active:scale-95"
+                    className="w-8 h-8 rounded-xs bg-surface-elevated hover:bg-surface-subtle border border-border text-fg-muted hover:text-fg flex items-center justify-center transition-colors cursor-pointer"
                     title="Next Tournament"
                     aria-label="Next Tournament"
                   >
-                    <ChevronRight className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+                    <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
               </div>
 
-              {/* Event Coordinates (Google Calendar Format) */}
-              <div className="space-y-3.5 p-4 rounded-2xl bg-black/50 border border-white/10 text-xs font-['Poppins',sans-serif]">
+              <div className="space-y-3 p-4 rounded-sm bg-surface-elevated border border-border text-xs font-body">
                 <div className="flex items-start gap-3">
-                  <Clock className="w-4 h-4 text-[#D4AF7C] shrink-0 mt-0.5" />
+                  <Clock className="w-4 h-4 text-accent shrink-0 mt-0.5" aria-hidden="true" />
                   <div>
-                    <span className="text-[10px] text-[#A0A6B0] block uppercase font-medium">Match Date &amp; Reporting Time</span>
-                    <span className="text-[#F5F5F5] font-semibold block">{selectedEvent.dateFormatted}</span>
-                    <span className="text-[#D4AF7C] font-mono text-[11px]">{selectedEvent.time}</span>
+                    <span className="text-[10px] font-mono text-fg-muted block uppercase font-semibold">Date &amp; Time</span>
+                    <span className="text-fg font-semibold block">{selectedEvent.dateFormatted}</span>
+                    <span className="text-accent font-mono text-[11px]">{selectedEvent.time}</span>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 pt-3 border-t border-white/5">
-                  <MapPin className="w-4 h-4 text-[#D4AF7C] shrink-0 mt-0.5" />
+                <div className="flex items-start gap-3 pt-3 border-t border-border">
+                  <MapPin className="w-4 h-4 text-accent shrink-0 mt-0.5" aria-hidden="true" />
                   <div>
-                    <span className="text-[10px] text-[#A0A6B0] block uppercase font-medium">Playing Hall / Venue</span>
-                    <span className="text-[#F5F5F5] font-medium">{selectedEvent.venue}</span>
+                    <span className="text-[10px] font-mono text-fg-muted block uppercase font-semibold">Venue</span>
+                    <span className="text-fg font-medium">{selectedEvent.venue}</span>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 pt-3 border-t border-white/5">
-                  <Trophy className="w-4 h-4 text-[#D4AF7C] shrink-0 mt-0.5" />
+                <div className="flex items-start gap-3 pt-3 border-t border-border">
+                  <Trophy className="w-4 h-4 text-accent shrink-0 mt-0.5" aria-hidden="true" />
                   <div>
-                    <span className="text-[10px] text-[#A0A6B0] block uppercase font-medium">Tournament Format &amp; Clock</span>
-                    <span className="text-[#F5F5F5] font-medium">{selectedEvent.format}</span>
+                    <span className="text-[10px] font-mono text-fg-muted block uppercase font-semibold">Format &amp; Prize Pool</span>
+                    <span className="text-fg font-medium block">{selectedEvent.format}</span>
+                    {selectedEvent.prizePool && (
+                      <span className="text-accent font-mono font-bold text-sm block mt-0.5">{selectedEvent.prizePool}</span>
+                    )}
                   </div>
                 </div>
-
-                {selectedEvent.prizePool && (
-                  <div className="flex items-start gap-3 pt-3 border-t border-white/5">
-                    <Sparkles className="w-4 h-4 text-[#D4AF7C] shrink-0 mt-0.5" />
-                    <div>
-                      <span className="text-[10px] text-[#A0A6B0] block uppercase font-medium">Prize Pool &amp; Slots</span>
-                      <span className="text-[#F3E2B8] font-mono font-bold text-sm block">{selectedEvent.prizePool}</span>
-                      {selectedEvent.slots && (
-                        <span className="text-[11px] text-[#A0A6B0]">{selectedEvent.slots}</span>
-                      )}
-                    </div>
-                  </div>
-                )}
               </div>
 
-              {/* Description */}
-              <p className="text-xs text-[#A0A6B0] leading-relaxed font-['Poppins',sans-serif]">
+              <p className="text-xs text-fg-muted leading-relaxed font-body">
                 {selectedEvent.description}
               </p>
 
-              {/* Action Button */}
-              <div className="pt-2">
+              <div className="pt-1">
                 {selectedEvent.isUpcoming ? (
                   <Link
                     href={`/register?event=${selectedEvent.id}`}
-                    className="w-full inline-flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-full font-['Inter',sans-serif] text-sm font-bold text-[#0B0F14] bg-gradient-to-r from-[#D4AF7C] via-[#F3E2B8] to-[#D4AF7C] hover:brightness-110 transition-all duration-300 shadow-[0_4px_25px_rgba(212,175,124,0.3)] hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                    className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-xs font-ui text-xs font-bold uppercase tracking-wider text-on-accent bg-accent hover:bg-accent-hover transition-colors cursor-pointer"
                   >
-                    <span>Register For This Championship</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <span>Register For Championship</span>
+                    <ArrowRight className="w-4 h-4" aria-hidden="true" />
                   </Link>
                 ) : (
                   <Link
                     href="/past-events"
-                    className="w-full inline-flex items-center justify-center gap-2 py-3 px-6 rounded-full font-['Inter',sans-serif] text-xs font-semibold text-[#F5F5F5] bg-white/10 hover:bg-white/20 border border-white/15 transition cursor-pointer"
+                    className="w-full inline-flex items-center justify-center gap-2 py-3 px-6 rounded-xs font-ui text-xs font-semibold uppercase tracking-wider text-fg bg-surface-elevated hover:bg-surface-subtle border border-border hover:border-border-strong transition-colors cursor-pointer"
                   >
                     <span>View Certified Crosstable Standings</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                   </Link>
                 )}
               </div>
 
             </div>
           ) : (
-            /* Empty Selected Day State */
-            <div className="py-10 text-center space-y-4 relative z-10">
-              <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 mx-auto flex items-center justify-center text-[#A0A6B0]">
-                <CalendarIcon className="w-7 h-7 text-[#D4AF7C]" />
+            <div className="py-10 text-center space-y-4">
+              <div className="w-12 h-12 rounded-sm bg-surface-elevated border border-border mx-auto flex items-center justify-center text-accent">
+                <CalendarIcon className="w-6 h-6" aria-hidden="true" />
               </div>
 
               <div className="space-y-1">
-                <h4 className="font-['Montserrat',sans-serif] font-bold text-lg text-[#F5F5F5]">
+                <h4 className="font-heading font-bold text-lg text-fg">
                   {MONTH_NAMES[currentMonth]} {selectedDay}, {currentYear}
                 </h4>
-                <p className="text-xs text-[#A0A6B0] max-w-xs mx-auto leading-relaxed">
-                  No official collegiate championship round scheduled on this calendar date.
+                <p className="text-xs text-fg-muted max-w-xs mx-auto leading-relaxed">
+                  No official championship round scheduled on this calendar date.
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl bg-black/40 border border-white/5 text-xs text-left space-y-2 text-[#A0A6B0]">
-                <div className="text-[#D4AF7C] font-semibold flex items-center gap-1.5">
-                  <Info className="w-3.5 h-3.5" />
-                  <span>Club Activity &amp; Practice</span>
+              <div className="p-4 rounded-sm bg-surface-elevated border border-border text-xs text-left space-y-1.5 text-fg-muted">
+                <div className="text-accent font-mono font-bold uppercase text-[10px] tracking-wider flex items-center gap-1.5">
+                  <Info className="w-3.5 h-3.5" aria-hidden="true" />
+                  <span>Daily Practice Hours</span>
                 </div>
-                <p>Casual practice matches, engine analysis, and blitz arenas run every weekday in SAC Room 204 from 5:00 PM – 8:30 PM.</p>
+                <p>Casual sparring, engine analysis, and blitz games run every weekday in SAC Room 204 (5:00 PM – 8:30 PM).</p>
               </div>
 
               {nearestEvent && (
                 <button
                   type="button"
                   onClick={handleNextEventJump}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#D4AF7C] hover:underline cursor-pointer pt-2"
+                  className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-accent hover:underline cursor-pointer pt-2"
                 >
                   <span>
-                    Jump to {nearestEvent.title} ({MONTH_NAMES[nearestEvent.month].slice(0, 3)} {String(nearestEvent.day).padStart(2, '0')}, {nearestEvent.year}) &rarr;
+                    Jump to {nearestEvent.title} ({MONTH_NAMES[nearestEvent.month].slice(0, 3)} {String(nearestEvent.day).padStart(2, '0')}, {nearestEvent.year}) →
                   </span>
                 </button>
               )}

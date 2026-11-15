@@ -315,7 +315,7 @@ export default function CertificateCanvas({
   }, [certificate, width, height, onCanvasReady]);
 
   return (
-    <div className="relative inline-block overflow-hidden rounded-xl shadow-2xl border border-white/10 bg-[#070A0E]">
+    <div className="relative inline-block overflow-hidden rounded-sm border border-border-strong bg-surface-elevated shadow-sm">
       <canvas
         ref={canvasRef}
         style={{ width: `${width}px`, height: `${height}px` }}

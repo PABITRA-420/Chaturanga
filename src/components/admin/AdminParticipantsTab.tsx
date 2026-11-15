@@ -3,20 +3,20 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Tournament, Participant } from '@/types/tournament';
-import { 
-  Swords, 
-  RefreshCw, 
-  Flame, 
-  X, 
-  Search, 
-  UserPlus, 
-  Download, 
-  CheckCircle2, 
-  Clock, 
-  ExternalLink, 
-  Eye, 
-  Check, 
-  Trash2 
+import {
+  Swords,
+  RefreshCw,
+  Flame,
+  X,
+  Search,
+  UserPlus,
+  Download,
+  CheckCircle2,
+  Clock,
+  ExternalLink,
+  Eye,
+  Check,
+  Trash2
 } from 'lucide-react';
 
 export interface AdminParticipantsTabProps {
@@ -93,13 +93,13 @@ export default function AdminParticipantsTab({
       (p.email && p.email.toLowerCase().includes(q))
     );
 
-    const matchesTournament = 
-      selectedTournament === 'all' || 
+    const matchesTournament =
+      selectedTournament === 'all' ||
       p.tournamentId === selectedTournament ||
       p.tournament.toLowerCase() === selectedTournament.toLowerCase() ||
       (tournaments.find(t => t.id === selectedTournament)?.title.toLowerCase() === p.tournament.toLowerCase());
 
-    const matchesStatus = 
+    const matchesStatus =
       statusFilter === 'all' ||
       (statusFilter === 'checked_in' && p.checkInStatus === 'checked_in') ||
       (statusFilter === 'confirmed' && p.checkInStatus !== 'checked_in');
@@ -133,7 +133,7 @@ export default function AdminParticipantsTab({
     ];
 
     const dataRows = (isFiltered ? filteredParticipants : participants).map(p => {
-      const customStr = p.customAnswers 
+      const customStr = p.customAnswers
         ? Object.entries(p.customAnswers).map(([k, v]) => `${k}: ${v}`).join('; ')
         : '';
       return [
@@ -226,16 +226,15 @@ export default function AdminParticipantsTab({
 
   return (
     <div className="space-y-6">
-      
       {/* Multi-Tournament Live Operations Grid (Top Overview Cards) */}
       <div className="space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-            <h2 className="font-['Montserrat',sans-serif] text-base sm:text-lg font-bold text-[#F5F5F5] flex items-center gap-2">
-              <Swords className="w-5 h-5 text-[#D4AF7C]" />
+            <h2 className="font-heading text-base sm:text-lg font-bold text-fg flex items-center gap-2 tracking-tight">
+              <Swords className="w-5 h-5 text-accent" />
               <span>Concurrent Tournaments • Live Registration Operations</span>
             </h2>
-            <p className="text-xs text-[#A0A6B0]">
+            <p className="text-xs text-fg-muted">
               Monitor capacity and arbiter desk check-ins across all simultaneously active tournament forms.
             </p>
           </div>
@@ -245,9 +244,9 @@ export default function AdminParticipantsTab({
               type="button"
               onClick={onRefresh}
               disabled={loadingParticipants}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-[#A0A6B0] hover:text-white transition cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-semibold bg-surface hover:bg-surface-subtle border border-border text-fg-muted hover:text-fg transition-colors cursor-pointer"
             >
-              <RefreshCw className={`w-3.5 h-3.5 text-[#D4AF7C] ${loadingParticipants ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 text-accent ${loadingParticipants ? 'animate-spin' : ''}`} />
               <span>Refresh Live Roster</span>
             </button>
           </div>
@@ -256,8 +255,8 @@ export default function AdminParticipantsTab({
         {/* Tournament Capacity & Operations Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
           {tournaments.filter(t => !t.isPast && t.status !== 'completed').map((tourn) => {
-            const matchingPlayers = participants.filter(p => 
-              p.tournamentId === tourn.id || 
+            const matchingPlayers = participants.filter(p =>
+              p.tournamentId === tourn.id ||
               p.tournament.toLowerCase() === tourn.title.toLowerCase() ||
               tourn.title.toLowerCase().includes(p.tournament.toLowerCase())
             );
@@ -272,140 +271,139 @@ export default function AdminParticipantsTab({
             const isClosed = tourn.status === 'closed';
 
             return (
-              <div
+              <button
+                type="button"
                 key={tourn.id}
                 onClick={() => setSelectedTournament(isSelected ? 'all' : tourn.id)}
-                className={`relative p-4 rounded-2xl border transition-all duration-300 cursor-pointer flex flex-col justify-between space-y-3 ${
-                  isSelected
-                    ? 'bg-gradient-to-b from-[#141A24] via-[#10141C] to-[#0A0D12] border-[#D4AF7C] shadow-lg shadow-[#D4AF7C]/15 ring-1 ring-[#D4AF7C]'
-                    : 'bg-[#10141C] border-white/10 hover:border-white/20 hover:bg-[#141924]'
-                }`}
+                className={`text-left relative p-4 rounded-md border transition-colors cursor-pointer flex flex-col justify-between space-y-3 ${isSelected
+                  ? 'bg-surface border-accent ring-1 ring-accent shadow-xs'
+                  : 'bg-surface border-border hover:border-border-strong'
+                  }`}
               >
-                <div className="space-y-2">
+                <div className="space-y-2 w-full">
                   {/* Status Chip & Format */}
                   <div className="flex items-center justify-between gap-2">
                     {isOpen ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-xs text-[10px] font-mono font-bold text-success bg-success/10 border border-success/30">
+                        <span className="w-1.5 h-1.5 rounded-full bg-success" />
                         <span>OPEN</span>
                       </span>
                     ) : isClosingSoon ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/30">
-                        <Flame className="w-3 h-3 text-amber-400" />
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-xs text-[10px] font-mono font-bold text-warning bg-warning/10 border border-warning/30">
+                        <Flame className="w-3 h-3 text-warning" />
                         <span>CLOSING SOON</span>
                       </span>
                     ) : isClosed ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-red-400 bg-red-500/10 border border-red-500/30">
-                        <X className="w-3 h-3 text-red-400" />
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-xs text-[10px] font-mono font-bold text-danger bg-danger/10 border border-danger/30">
+                        <X className="w-3 h-3 text-danger" />
                         <span>CLOSED</span>
                       </span>
                     ) : (
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold text-cyan-400 bg-cyan-500/10 border border-cyan-500/30 uppercase">
+                      <span className="px-2 py-0.5 rounded-xs text-[10px] font-mono font-bold text-info bg-info/10 border border-info/30 uppercase">
                         {tourn.status}
                       </span>
                     )}
 
-                    <span className="text-[10px] font-mono text-[#D4AF7C] font-semibold truncate max-w-[120px]">
+                    <span className="text-[10px] font-mono text-accent font-semibold truncate max-w-[120px]">
                       {tourn.entryFee || 'Free'}
                     </span>
                   </div>
 
                   {/* Tournament Title */}
                   <div>
-                    <h4 className="font-['Montserrat',sans-serif] font-bold text-xs sm:text-sm text-[#F5F5F5] line-clamp-1 leading-snug">
+                    <h4 className="font-heading font-bold text-xs sm:text-sm text-fg line-clamp-1 leading-snug">
                       {tourn.title}
                     </h4>
-                    <p className="text-[10px] text-[#A0A6B0] truncate mt-0.5">
+                    <p className="text-[10px] text-fg-muted truncate mt-0.5">
                       {tourn.date} • {tourn.venue}
                     </p>
                   </div>
 
                   {/* Capacity Progress Bar */}
                   <div className="space-y-1 pt-1">
-                    <div className="flex items-center justify-between text-[10px]">
-                      <span className="text-[#A0A6B0]">
-                        Capacity: <strong className="text-white font-mono">{enrolledCount}</strong>/{maxSlots}
+                    <div className="flex items-center justify-between text-[10px] font-mono tabular-nums">
+                      <span className="text-fg-muted">
+                        Capacity: <strong className="text-fg">{enrolledCount}</strong>/{maxSlots}
                       </span>
-                      <span className="font-mono font-bold text-[#D4AF7C]">
+                      <span className="font-bold text-accent">
                         {capacityPercent}%
                       </span>
                     </div>
-                    <div className="w-full h-1.5 rounded-full bg-black/60 overflow-hidden border border-white/5">
+                    <div className="w-full h-1.5 rounded-xs bg-surface-subtle overflow-hidden border border-border">
                       <div
-                        className={`h-full rounded-full transition-all duration-500 ${
-                          capacityPercent >= 90
-                            ? 'bg-gradient-to-r from-red-500 to-amber-500'
-                            : capacityPercent >= 70
-                            ? 'bg-gradient-to-r from-amber-500 to-[#D4AF7C]'
-                            : 'bg-gradient-to-r from-emerald-500 to-[#D4AF7C]'
-                        }`}
+                        className={`h-full transition-all duration-500 ${capacityPercent >= 90
+                          ? 'bg-danger'
+                          : capacityPercent >= 70
+                            ? 'bg-warning'
+                            : 'bg-success'
+                          }`}
                         style={{ width: `${capacityPercent}%` }}
                       />
                     </div>
-                    <p className="text-[9px] text-[#A0A6B0]">
+                    <p className="text-[9px] font-mono text-fg-subtle">
                       {Math.max(0, maxSlots - enrolledCount)} spots remaining
                     </p>
                   </div>
                 </div>
 
                 {/* Desk Check-in Breakdown & Focus Toggle */}
-                <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[10px]">
+                <div className="pt-2 border-t border-border flex items-center justify-between text-[10px] font-mono w-full">
                   <div className="flex items-center gap-1.5">
-                    <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20">
-                      ✓ {checkedInCount} In
+                    <span className="px-2 py-0.5 rounded-xs bg-success/10 text-success font-bold border border-success/20 tabular-nums">
+                      {checkedInCount} In
                     </span>
-                    <span className="px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-300 font-medium border border-amber-500/20">
-                      ⏳ {Math.max(0, enrolledCount - checkedInCount)} Pending
+                    <span className="px-2 py-0.5 rounded-xs bg-warning/10 text-warning font-medium border border-warning/20 tabular-nums">
+                      {Math.max(0, enrolledCount - checkedInCount)} Pending
                     </span>
                   </div>
 
-                  <span className={`text-[10px] font-bold ${isSelected ? 'text-[#D4AF7C]' : 'text-[#A0A6B0] hover:text-white'}`}>
-                    {isSelected ? '★ Focused' : 'Focus →'}
+                  <span className={`text-[10px] font-bold ${isSelected ? 'text-accent' : 'text-fg-muted'}`}>
+                    {isSelected ? 'Focused' : 'Focus →'}
                   </span>
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>
       </div>
 
       {/* Filter, Search & Arbiter Actions Toolbar */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-[#10141C] border border-white/10 space-y-4">
-        
+      <div className="p-4 sm:p-5 rounded-md bg-surface border border-border space-y-4">
         {/* Row 1: Search & Action Buttons */}
         <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
-          
           {/* Search */}
           <div className="relative w-full lg:w-96">
-            <Search className="w-4 h-4 text-[#A0A6B0] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-fg-subtle absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               placeholder="Search player name, roll no, ticket ID, chess handle..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] placeholder-[#A0A6B0]/50 focus:outline-none focus:border-[#D4AF7C]"
+              className="w-full pl-9 pr-8 py-2 rounded-sm bg-surface-elevated border border-border text-xs text-fg placeholder:text-fg-subtle focus:border-accent transition-colors"
             />
             {searchQuery && (
               <button
+                type="button"
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#A0A6B0] hover:text-white"
+                aria-label="Clear search"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-fg-muted hover:text-fg cursor-pointer"
               >
-                ✕
+                <X className="w-3.5 h-3.5" />
               </button>
             )}
           </div>
 
           {/* Arbiter Action Buttons */}
           <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto justify-end">
-            
             {/* Manual Walk-in Player */}
             <button
+              type="button"
               onClick={() => {
                 setWalkInError('');
                 setWalkInCustomAnswers({});
                 setIsAddModalOpen(true);
               }}
-              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold text-[#0B0F14] bg-[#D4AF7C] hover:bg-[#E6C98A] transition shadow-md shadow-[#D4AF7C]/20 cursor-pointer active:scale-95"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-sm text-xs font-heading font-semibold text-on-accent bg-accent hover:bg-accent-hover transition-colors cursor-pointer"
             >
               <UserPlus className="w-4 h-4" />
               <span>+ Walk-in Registration</span>
@@ -413,38 +411,37 @@ export default function AdminParticipantsTab({
 
             {/* Export CSV for Swiss-Manager / FIDE */}
             <button
+              type="button"
               onClick={handleExportCSV}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-[#F5F5F5] bg-white/[0.05] hover:bg-white/[0.1] border border-white/15 transition cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-sm text-xs font-semibold text-fg bg-surface-elevated hover:bg-surface-subtle border border-border-strong transition-colors cursor-pointer"
               title="Export formatted CSV compatible with Swiss-Manager and Excel"
             >
-              <Download className="w-3.5 h-3.5 text-[#D4AF7C]" />
+              <Download className="w-3.5 h-3.5 text-accent" />
               <span>Export CSV</span>
             </button>
           </div>
         </div>
 
         {/* Row 2: Tournament Filter Tabs & Check-in Status Pills */}
-        <div className="pt-2 border-t border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
-          
+        <div className="pt-3 border-t border-border flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
           {/* Tournament Filter Pills */}
           <div className="flex flex-wrap items-center gap-1.5 overflow-x-auto pb-1">
-            <span className="text-[11px] font-semibold text-[#A0A6B0] mr-1">Event:</span>
-            
+            <span className="text-[11px] font-mono uppercase tracking-wider font-semibold text-fg-muted mr-1">Event:</span>
+
             <button
               type="button"
               onClick={() => setSelectedTournament('all')}
-              className={`px-3 py-1.5 rounded-xl font-bold transition cursor-pointer text-xs ${
-                selectedTournament === 'all'
-                  ? 'bg-[#D4AF7C] text-[#0B0F14] shadow'
-                  : 'bg-[#080B0F] text-[#A0A6B0] hover:text-white border border-white/10'
-              }`}
+              className={`px-3 py-1.5 rounded-sm font-semibold transition-colors cursor-pointer text-xs ${selectedTournament === 'all'
+                ? 'bg-accent text-on-accent'
+                : 'bg-surface-elevated text-fg-muted hover:text-fg border border-border'
+                }`}
             >
               All Events ({participants.length})
             </button>
 
             {tournaments.filter(t => !t.isPast && t.status !== 'completed').map(t => {
-              const count = participants.filter(p => 
-                p.tournamentId === t.id || 
+              const count = participants.filter(p =>
+                p.tournamentId === t.id ||
                 p.tournament.toLowerCase() === t.title.toLowerCase() ||
                 t.title.toLowerCase().includes(p.tournament.toLowerCase())
               ).length;
@@ -454,11 +451,10 @@ export default function AdminParticipantsTab({
                   key={t.id}
                   type="button"
                   onClick={() => setSelectedTournament(t.id)}
-                  className={`px-3 py-1.5 rounded-xl font-semibold transition cursor-pointer text-xs truncate max-w-[200px] ${
-                    selectedTournament === t.id || selectedTournament === t.title
-                      ? 'bg-[#D4AF7C] text-[#0B0F14] font-bold shadow'
-                      : 'bg-[#080B0F] text-[#A0A6B0] hover:text-white border border-white/10'
-                  }`}
+                  className={`px-3 py-1.5 rounded-sm font-semibold transition-colors cursor-pointer text-xs truncate max-w-[200px] ${selectedTournament === t.id || selectedTournament === t.title
+                    ? 'bg-accent text-on-accent'
+                    : 'bg-surface-elevated text-fg-muted hover:text-fg border border-border'
+                    }`}
                   title={t.title}
                 >
                   {t.title.split(' ')[0]} {t.title.split(' ')[1] || ''} ({count})
@@ -469,16 +465,15 @@ export default function AdminParticipantsTab({
 
           {/* Check-in Status Filter Pills */}
           <div className="flex items-center gap-1.5 shrink-0">
-            <span className="text-[11px] font-semibold text-[#A0A6B0] mr-1">Status:</span>
+            <span className="text-[11px] font-mono uppercase tracking-wider font-semibold text-fg-muted mr-1">Status:</span>
 
             <button
               type="button"
               onClick={() => setStatusFilter('all')}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition cursor-pointer ${
-                statusFilter === 'all'
-                  ? 'bg-white/15 text-white'
-                  : 'text-[#A0A6B0] hover:text-white'
-              }`}
+              className={`px-2.5 py-1 rounded-xs text-[11px] font-semibold transition-colors cursor-pointer ${statusFilter === 'all'
+                ? 'bg-primary text-on-primary'
+                : 'text-fg-muted hover:text-fg border border-border'
+                }`}
             >
               All ({filteredParticipants.length})
             </button>
@@ -486,70 +481,66 @@ export default function AdminParticipantsTab({
             <button
               type="button"
               onClick={() => setStatusFilter('checked_in')}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition cursor-pointer flex items-center gap-1 ${
-                statusFilter === 'checked_in'
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                  : 'text-[#A0A6B0] hover:text-emerald-400'
-              }`}
+              className={`px-2.5 py-1 rounded-xs text-[11px] font-semibold transition-colors cursor-pointer flex items-center gap-1 ${statusFilter === 'checked_in'
+                ? 'bg-success/15 text-success border border-success/30'
+                : 'text-fg-muted hover:text-success border border-transparent'
+                }`}
             >
-              <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+              <CheckCircle2 className="w-3 h-3 text-success" />
               <span>Checked In ({participants.filter(p => p.checkInStatus === 'checked_in').length})</span>
             </button>
 
             <button
               type="button"
               onClick={() => setStatusFilter('confirmed')}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition cursor-pointer flex items-center gap-1 ${
-                statusFilter === 'confirmed'
-                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                  : 'text-[#A0A6B0] hover:text-amber-400'
-              }`}
+              className={`px-2.5 py-1 rounded-xs text-[11px] font-semibold transition-colors cursor-pointer flex items-center gap-1 ${statusFilter === 'confirmed'
+                ? 'bg-warning/15 text-warning border border-warning/30'
+                : 'text-fg-muted hover:text-warning border border-transparent'
+                }`}
             >
-              <Clock className="w-3 h-3 text-amber-400" />
+              <Clock className="w-3 h-3 text-warning" />
               <span>Awaiting Desk ({participants.filter(p => p.checkInStatus !== 'checked_in').length})</span>
             </button>
           </div>
-
         </div>
-
       </div>
 
       {/* Players Table */}
-      <div className="rounded-2xl bg-[#10141C] border border-white/10 overflow-hidden shadow-xl">
+      <div className="rounded-md bg-surface border border-border overflow-hidden shadow-xs">
         {/* Mobile Horizontal Scroll Hint */}
-        <div className="sm:hidden flex items-center justify-between px-4 py-2 bg-black/40 border-b border-white/5 text-[11px] text-[#A0A6B0]">
-          <span className="text-[#D4AF7C] font-medium">← Swipe to view arbiter actions & details →</span>
-          <span className="font-mono text-[10px] text-white/50">{filteredParticipants.length} entries</span>
+        <div className="sm:hidden flex items-center justify-between px-4 py-2 bg-surface-elevated border-b border-border text-[11px] text-fg-muted">
+          <span className="text-accent font-medium">← Swipe to view arbiter actions &amp; details →</span>
+          <span className="font-mono text-[10px] text-fg-subtle tabular-nums">{filteredParticipants.length} entries</span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[880px] text-left text-xs">
-            <thead className="bg-[#090D12] text-[#A0A6B0] font-semibold border-b border-white/10 uppercase tracking-wider text-[10px]">
+            <thead className="bg-surface-elevated text-fg-muted font-mono font-semibold border-b border-border uppercase tracking-wider text-[10px]">
               <tr>
                 <th className="py-3.5 px-4">Ticket ID</th>
                 <th className="py-3.5 px-4">Participant Details</th>
-                <th className="py-3.5 px-4">Institution & Dept</th>
-                <th className="py-3.5 px-4">Rating & Handle</th>
+                <th className="py-3.5 px-4">Institution &amp; Dept</th>
+                <th className="py-3.5 px-4">Rating &amp; Handle</th>
                 <th className="py-3.5 px-4">Tournament Event</th>
-                <th className="py-3.5 px-4 text-center">Custom Q&A</th>
+                <th className="py-3.5 px-4 text-center">Custom Q&amp;A</th>
                 <th className="py-3.5 px-4 text-center">Desk Status</th>
                 <th className="py-3.5 px-4 text-right">Arbiter Desk Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5 font-['Inter',sans-serif]">
+            <tbody className="divide-y divide-border font-body">
               {loadingParticipants ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-14 text-[#A0A6B0]">
+                  <td colSpan={8} className="text-center py-14 text-fg-muted">
                     <div className="flex flex-col items-center justify-center space-y-2">
-                      <RefreshCw className="w-6 h-6 text-[#D4AF7C] animate-spin" />
-                      <span className="text-xs">Synchronizing player registrations from database...</span>
+                      <RefreshCw className="w-6 h-6 text-accent animate-spin" />
+                      <span className="text-xs font-mono">Synchronizing player registrations from database...</span>
                     </div>
                   </td>
                 </tr>
               ) : filteredParticipants.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-14 text-[#A0A6B0]">
-                    <p className="text-sm font-semibold text-[#F5F5F5]">No participants matching your filter criteria.</p>
-                    <p className="text-xs text-[#A0A6B0] mt-1">Try clearing your search query or selecting &quot;All Events&quot;.</p>
+                  <td colSpan={8} className="text-center py-14 text-fg-muted">
+                    <p className="text-sm font-semibold text-fg">No participants matching your filter criteria.</p>
+                    <p className="text-xs text-fg-muted mt-1">Try clearing your search query or selecting &quot;All Events&quot;.</p>
                   </td>
                 </tr>
               ) : (
@@ -559,15 +550,15 @@ export default function AdminParticipantsTab({
                   const isDeletingThis = deletingTicketId === player.ticketId;
 
                   return (
-                    <tr key={player.id} className="hover:bg-white/[0.02] transition">
+                    <tr key={player.id} className="hover:bg-surface-elevated/60 transition-colors">
                       {/* Ticket ID */}
-                      <td className="py-4 px-4 font-mono font-semibold text-[#D4AF7C] whitespace-nowrap">
+                      <td className="py-4 px-4 font-mono font-semibold text-accent whitespace-nowrap">
                         <div className="flex items-center gap-1.5">
                           <span>{player.ticketId}</span>
                           <Link
                             href={`/my-ticket?ticketId=${encodeURIComponent(player.ticketId)}`}
                             target="_blank"
-                            className="text-[#A0A6B0] hover:text-[#D4AF7C] transition"
+                            className="text-fg-muted hover:text-accent transition-colors"
                             title="Open Public Pass"
                           >
                             <ExternalLink className="w-3 h-3" />
@@ -577,17 +568,17 @@ export default function AdminParticipantsTab({
 
                       {/* Participant Name & Contact */}
                       <td className="py-4 px-4">
-                        <div className="font-bold text-[#F5F5F5]">{player.name}</div>
-                        <div className="text-[11px] text-[#A0A6B0] font-mono">Roll: {player.rollNumber}</div>
+                        <div className="font-semibold text-fg">{player.name}</div>
+                        <div className="text-[11px] text-fg-muted font-mono">Roll: {player.rollNumber}</div>
                         {player.phone && (
-                          <div className="text-[10px] text-[#A0A6B0]/80">Ph: {player.phone}</div>
+                          <div className="text-[10px] font-mono text-fg-subtle">Ph: {player.phone}</div>
                         )}
                       </td>
 
                       {/* Institution & Dept */}
                       <td className="py-4 px-4">
-                        <div className="text-[#F5F5F5] font-medium">{player.department} ({player.year || 'UG'})</div>
-                        <div className="text-[11px] text-[#A0A6B0] truncate max-w-[170px]" title={player.college}>
+                        <div className="text-fg font-medium">{player.department} ({player.year || 'UG'})</div>
+                        <div className="text-[11px] text-fg-muted truncate max-w-[170px]" title={player.college}>
                           {player.college}
                         </div>
                       </td>
@@ -595,30 +586,30 @@ export default function AdminParticipantsTab({
                       {/* Rating Category & Chess Handles */}
                       <td className="py-4 px-4">
                         <div>
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white/[0.05] border border-white/10 text-[#F5F5F5]">
+                          <span className="px-2 py-0.5 rounded-xs text-[10px] font-semibold bg-surface-elevated border border-border text-fg">
                             {player.ratingCategory}
                           </span>
                         </div>
-                        <div className="text-[11px] text-[#D4AF7C] font-mono mt-1">
+                        <div className="text-[11px] text-accent font-mono mt-1">
                           {player.chessUsername && player.chessUsername !== 'N/A' ? (
                             <>
                               <span>@{player.chessUsername}</span>
                               {player.chessPlatform && !player.chessUsername.includes('(') && (
-                                <span className="text-[#A0A6B0] text-[10px] ml-1">
+                                <span className="text-fg-muted text-[10px] ml-1">
                                   ({player.chessPlatform === 'chesscom' ? 'Chess.com' : 'Lichess'})
                                 </span>
                               )}
                             </>
                           ) : ''}
                           {player.fideId && player.fideId !== 'Unrated' && (
-                            <span className="text-[10px] text-[#A0A6B0] block">FIDE: {player.fideId}</span>
+                            <span className="text-[10px] text-fg-muted block">FIDE: {player.fideId}</span>
                           )}
                         </div>
                       </td>
 
                       {/* Tournament Event */}
                       <td className="py-4 px-4">
-                        <span className="px-2.5 py-1 rounded-xl text-[10px] font-medium bg-[#D4AF7C]/10 border border-[#D4AF7C]/20 text-[#D4AF7C] inline-block max-w-[160px] truncate" title={player.tournament}>
+                        <span className="px-2.5 py-1 rounded-xs text-[10px] font-medium bg-accent/10 border border-accent/25 text-accent inline-block max-w-[160px] truncate" title={player.tournament}>
                           {player.tournament}
                         </span>
                       </td>
@@ -629,27 +620,27 @@ export default function AdminParticipantsTab({
                           <button
                             type="button"
                             onClick={() => setInspectingPlayer(player)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold text-cyan-300 bg-cyan-500/10 border border-cyan-500/30 hover:bg-cyan-500/20 transition cursor-pointer"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xs text-[10px] font-semibold text-info bg-info/10 border border-info/30 hover:bg-info/20 transition-colors cursor-pointer"
                             title="View answers to custom tournament questions"
                           >
                             <Eye className="w-3 h-3" />
                             <span>{Object.keys(player.customAnswers || {}).length} Answers</span>
                           </button>
                         ) : (
-                          <span className="text-[10px] text-[#A0A6B0]/50">—</span>
+                          <span className="text-[10px] text-fg-subtle">—</span>
                         )}
                       </td>
 
                       {/* Status */}
                       <td className="py-4 px-4 text-center whitespace-nowrap">
                         {player.checkInStatus === 'checked_in' ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30">
-                            <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xs text-[10px] font-mono font-bold text-success bg-success/10 border border-success/30">
+                            <CheckCircle2 className="w-3 h-3 text-success" />
                             <span>Checked In</span>
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/30">
-                            <Clock className="w-3 h-3 text-amber-400" />
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xs text-[10px] font-mono font-bold text-warning bg-warning/10 border border-warning/30">
+                            <Clock className="w-3 h-3 text-warning" />
                             <span>Awaiting Desk</span>
                           </span>
                         )}
@@ -662,11 +653,10 @@ export default function AdminParticipantsTab({
                             type="button"
                             disabled={isCheckingThis}
                             onClick={() => handleCheckInToggle(player.ticketId, player.checkInStatus)}
-                            className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition cursor-pointer flex items-center gap-1 ${
-                              player.checkInStatus === 'checked_in'
-                                ? 'text-[#A0A6B0] hover:text-red-300 bg-white/[0.04] hover:bg-red-500/10 border border-white/10 hover:border-red-500/30'
-                                : 'text-[#0B0F14] bg-emerald-400 hover:bg-emerald-300 font-bold shadow-md shadow-emerald-500/20'
-                            }`}
+                            className={`px-3 py-1.5 rounded-sm text-[11px] font-semibold transition-colors cursor-pointer flex items-center gap-1 ${player.checkInStatus === 'checked_in'
+                              ? 'text-fg-muted hover:text-danger bg-surface-elevated hover:bg-danger/10 border border-border hover:border-danger/30'
+                              : 'text-white bg-success hover:bg-success/90 font-semibold'
+                              }`}
                           >
                             {isCheckingThis ? (
                               <RefreshCw className="w-3 h-3 animate-spin" />
@@ -684,7 +674,7 @@ export default function AdminParticipantsTab({
                             type="button"
                             disabled={isDeletingThis}
                             onClick={() => handleDelete(player.ticketId, player.name)}
-                            className="p-1.5 rounded-lg text-[#A0A6B0] hover:text-red-400 hover:bg-red-500/10 transition cursor-pointer"
+                            className="p-1.5 rounded-sm text-fg-muted hover:text-danger hover:bg-danger/10 transition-colors cursor-pointer"
                             title="Delete Registration"
                           >
                             {isDeletingThis ? (
@@ -695,7 +685,6 @@ export default function AdminParticipantsTab({
                           </button>
                         </div>
                       </td>
-
                     </tr>
                   );
                 })
@@ -707,52 +696,56 @@ export default function AdminParticipantsTab({
 
       {/* MODAL: MANUAL ARBITER WALK-IN REGISTRATION */}
       {isAddModalOpen && (
-        <div 
-          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto"
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Manual Arbiter Walk-in Registration"
+          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto"
           onClick={() => setIsAddModalOpen(false)}
         >
-          <div 
-            className="w-full max-w-lg bg-[#12161D] rounded-3xl border border-white/15 p-6 sm:p-8 space-y-5 shadow-2xl my-auto max-h-[92vh] flex flex-col overflow-hidden"
+          <div
+            className="w-full max-w-lg bg-surface rounded-md border border-border-strong p-6 sm:p-8 space-y-5 shadow-md my-auto max-h-[92vh] flex flex-col overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between pb-3 border-b border-white/10 shrink-0">
+            <div className="flex items-center justify-between pb-3 border-b border-border shrink-0">
               <div>
-                <h3 className="font-['Montserrat',sans-serif] text-base font-bold text-[#F5F5F5] flex items-center gap-2">
-                  <UserPlus className="w-4 h-4 text-[#D4AF7C]" />
+                <h3 className="font-heading text-base font-bold text-fg flex items-center gap-2">
+                  <UserPlus className="w-4 h-4 text-accent" />
                   <span>Manual Arbiter Walk-in Registration</span>
                 </h3>
-                <p className="text-xs text-[#A0A6B0] mt-0.5">
+                <p className="text-xs text-fg-muted mt-0.5">
                   Register a walk-in player directly at the tournament reception desk.
                 </p>
               </div>
-              <button 
+              <button
+                type="button"
+                aria-label="Close Walk-in Modal"
                 onClick={() => setIsAddModalOpen(false)}
-                className="w-7 h-7 rounded-full bg-white/5 hover:bg-white/10 text-[#A0A6B0] hover:text-[#F5F5F5] flex items-center justify-center cursor-pointer"
+                className="w-7 h-7 rounded-sm bg-surface-elevated hover:bg-surface-subtle text-fg-muted hover:text-fg flex items-center justify-center cursor-pointer"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleWalkInSubmit} className="flex-1 overflow-y-auto pr-1 space-y-4 text-xs font-['Inter',sans-serif]">
-              
+            <form onSubmit={handleWalkInSubmit} className="flex-1 overflow-y-auto pr-1 space-y-4 text-xs font-body">
               {walkInError && (
-                <div className="p-3 rounded-xl bg-red-500/15 border border-red-500/30 text-red-300">
+                <div className="p-3 rounded-sm bg-danger/10 border border-danger/30 text-danger">
                   {walkInError}
                 </div>
               )}
 
               {/* Tournament Selector */}
               <div className="space-y-1">
-                <label className="text-[#D4AF7C] font-bold uppercase tracking-wider text-[10px]">
+                <label className="text-accent font-mono font-bold uppercase tracking-wider text-[10px]">
                   Target Tournament Event *
                 </label>
                 <select
                   value={newPlayer.tournamentId}
                   onChange={(e) => setNewPlayer({ ...newPlayer, tournamentId: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#090D12] border border-white/10 text-white focus:outline-none focus:border-[#D4AF7C] text-xs cursor-pointer"
+                  className="w-full px-3.5 py-2 rounded-sm bg-surface-elevated border border-border text-fg focus:border-accent text-xs cursor-pointer"
                 >
                   {tournaments.filter(t => !t.isPast && t.status !== 'completed').map(t => (
-                    <option key={t.id} value={t.id}>
+                    <option key={t.id} value={t.id} className="bg-surface text-fg">
                       {t.title} ({t.status === 'open' ? 'Open' : t.status})
                     </option>
                   ))}
@@ -762,26 +755,26 @@ export default function AdminParticipantsTab({
               {/* Full Name & Roll */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[#A0A6B0] font-semibold">Full Legal Name *</label>
+                  <label className="text-fg-muted font-semibold">Full Legal Name *</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. Rahul Sharma"
                     value={newPlayer.name}
                     onChange={(e) => setNewPlayer({ ...newPlayer, name: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#090D12] border border-white/10 text-white focus:outline-none focus:border-[#D4AF7C] text-xs"
+                    className="w-full px-3 py-2 rounded-sm bg-surface-elevated border border-border text-fg placeholder:text-fg-subtle focus:border-accent text-xs"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[#A0A6B0] font-semibold">Roll Number / Student ID *</label>
+                  <label className="text-fg-muted font-semibold">Roll Number / Student ID *</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. 23101104018"
                     value={newPlayer.rollNumber}
                     onChange={(e) => setNewPlayer({ ...newPlayer, rollNumber: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#090D12] border border-white/10 text-white focus:outline-none focus:border-[#D4AF7C] text-xs"
+                    className="w-full px-3 py-2 rounded-sm bg-surface-elevated border border-border text-fg placeholder:text-fg-subtle focus:border-accent text-xs font-mono"
                   />
                 </div>
               </div>
@@ -789,29 +782,29 @@ export default function AdminParticipantsTab({
               {/* Institution & Department */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[#A0A6B0] font-semibold">Institution / College</label>
+                  <label className="text-fg-muted font-semibold">Institution / College</label>
                   <input
                     type="text"
                     value={newPlayer.college}
                     onChange={(e) => setNewPlayer({ ...newPlayer, college: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#090D12] border border-white/10 text-white focus:outline-none focus:border-[#D4AF7C] text-xs"
+                    className="w-full px-3 py-2 rounded-sm bg-surface-elevated border border-border text-fg focus:border-accent text-xs"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[#A0A6B0] font-semibold">Department & Year</label>
+                  <label className="text-fg-muted font-semibold">Department &amp; Year</label>
                   <div className="grid grid-cols-2 gap-2">
                     <input
                       type="text"
                       placeholder="CSE"
                       value={newPlayer.department}
                       onChange={(e) => setNewPlayer({ ...newPlayer, department: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl bg-[#090D12] border border-white/10 text-white focus:outline-none focus:border-[#D4AF7C] text-xs"
+                      className="w-full px-3 py-2 rounded-sm bg-surface-elevated border border-border text-fg focus:border-accent text-xs"
                     />
                     <select
                       value={newPlayer.year}
                       onChange={(e) => setNewPlayer({ ...newPlayer, year: e.target.value })}
-                      className="w-full px-2 py-2 rounded-xl bg-[#090D12] border border-white/10 text-white text-xs"
+                      className="w-full px-2 py-2 rounded-sm bg-surface-elevated border border-border text-fg text-xs"
                     >
                       <option>1st Year</option>
                       <option>2nd Year</option>
@@ -825,24 +818,24 @@ export default function AdminParticipantsTab({
               {/* Contact: Email & Phone */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[#A0A6B0] font-semibold">Email Address</label>
+                  <label className="text-fg-muted font-semibold">Email Address</label>
                   <input
                     type="email"
                     placeholder="player@jgec.ac.in"
                     value={newPlayer.email}
                     onChange={(e) => setNewPlayer({ ...newPlayer, email: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#090D12] border border-white/10 text-white focus:outline-none focus:border-[#D4AF7C] text-xs"
+                    className="w-full px-3 py-2 rounded-sm bg-surface-elevated border border-border text-fg placeholder:text-fg-subtle focus:border-accent text-xs"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[#A0A6B0] font-semibold">WhatsApp / Mobile Number</label>
+                  <label className="text-fg-muted font-semibold">WhatsApp / Mobile Number</label>
                   <input
                     type="tel"
                     placeholder="9876543210"
                     value={newPlayer.phone}
                     onChange={(e) => setNewPlayer({ ...newPlayer, phone: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#090D12] border border-white/10 text-white focus:outline-none focus:border-[#D4AF7C] text-xs"
+                    className="w-full px-3 py-2 rounded-sm bg-surface-elevated border border-border text-fg placeholder:text-fg-subtle focus:border-accent text-xs font-mono"
                   />
                 </div>
               </div>
@@ -850,11 +843,11 @@ export default function AdminParticipantsTab({
               {/* Chess Ratings & Handles */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[#A0A6B0] font-semibold">Rating Band</label>
+                  <label className="text-fg-muted font-semibold">Rating Band</label>
                   <select
                     value={newPlayer.ratingCategory}
                     onChange={(e) => setNewPlayer({ ...newPlayer, ratingCategory: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#090D12] border border-white/10 text-white focus:outline-none focus:border-[#D4AF7C] text-xs"
+                    className="w-full px-3 py-2 rounded-sm bg-surface-elevated border border-border text-fg focus:border-accent text-xs"
                   >
                     <option>Beginner / Casual (&lt; 1200)</option>
                     <option>Club Player (1200 - 1600)</option>
@@ -864,24 +857,24 @@ export default function AdminParticipantsTab({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[#A0A6B0] font-semibold">Chess Handle</label>
+                  <label className="text-fg-muted font-semibold">Chess Handle</label>
                   <input
                     type="text"
                     placeholder="Lichess/Chess.com"
                     value={newPlayer.chessUsername}
                     onChange={(e) => setNewPlayer({ ...newPlayer, chessUsername: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#090D12] border border-white/10 text-white focus:outline-none focus:border-[#D4AF7C] text-xs"
+                    className="w-full px-3 py-2 rounded-sm bg-surface-elevated border border-border text-fg placeholder:text-fg-subtle focus:border-accent text-xs"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[#A0A6B0] font-semibold">FIDE ID</label>
+                  <label className="text-fg-muted font-semibold">FIDE ID</label>
                   <input
                     type="text"
                     placeholder="Optional"
                     value={newPlayer.fideId}
                     onChange={(e) => setNewPlayer({ ...newPlayer, fideId: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#090D12] border border-white/10 text-white focus:outline-none focus:border-[#D4AF7C] text-xs"
+                    className="w-full px-3 py-2 rounded-sm bg-surface-elevated border border-border text-fg placeholder:text-fg-subtle focus:border-accent text-xs font-mono"
                   />
                 </div>
               </div>
@@ -891,20 +884,20 @@ export default function AdminParticipantsTab({
                 const curTourn = tournaments.find(t => t.id === newPlayer.tournamentId);
                 if (!curTourn || !curTourn.customFields || curTourn.customFields.length === 0) return null;
                 return (
-                  <div className="p-3.5 rounded-2xl bg-black/40 border border-[#D4AF7C]/30 space-y-3">
-                    <div className="font-bold text-[11px] uppercase tracking-wider text-[#D4AF7C]">
+                  <div className="p-3.5 rounded-sm bg-surface-elevated border border-accent/30 space-y-3">
+                    <div className="font-mono font-bold text-[11px] uppercase tracking-wider text-accent">
                       Tournament Specific Form Responses
                     </div>
                     {curTourn.customFields.map(cf => (
                       <div key={cf.id} className="space-y-1">
-                        <label className="text-[#F5F5F5] font-medium text-[11px] block">
-                          {cf.label} {cf.required && <span className="text-red-400">*</span>}
+                        <label className="text-fg font-medium text-[11px] block">
+                          {cf.label} {cf.required && <span className="text-danger">*</span>}
                         </label>
                         {cf.type === 'select' && cf.options ? (
                           <select
                             value={walkInCustomAnswers[cf.id] || ''}
                             onChange={(e) => setWalkInCustomAnswers({ ...walkInCustomAnswers, [cf.id]: e.target.value })}
-                            className="w-full px-3 py-2 rounded-xl bg-[#090D12] border border-white/10 text-white text-xs"
+                            className="w-full px-3 py-2 rounded-sm bg-surface border border-border text-fg text-xs"
                           >
                             <option value="">-- Choose Option --</option>
                             {cf.options.map((opt, oIdx) => (
@@ -916,7 +909,7 @@ export default function AdminParticipantsTab({
                             type="text"
                             value={walkInCustomAnswers[cf.id] || ''}
                             onChange={(e) => setWalkInCustomAnswers({ ...walkInCustomAnswers, [cf.id]: e.target.value })}
-                            className="w-full px-3 py-2 rounded-xl bg-[#090D12] border border-white/10 text-white text-xs"
+                            className="w-full px-3 py-2 rounded-sm bg-surface border border-border text-fg text-xs"
                           />
                         )}
                       </div>
@@ -926,32 +919,32 @@ export default function AdminParticipantsTab({
               })()}
 
               {/* Immediate Check-In Toggle */}
-              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between">
+              <div className="p-3 rounded-sm bg-success/10 border border-success/30 flex items-center justify-between">
                 <div>
-                  <span className="font-bold text-xs text-emerald-400 block">Immediate Desk Check-In</span>
-                  <span className="text-[10px] text-[#A0A6B0]">Mark player as present and verified for pairing immediately</span>
+                  <span className="font-semibold text-xs text-success block">Immediate Desk Check-In</span>
+                  <span className="text-[10px] text-fg-muted">Mark player as present and verified for pairing immediately</span>
                 </div>
                 <input
                   type="checkbox"
                   checked={walkInImmediateCheckIn}
                   onChange={(e) => setWalkInImmediateCheckIn(e.target.checked)}
-                  className="w-4 h-4 accent-emerald-400 rounded cursor-pointer"
+                  className="w-4 h-4 accent-success rounded-xs cursor-pointer"
                 />
               </div>
 
               {/* Submit Buttons */}
-              <div className="pt-3 border-t border-white/10 flex items-center justify-end gap-2 shrink-0">
+              <div className="pt-3 border-t border-border flex items-center justify-end gap-2 shrink-0">
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="px-4 py-2 rounded-full text-[#A0A6B0] hover:text-white cursor-pointer"
+                  className="px-4 py-2 rounded-sm text-fg-muted hover:text-fg cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={savingWalkIn}
-                  className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full font-bold text-[#0B0F14] bg-[#D4AF7C] hover:bg-[#E6C98A] transition cursor-pointer shadow-lg shadow-[#D4AF7C]/20 disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-sm font-heading font-semibold text-on-accent bg-accent hover:bg-accent-hover transition-colors cursor-pointer disabled:opacity-50"
                 >
                   {savingWalkIn ? (
                     <>
@@ -963,7 +956,6 @@ export default function AdminParticipantsTab({
                   )}
                 </button>
               </div>
-
             </form>
           </div>
         </div>
@@ -971,70 +963,75 @@ export default function AdminParticipantsTab({
 
       {/* MODAL: CUSTOM Q&A INSPECTOR */}
       {inspectingPlayer && (
-        <div 
-          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4"
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Custom Registration Answers"
+          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4"
           onClick={() => setInspectingPlayer(null)}
         >
-          <div 
-            className="w-full max-w-lg bg-[#12161D] rounded-3xl border border-white/15 p-6 sm:p-8 space-y-5 shadow-2xl"
+          <div
+            className="w-full max-w-lg bg-surface rounded-md border border-border-strong p-6 sm:p-8 space-y-5 shadow-md"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
+            <div className="flex items-center justify-between pb-3 border-b border-border">
               <div>
-                <h3 className="font-['Montserrat',sans-serif] text-base font-bold text-[#F5F5F5] flex items-center gap-2">
-                  <Eye className="w-4 h-4 text-cyan-400" />
+                <h3 className="font-heading text-base font-bold text-fg flex items-center gap-2">
+                  <Eye className="w-4 h-4 text-info" />
                   <span>Custom Registration Answers</span>
                 </h3>
-                <p className="text-xs text-[#A0A6B0] mt-0.5">
+                <p className="text-xs text-fg-muted mt-0.5 font-mono">
                   {inspectingPlayer.name} ({inspectingPlayer.rollNumber}) • {inspectingPlayer.ticketId}
                 </p>
               </div>
-              <button 
+              <button
+                type="button"
+                aria-label="Close Inspector"
                 onClick={() => setInspectingPlayer(null)}
-                className="w-7 h-7 rounded-full bg-white/5 hover:bg-white/10 text-[#A0A6B0] hover:text-[#F5F5F5] flex items-center justify-center cursor-pointer"
+                className="w-7 h-7 rounded-sm bg-surface-elevated hover:bg-surface-subtle text-fg-muted hover:text-fg flex items-center justify-center cursor-pointer"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
-              <div className="p-3 rounded-xl bg-black/40 border border-white/5 text-xs">
-                <span className="text-[#A0A6B0] block text-[10px] uppercase font-mono">Tournament</span>
-                <span className="text-[#D4AF7C] font-semibold">{inspectingPlayer.tournament}</span>
+              <div className="p-3 rounded-sm bg-surface-elevated border border-border text-xs">
+                <span className="text-fg-muted block text-[10px] uppercase font-mono">Tournament</span>
+                <span className="text-accent font-semibold">{inspectingPlayer.tournament}</span>
               </div>
 
               {inspectingPlayer.customAnswers && Object.keys(inspectingPlayer.customAnswers).length > 0 ? (
                 Object.entries(inspectingPlayer.customAnswers).map(([key, val], idx) => {
-                  const targetTourn = tournaments.find(t => 
-                    t.id === inspectingPlayer.tournamentId || 
+                  const targetTourn = tournaments.find(t =>
+                    t.id === inspectingPlayer.tournamentId ||
                     t.title.toLowerCase() === inspectingPlayer.tournament.toLowerCase()
                   );
                   const cf = targetTourn?.customFields?.find(f => f.id === key);
                   const displayLabel = cf ? cf.label : key.replace(/_/g, ' ');
 
                   return (
-                    <div key={idx} className="p-3.5 rounded-2xl bg-[#090D12] border border-white/10 space-y-1">
-                      <span className="text-[11px] font-medium text-[#A0A6B0] block leading-snug">
+                    <div key={idx} className="p-3.5 rounded-sm bg-surface-elevated border border-border space-y-1">
+                      <span className="text-[11px] font-medium text-fg-muted block leading-snug">
                         {displayLabel}
                       </span>
-                      <p className="text-sm font-bold text-[#F5F5F5] font-['Inter',sans-serif]">
+                      <p className="text-sm font-semibold text-fg font-body">
                         {val || '<empty response>'}
                       </p>
                     </div>
                   );
                 })
               ) : (
-                <div className="text-center py-6 text-xs text-[#A0A6B0]">
+                <div className="text-center py-6 text-xs text-fg-muted">
                   No custom questions were answered for this player.
                 </div>
               )}
             </div>
 
-            <div className="pt-3 border-t border-white/10 flex items-center justify-end">
+            <div className="pt-3 border-t border-border flex items-center justify-end">
               <button
                 type="button"
                 onClick={() => setInspectingPlayer(null)}
-                className="px-5 py-2 rounded-full font-bold text-[#0B0F14] bg-[#D4AF7C] hover:bg-[#E6C98A] transition cursor-pointer text-xs"
+                className="px-5 py-2 rounded-sm font-heading font-semibold text-on-accent bg-accent hover:bg-accent-hover transition-colors cursor-pointer text-xs"
               >
                 Close Inspector
               </button>

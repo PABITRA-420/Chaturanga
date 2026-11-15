@@ -228,19 +228,18 @@ export default function AdminGalleryTab() {
 
   return (
     <div className="space-y-6">
-      
       {/* Header Banner */}
-      <div className="p-6 rounded-3xl bg-[#10141C] border border-white/10 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-6 rounded-md bg-surface border border-border shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold text-[#D4AF7C] bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xs text-[11px] font-mono font-bold text-accent bg-accent/10 border border-accent/30 mb-2">
             <Camera className="w-3.5 h-3.5" />
             <span>COLLEGIATE TOURNAMENT MEMORIES</span>
           </div>
-          <h2 className="font-['Montserrat',sans-serif] text-xl sm:text-2xl font-black text-[#F5F5F5]">
+          <h2 className="font-heading text-xl sm:text-2xl font-bold text-fg tracking-tight">
             Photo Gallery &amp; Event Archive CMS
           </h2>
-          <p className="text-xs text-[#A0A6B0] mt-1 max-w-2xl font-['Poppins',sans-serif]">
-            Upload and organize collegiate tournament photos, award presentations, blitz arenas, and club room masterclasses at <span className="text-[#D4AF7C]">/gallery</span>.
+          <p className="text-xs text-fg-muted mt-1 max-w-2xl">
+            Upload and organize collegiate tournament photos, award presentations, blitz arenas, and club room masterclasses at <span className="font-mono text-accent">/gallery</span>.
           </p>
         </div>
 
@@ -249,16 +248,17 @@ export default function AdminGalleryTab() {
             type="button"
             onClick={loadPhotos}
             disabled={loading}
-            className="p-2.5 rounded-xl bg-white/[0.05] hover:bg-white/10 border border-white/10 text-[#A0A6B0] hover:text-[#F5F5F5] transition cursor-pointer"
+            className="p-2.5 rounded-sm bg-surface-elevated hover:bg-surface-subtle border border-border text-fg-muted hover:text-fg transition-colors cursor-pointer"
             title="Refresh Photos"
+            aria-label="Refresh Photos"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
-          
+
           <button
             type="button"
             onClick={handleOpenCreateModal}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-[#0B0F14] bg-[#D4AF7C] hover:bg-[#E6C98A] transition cursor-pointer shadow-md shadow-[#D4AF7C]/20 whitespace-nowrap"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-sm text-xs font-heading font-semibold text-on-accent bg-accent hover:bg-accent-hover transition-colors cursor-pointer whitespace-nowrap"
           >
             <Plus className="w-4 h-4" />
             <span>Add / Upload Photo</span>
@@ -268,11 +268,14 @@ export default function AdminGalleryTab() {
 
       {/* Notice Banner */}
       {notice && (
-        <div className={`p-4 rounded-2xl flex items-center gap-3 text-xs font-semibold ${
-          notice.type === 'success' 
-            ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400' 
-            : 'bg-rose-500/10 border border-rose-500/30 text-rose-400'
-        }`}>
+        <div
+          role="status"
+          className={`p-4 rounded-sm flex items-center gap-3 text-xs font-semibold border ${
+            notice.type === 'success'
+              ? 'bg-success/10 border-success/30 text-success'
+              : 'bg-danger/10 border-danger/30 text-danger'
+          }`}
+        >
           {notice.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
           <span>{notice.text}</span>
         </div>
@@ -287,10 +290,10 @@ export default function AdminGalleryTab() {
               key={cat}
               type="button"
               onClick={() => setSelectedCategory(cat)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer whitespace-nowrap ${
+              className={`px-3.5 py-1.5 rounded-sm text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap ${
                 selectedCategory === cat
-                  ? 'bg-[#D4AF7C] text-[#0B0F14] shadow-sm'
-                  : 'bg-[#12161D] text-[#A0A6B0] hover:text-white border border-white/5'
+                  ? 'bg-accent text-on-accent'
+                  : 'bg-surface text-fg-muted hover:text-fg border border-border'
               }`}
             >
               {cat} {cat === 'All' ? `(${photos.length})` : `(${photos.filter(p => p.category === cat).length})`}
@@ -300,13 +303,13 @@ export default function AdminGalleryTab() {
 
         {/* Search Input */}
         <div className="relative min-w-[240px]">
-          <Search className="w-4 h-4 text-[#A0A6B0] absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-fg-subtle absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by title, event, tag..."
-            className="w-full bg-[#12161D] border border-white/10 rounded-xl pl-9 pr-4 py-2 text-xs text-[#F5F5F5] placeholder-[#A0A6B0]/60 focus:outline-none focus:border-[#D4AF7C]/60"
+            className="w-full bg-surface border border-border rounded-sm pl-9 pr-4 py-2 text-xs text-fg placeholder:text-fg-subtle focus:border-accent transition-colors"
           />
         </div>
       </div>
@@ -315,20 +318,20 @@ export default function AdminGalleryTab() {
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="rounded-2xl overflow-hidden bg-[#10141C] border border-white/5 animate-pulse space-y-3">
-              <div className="aspect-[4/3] bg-white/5" />
+            <div key={i} className="rounded-md overflow-hidden bg-surface border border-border animate-pulse space-y-3">
+              <div className="aspect-[4/3] bg-surface-subtle" />
               <div className="p-4 space-y-2">
-                <div className="h-4 w-3/4 bg-white/10 rounded" />
-                <div className="h-3 w-1/2 bg-white/5 rounded" />
+                <div className="h-4 w-3/4 bg-surface-subtle rounded-xs" />
+                <div className="h-3 w-1/2 bg-surface-subtle rounded-xs" />
               </div>
             </div>
           ))}
         </div>
       ) : filteredPhotos.length === 0 ? (
-        <div className="py-16 text-center rounded-3xl bg-[#10141C] border border-white/5 space-y-3">
-          <Camera className="w-10 h-10 text-[#D4AF7C]/40 mx-auto" />
-          <h3 className="font-bold text-sm text-[#F5F5F5]">No Gallery Photos Found</h3>
-          <p className="text-xs text-[#A0A6B0]">
+        <div className="py-16 text-center rounded-md bg-surface border border-border space-y-3">
+          <Camera className="w-9 h-9 text-accent/50 mx-auto" />
+          <h3 className="font-heading font-bold text-sm text-fg">No Gallery Photos Found</h3>
+          <p className="text-xs text-fg-muted">
             {searchQuery ? 'No photos match your search.' : 'Click "Add / Upload Photo" to catalog your first tournament highlight.'}
           </p>
         </div>
@@ -337,35 +340,35 @@ export default function AdminGalleryTab() {
           {filteredPhotos.map((photo) => (
             <div
               key={photo.id}
-              className="rounded-2xl overflow-hidden bg-[#10141C] border border-white/10 hover:border-[#D4AF7C]/40 transition group flex flex-col justify-between"
+              className="rounded-md overflow-hidden bg-surface border border-border hover:border-border-strong transition-colors group flex flex-col justify-between"
             >
               <div>
                 {/* Photo Thumbnail */}
-                <div className="relative aspect-[4/3] w-full bg-black/60 overflow-hidden">
+                <div className="relative aspect-[4/3] w-full bg-surface-elevated overflow-hidden">
                   <img
                     src={photo.imageSrc}
                     alt={photo.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     loading="lazy"
                   />
-                  <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-md border border-white/15 text-[10px] font-bold text-[#D4AF7C]">
+                  <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-xs bg-[#09090B]/85 backdrop-blur-xs border border-white/15 text-[10px] font-mono font-bold text-[#D4AF7C]">
                     {photo.tag}
                   </div>
-                  <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-md border border-white/15 text-[10px] text-[#A0A6B0]">
+                  <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-xs bg-[#09090B]/85 backdrop-blur-xs border border-white/15 text-[10px] font-mono text-zinc-200">
                     {photo.date}
                   </div>
                 </div>
 
                 {/* Content */}
                 <div className="p-4 space-y-2">
-                  <div className="text-[11px] font-bold text-[#D4AF7C] uppercase tracking-wider">
+                  <div className="text-[11px] font-mono font-bold text-accent uppercase tracking-wider">
                     {photo.category} • {photo.tournamentName}
                   </div>
-                  <h4 className="font-['Montserrat',sans-serif] font-bold text-sm text-[#F5F5F5] group-hover:text-[#D4AF7C] transition-colors line-clamp-1">
+                  <h4 className="font-heading font-bold text-sm text-fg group-hover:text-accent transition-colors line-clamp-1">
                     {photo.title}
                   </h4>
                   {photo.description && (
-                    <p className="text-xs text-[#A0A6B0] line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-fg-muted line-clamp-2 leading-relaxed">
                       {photo.description}
                     </p>
                   )}
@@ -373,25 +376,27 @@ export default function AdminGalleryTab() {
               </div>
 
               {/* Actions Footer */}
-              <div className="p-4 pt-0 flex items-center justify-between border-t border-white/5 mt-2">
-                <span className="text-[10px] font-mono text-[#A0A6B0] uppercase">
+              <div className="p-4 pt-3 flex items-center justify-between border-t border-border mt-2">
+                <span className="text-[10px] font-mono text-fg-subtle uppercase">
                   {photo.aspect}
                 </span>
 
-                <div className="flex items-center gap-1.5 pt-3">
+                <div className="flex items-center gap-1.5">
                   <button
                     type="button"
                     onClick={() => handleOpenEditModal(photo)}
-                    className="p-1.5 rounded-lg bg-white/5 hover:bg-[#D4AF7C]/20 hover:text-[#D4AF7C] text-[#A0A6B0] transition cursor-pointer"
+                    className="p-1.5 rounded-sm bg-surface-elevated hover:bg-accent/15 hover:text-accent text-fg-muted border border-border transition-colors cursor-pointer"
                     title="Edit Photo"
+                    aria-label={`Edit ${photo.title}`}
                   >
                     <Edit className="w-3.5 h-3.5" />
                   </button>
                   <button
                     type="button"
                     onClick={() => handleDelete(photo)}
-                    className="p-1.5 rounded-lg bg-white/5 hover:bg-rose-500/20 hover:text-rose-400 text-[#A0A6B0] transition cursor-pointer"
+                    className="p-1.5 rounded-sm bg-surface-elevated hover:bg-danger/15 hover:text-danger text-fg-muted border border-border transition-colors cursor-pointer"
                     title="Delete Photo"
+                    aria-label={`Delete ${photo.title}`}
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -404,24 +409,29 @@ export default function AdminGalleryTab() {
 
       {/* CREATE / EDIT MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-          <div className="relative max-w-2xl w-full my-8 bg-[#12161D] border border-white/15 rounded-3xl shadow-2xl p-6 sm:p-8 space-y-6">
-            
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={editingPhoto ? 'Edit Gallery Photo' : 'Upload and Add Photo'}
+          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto"
+        >
+          <div className="relative max-w-2xl w-full my-8 bg-surface border border-border-strong rounded-md shadow-md p-6 sm:p-8 space-y-6">
             {/* Modal Header */}
-            <div className="flex items-center justify-between pb-4 border-b border-white/10">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 flex items-center justify-center text-[#D4AF7C]">
+            <div className="flex items-center justify-between pb-4 border-b border-border">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-sm bg-accent/10 border border-accent/30 flex items-center justify-center text-accent">
                   <Camera className="w-4 h-4" />
                 </div>
-                <h3 className="font-['Montserrat',sans-serif] font-bold text-lg text-[#F5F5F5]">
+                <h3 className="font-heading font-bold text-lg text-fg">
                   {editingPhoto ? 'Edit Gallery Photo' : 'Upload & Add Photo'}
                 </h3>
               </div>
 
               <button
                 type="button"
+                aria-label="Close modal"
                 onClick={() => setIsModalOpen(false)}
-                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-[#A0A6B0] hover:text-[#F5F5F5] transition cursor-pointer"
+                className="p-2 rounded-sm bg-surface-elevated hover:bg-surface-subtle text-fg-muted hover:text-fg transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -429,19 +439,18 @@ export default function AdminGalleryTab() {
 
             {/* Modal Form */}
             <form onSubmit={handleSave} className="space-y-4">
-              
               {/* Image Uploader & Preview Box */}
-              <div className="p-4 rounded-2xl bg-[#0E1218] border border-white/10 space-y-3">
+              <div className="p-4 rounded-sm bg-surface-elevated border border-border space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-[#D4AF7C] uppercase tracking-wider flex items-center gap-1.5">
+                  <label className="text-[11px] font-mono font-bold text-accent uppercase tracking-wider flex items-center gap-1.5">
                     <ImageIcon className="w-3.5 h-3.5" />
                     <span>Photo Source (Netlify Blobs / Direct URL) *</span>
                   </label>
-                  
+
                   <button
                     type="button"
                     onClick={() => setShowMediaPicker(!showMediaPicker)}
-                    className="text-[11px] font-semibold text-[#D4AF7C] hover:underline flex items-center gap-1 cursor-pointer"
+                    className="text-[11px] font-semibold text-accent hover:underline flex items-center gap-1 cursor-pointer"
                   >
                     <FolderOpen className="w-3.5 h-3.5" />
                     <span>{showMediaPicker ? 'Hide Library' : 'Browse Blobs Library'}</span>
@@ -450,11 +459,11 @@ export default function AdminGalleryTab() {
 
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                   {/* Photo Preview */}
-                  <div className="w-full sm:w-36 h-28 rounded-xl border border-white/15 bg-black/60 overflow-hidden shrink-0 flex items-center justify-center">
+                  <div className="w-full sm:w-36 h-28 rounded-sm border border-border-strong bg-surface overflow-hidden shrink-0 flex items-center justify-center">
                     {formData.imageSrc ? (
                       <img src={formData.imageSrc} alt="Preview" className="w-full h-full object-cover" />
                     ) : (
-                      <div className="text-center p-2 text-[#A0A6B0]/50 text-xs">
+                      <div className="text-center p-2 text-fg-subtle text-xs">
                         <ImageIcon className="w-6 h-6 mx-auto mb-1 opacity-40" />
                         <span>No image</span>
                       </div>
@@ -469,7 +478,7 @@ export default function AdminGalleryTab() {
                       value={formData.imageSrc}
                       onChange={(e) => setFormData(prev => ({ ...prev, imageSrc: e.target.value }))}
                       placeholder="Paste image URL (https://...) or upload below"
-                      className="w-full bg-[#12161D] border border-white/10 rounded-xl px-3 py-2 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                      className="w-full bg-surface border border-border rounded-sm px-3 py-2 text-xs text-fg placeholder:text-fg-subtle focus:border-accent"
                     />
 
                     <div className="flex items-center gap-2">
@@ -484,9 +493,9 @@ export default function AdminGalleryTab() {
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
                         disabled={uploadingImage}
-                        className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-[#F5F5F5] flex items-center gap-1.5 transition cursor-pointer disabled:opacity-50"
+                        className="px-3.5 py-2 rounded-sm bg-surface hover:bg-surface-subtle border border-border text-xs font-semibold text-fg flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
                       >
-                        <Upload className={`w-3.5 h-3.5 ${uploadingImage ? 'animate-bounce' : ''}`} />
+                        <Upload className={`w-3.5 h-3.5 ${uploadingImage ? 'animate-spin' : ''}`} />
                         <span>{uploadingImage ? 'Uploading to Blobs...' : 'Upload from Computer'}</span>
                       </button>
 
@@ -494,7 +503,7 @@ export default function AdminGalleryTab() {
                         <button
                           type="button"
                           onClick={() => setFormData(prev => ({ ...prev, imageSrc: '' }))}
-                          className="px-3 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-semibold transition cursor-pointer"
+                          className="px-3 py-2 rounded-sm bg-danger/10 hover:bg-danger/20 border border-danger/30 text-danger text-xs font-semibold transition-colors cursor-pointer"
                         >
                           Clear
                         </button>
@@ -505,8 +514,8 @@ export default function AdminGalleryTab() {
 
                 {/* Optional Embedded Media Manager Picker */}
                 {showMediaPicker && (
-                  <div className="mt-3 pt-3 border-t border-white/10">
-                    <p className="text-[11px] text-[#A0A6B0] mb-2">Click any photo below to select:</p>
+                  <div className="mt-3 pt-3 border-t border-border">
+                    <p className="text-[11px] text-fg-muted mb-2">Click any photo below to select:</p>
                     <AdminMediaManager
                       selectedUrl={formData.imageSrc}
                       onSelectImage={(url) => {
@@ -520,7 +529,7 @@ export default function AdminGalleryTab() {
 
               {/* Title */}
               <div>
-                <label className="block text-xs font-bold text-[#D4AF7C] uppercase tracking-wider mb-1">
+                <label className="block text-[11px] font-mono font-bold text-accent uppercase tracking-wider mb-1">
                   Photo Caption / Title *
                 </label>
                 <input
@@ -529,20 +538,20 @@ export default function AdminGalleryTab() {
                   value={formData.title}
                   onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                   placeholder="e.g. Final Round Board 1 Clash • Annual Championship 2025"
-                  className="w-full bg-[#0E1218] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                  className="w-full bg-surface-elevated border border-border rounded-sm px-3.5 py-2 text-xs text-fg placeholder:text-fg-subtle focus:border-accent"
                 />
               </div>
 
               {/* Category & Tag & Aspect */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-[#D4AF7C] uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-mono font-bold text-accent uppercase tracking-wider mb-1">
                     Category *
                   </label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as any }))}
-                    className="w-full bg-[#0E1218] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                    className="w-full bg-surface-elevated border border-border rounded-sm px-3.5 py-2 text-xs text-fg focus:border-accent"
                   >
                     <option value="Tournaments">Tournaments</option>
                     <option value="Awards">Awards</option>
@@ -552,7 +561,7 @@ export default function AdminGalleryTab() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#D4AF7C] uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-mono font-bold text-accent uppercase tracking-wider mb-1">
                     Tag / Badge
                   </label>
                   <input
@@ -560,18 +569,18 @@ export default function AdminGalleryTab() {
                     value={formData.tag}
                     onChange={(e) => setFormData(prev => ({ ...prev, tag: e.target.value }))}
                     placeholder="e.g. Championship / Podium"
-                    className="w-full bg-[#0E1218] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                    className="w-full bg-surface-elevated border border-border rounded-sm px-3.5 py-2 text-xs text-fg placeholder:text-fg-subtle focus:border-accent"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#D4AF7C] uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-mono font-bold text-accent uppercase tracking-wider mb-1">
                     Display Aspect
                   </label>
                   <select
                     value={formData.aspect}
                     onChange={(e) => setFormData(prev => ({ ...prev, aspect: e.target.value as any }))}
-                    className="w-full bg-[#0E1218] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                    className="w-full bg-surface-elevated border border-border rounded-sm px-3.5 py-2 text-xs text-fg focus:border-accent"
                   >
                     {ASPECTS.map(a => (
                       <option key={a} value={a}>{a}</option>
@@ -583,7 +592,7 @@ export default function AdminGalleryTab() {
               {/* Tournament Name & Date */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-[#D4AF7C] uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-mono font-bold text-accent uppercase tracking-wider mb-1">
                     Tournament / Event Name
                   </label>
                   <input
@@ -591,12 +600,12 @@ export default function AdminGalleryTab() {
                     value={formData.tournamentName}
                     onChange={(e) => setFormData(prev => ({ ...prev, tournamentName: e.target.value }))}
                     placeholder="e.g. Chaturanga Annual Championship 2025"
-                    className="w-full bg-[#0E1218] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                    className="w-full bg-surface-elevated border border-border rounded-sm px-3.5 py-2 text-xs text-fg placeholder:text-fg-subtle focus:border-accent"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#D4AF7C] uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-mono font-bold text-accent uppercase tracking-wider mb-1">
                     Date String
                   </label>
                   <input
@@ -604,14 +613,14 @@ export default function AdminGalleryTab() {
                     value={formData.date}
                     onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
                     placeholder="e.g. November 2025"
-                    className="w-full bg-[#0E1218] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                    className="w-full bg-surface-elevated border border-border rounded-sm px-3.5 py-2 text-xs text-fg placeholder:text-fg-subtle focus:border-accent"
                   />
                 </div>
               </div>
 
               {/* Description */}
               <div>
-                <label className="block text-xs font-bold text-[#D4AF7C] uppercase tracking-wider mb-1">
+                <label className="block text-[11px] font-mono font-bold text-accent uppercase tracking-wider mb-1">
                   Description / Memory Context
                 </label>
                 <textarea
@@ -619,34 +628,32 @@ export default function AdminGalleryTab() {
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                   placeholder="Context about the moment, players involved, board dynamics..."
-                  className="w-full bg-[#0E1218] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                  className="w-full bg-surface-elevated border border-border rounded-sm px-3.5 py-2 text-xs text-fg placeholder:text-fg-subtle focus:border-accent"
                 />
               </div>
 
               {/* Modal Actions */}
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-[#A0A6B0] hover:text-[#F5F5F5] bg-white/5 hover:bg-white/10 transition cursor-pointer"
+                  className="px-4 py-2 rounded-sm text-xs font-semibold text-fg-muted hover:text-fg bg-surface-elevated border border-border transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2 rounded-xl text-xs font-bold text-[#0B0F14] bg-[#D4AF7C] hover:bg-[#E6C98A] transition cursor-pointer shadow-md shadow-[#D4AF7C]/20 disabled:opacity-50 flex items-center gap-2"
+                  className="px-5 py-2 rounded-sm text-xs font-heading font-semibold text-on-accent bg-accent hover:bg-accent-hover transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-2"
                 >
                   {saving && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
                   <span>{saving ? 'Saving Photo...' : editingPhoto ? 'Update Photo' : 'Add Photo'}</span>
                 </button>
               </div>
-
             </form>
           </div>
         </div>
       )}
-
     </div>
   );
 }

@@ -247,19 +247,23 @@ export default function AdminPairingsTab({ tournaments }: AdminPairingsTabProps)
   return (
     <div className="space-y-6" data-testid="admin-pairings-tab">
       {/* Top Controls: Tournament Selector & Action Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[#10141C] border border-white/10">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-md bg-surface border border-border">
         <div className="space-y-1">
-          <label className="text-[11px] font-bold uppercase tracking-wider text-[#D4AF7C] flex items-center gap-1.5">
+          <label
+            htmlFor="pairings-tournament-select"
+            className="text-[11px] font-mono font-bold uppercase tracking-wider text-accent flex items-center gap-1.5"
+          >
             <Trophy className="w-3.5 h-3.5" />
             <span>Select Active Tournament</span>
           </label>
           <select
+            id="pairings-tournament-select"
             value={selectedTournamentId}
             onChange={e => setSelectedTournamentId(e.target.value)}
-            className="w-full sm:w-80 px-3.5 py-2 rounded-xl bg-black/60 border border-white/15 text-sm font-semibold text-white focus:outline-none focus:border-[#D4AF7C] transition"
+            className="w-full sm:w-80 px-3.5 py-2 rounded-sm bg-surface-elevated border border-border text-sm font-semibold text-fg focus:border-accent transition-colors"
           >
             {tournaments.map(t => (
-              <option key={t.id} value={t.id}>
+              <option key={t.id} value={t.id} className="bg-surface text-fg">
                 {t.title} ({t.status})
               </option>
             ))}
@@ -271,7 +275,7 @@ export default function AdminPairingsTab({ tournaments }: AdminPairingsTabProps)
             type="button"
             onClick={() => loadPairings(selectedTournamentId)}
             disabled={loading}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-[#A0A6B0] hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-sm text-xs font-semibold text-fg-muted hover:text-fg bg-surface-elevated hover:bg-surface-subtle border border-border transition-colors cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span>Sync</span>
@@ -281,7 +285,7 @@ export default function AdminPairingsTab({ tournaments }: AdminPairingsTabProps)
             type="button"
             onClick={handleGeneratePairings}
             disabled={submitting}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-black bg-[#D4AF7C] hover:bg-[#E5C396] shadow-md shadow-[#D4AF7C]/20 transition disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-sm text-xs font-heading font-semibold text-on-accent bg-accent hover:bg-accent-hover transition-colors disabled:opacity-50 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Generate Next Round</span>
@@ -292,10 +296,11 @@ export default function AdminPairingsTab({ tournaments }: AdminPairingsTabProps)
       {/* Feedback Alert */}
       {feedback && (
         <div
-          className={`p-4 rounded-xl border flex items-center gap-3 text-xs font-semibold ${
+          role="status"
+          className={`p-4 rounded-sm border flex items-center gap-3 text-xs font-semibold ${
             feedback.type === 'success'
-              ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300'
-              : 'bg-red-950/40 border-red-500/40 text-red-300'
+              ? 'bg-success/10 border-success/30 text-success'
+              : 'bg-danger/10 border-danger/30 text-danger'
           }`}
         >
           {feedback.type === 'success' ? (
@@ -310,7 +315,7 @@ export default function AdminPairingsTab({ tournaments }: AdminPairingsTabProps)
       {/* Round Tabs Navigation */}
       {rounds.length > 0 ? (
         <div className="space-y-6">
-          <div className="flex items-center gap-2 border-b border-white/10 pb-3 overflow-x-auto">
+          <div className="flex items-center gap-2 border-b border-border pb-3 overflow-x-auto">
             {rounds.map(r => {
               const isActive = r.round_number === activeRoundNumber;
               return (
@@ -318,20 +323,24 @@ export default function AdminPairingsTab({ tournaments }: AdminPairingsTabProps)
                   key={r.id}
                   type="button"
                   onClick={() => setActiveRoundNumber(r.round_number)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition cursor-pointer shrink-0 ${
+                  className={`px-4 py-2 rounded-sm text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer shrink-0 ${
                     isActive
-                      ? 'bg-[#D4AF7C] text-black shadow-md shadow-[#D4AF7C]/20'
-                      : 'bg-white/5 text-[#A0A6B0] hover:text-white hover:bg-white/10 border border-white/10'
+                      ? 'bg-accent text-on-accent'
+                      : 'bg-surface text-fg-muted hover:text-fg hover:bg-surface-subtle border border-border'
                   }`}
                 >
                   <span>Round {r.round_number}</span>
                   <span
-                    className={`px-1.5 py-0.5 rounded text-[10px] uppercase font-mono ${
+                    className={`px-1.5 py-0.5 rounded-xs text-[10px] uppercase font-mono ${
                       r.status === 'published'
-                        ? 'bg-emerald-500/20 text-emerald-400'
+                        ? isActive
+                          ? 'bg-black/15 text-on-accent'
+                          : 'bg-success/15 text-success'
                         : r.status === 'draft'
-                        ? 'bg-amber-500/20 text-amber-300'
-                        : 'bg-slate-500/20 text-slate-300'
+                        ? isActive
+                          ? 'bg-black/15 text-on-accent'
+                          : 'bg-warning/15 text-warning'
+                        : 'bg-surface-elevated text-fg-muted'
                     }`}
                   >
                     {r.status}
@@ -344,23 +353,24 @@ export default function AdminPairingsTab({ tournaments }: AdminPairingsTabProps)
           {/* Active Round Controls Header */}
           {currentRound && (
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-              <div className="md:col-span-7 p-5 rounded-2xl bg-[#12161F] border border-white/10 flex flex-wrap items-center justify-between gap-4">
+              <div className="md:col-span-7 p-5 rounded-md bg-surface border border-border flex flex-wrap items-center justify-between gap-4">
                 <div>
-                  <div className="text-xs font-bold uppercase tracking-wider text-[#D4AF7C]">
+                  <div className="text-xs font-mono font-bold uppercase tracking-wider text-accent">
                     Round {currentRound.round_number} Controller
                   </div>
-                  <div className="text-sm font-semibold text-white mt-0.5">
+                  <div className="text-sm font-semibold text-fg mt-0.5 font-mono tabular-nums">
                     Total Boards: {currentRound.matches?.length || 0}
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-1.5 text-xs text-[#A0A6B0]">
-                    <Clock className="w-3.5 h-3.5 text-[#D4AF7C]" />
+                  <div className="flex items-center gap-1.5 text-xs text-fg-muted">
+                    <Clock className="w-3.5 h-3.5 text-accent" />
                     <select
+                      aria-label="Round duration in minutes"
                       value={durationMinutes}
                       onChange={e => setDurationMinutes(Number(e.target.value))}
-                      className="px-2.5 py-1 rounded-lg bg-black/50 border border-white/10 text-xs text-white"
+                      className="px-2.5 py-1 rounded-sm bg-surface-elevated border border-border text-xs text-fg font-mono"
                     >
                       <option value={15}>15 Mins</option>
                       <option value={25}>25 Mins</option>
@@ -374,9 +384,9 @@ export default function AdminPairingsTab({ tournaments }: AdminPairingsTabProps)
                       type="button"
                       onClick={() => handlePublishRound(currentRound.id)}
                       disabled={submitting}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-black bg-emerald-400 hover:bg-emerald-300 transition shadow-md shadow-emerald-500/20"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-sm text-xs font-heading font-semibold text-on-success bg-success hover:bg-success/90 transition-colors cursor-pointer"
                     >
-                      <Play className="w-3.5 h-3.5 fill-black" />
+                      <Play className="w-3.5 h-3.5" />
                       <span>Publish Round</span>
                     </button>
                   )}
@@ -394,13 +404,13 @@ export default function AdminPairingsTab({ tournaments }: AdminPairingsTabProps)
           )}
 
           {/* Matches Pairings Table */}
-          <div className="rounded-2xl border border-white/10 bg-[#0E121A] overflow-hidden shadow-xl">
-            <div className="p-4 bg-black/40 border-b border-white/10 flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#D4AF7C]">
-                Board Pairings & Score Entry
+          <div className="rounded-md border border-border bg-surface overflow-hidden shadow-xs">
+            <div className="p-4 bg-surface-elevated border-b border-border flex items-center justify-between">
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-accent">
+                Board Pairings &amp; Score Entry
               </span>
               {swapMatch1 && (
-                <span className="text-xs text-amber-400 font-semibold animate-pulse">
+                <span className="text-xs font-mono text-warning font-semibold">
                   Swap active: select target board
                 </span>
               )}
@@ -408,7 +418,7 @@ export default function AdminPairingsTab({ tournaments }: AdminPairingsTabProps)
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-white/[0.03] text-[11px] uppercase tracking-wider text-[#D4AF7C] font-semibold border-b border-white/10">
+                <thead className="bg-surface-elevated text-[10px] font-mono uppercase tracking-wider text-fg-muted font-semibold border-b border-border">
                   <tr>
                     <th className="py-3 px-3 text-center">Board</th>
                     <th className="py-3 px-4">White Player</th>
@@ -417,7 +427,7 @@ export default function AdminPairingsTab({ tournaments }: AdminPairingsTabProps)
                     <th className="py-3 px-3 text-center">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-border">
                   {(currentRound?.matches || []).map(m => {
                     const isBye = m.black_player_name === 'BYE' || m.result === '1-0_bye';
                     const isSwappingThis = swapMatch1 === m.id;
@@ -425,19 +435,19 @@ export default function AdminPairingsTab({ tournaments }: AdminPairingsTabProps)
                     return (
                       <tr
                         key={m.id}
-                        className={`hover:bg-white/[0.02] transition-colors ${
-                          isSwappingThis ? 'bg-amber-500/10' : ''
+                        className={`hover:bg-surface-elevated/60 transition-colors ${
+                          isSwappingThis ? 'bg-warning/10' : ''
                         }`}
                       >
                         {/* Board Number */}
-                        <td className="py-3 px-3 text-center font-mono font-bold text-[#D4AF7C]">
+                        <td className="py-3 px-3 text-center font-mono font-bold text-accent tabular-nums">
                           #{m.board_number}
                         </td>
 
                         {/* White Player */}
-                        <td className="py-3 px-4 font-semibold text-white">
+                        <td className="py-3 px-4 font-semibold text-fg">
                           <div className="flex items-center gap-2">
-                            <span className="w-2.5 h-2.5 rounded-full bg-white border border-slate-400" />
+                            <span className="w-2.5 h-2.5 rounded-xs bg-white border border-border-strong shrink-0" />
                             <span>{m.white_player_name}</span>
                           </div>
                         </td>
@@ -445,11 +455,11 @@ export default function AdminPairingsTab({ tournaments }: AdminPairingsTabProps)
                         {/* Result Score Pills */}
                         <td className="py-3 px-4 text-center">
                           {isBye ? (
-                            <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                            <span className="px-2.5 py-1 rounded-xs text-xs font-mono font-bold bg-warning/15 text-warning border border-warning/30">
                               1.0 BYE
                             </span>
                           ) : (
-                            <div className="inline-flex items-center gap-1 bg-black/60 p-1 rounded-lg border border-white/10">
+                            <div className="inline-flex items-center gap-1 bg-surface-elevated p-1 rounded-sm border border-border">
                               {(['1-0', '0.5-0.5', '0-1', '1F-0F', '0F-1F'] as MatchResult[]).map(
                                 r => {
                                   const isSelected = m.result === r;
@@ -459,10 +469,10 @@ export default function AdminPairingsTab({ tournaments }: AdminPairingsTabProps)
                                       key={r}
                                       type="button"
                                       onClick={() => handleRecordScore(m.id, r)}
-                                      className={`px-2 py-0.5 rounded text-[11px] font-mono font-bold transition ${
+                                      className={`px-2 py-0.5 rounded-xs text-[11px] font-mono font-bold transition-colors cursor-pointer ${
                                         isSelected
-                                          ? 'bg-[#D4AF7C] text-black shadow-sm'
-                                          : 'text-slate-300 hover:text-white hover:bg-white/10'
+                                          ? 'bg-accent text-on-accent'
+                                          : 'text-fg-muted hover:text-fg hover:bg-surface-subtle'
                                       }`}
                                     >
                                       {displayLabel}
@@ -475,10 +485,10 @@ export default function AdminPairingsTab({ tournaments }: AdminPairingsTabProps)
                         </td>
 
                         {/* Black Player */}
-                        <td className="py-3 px-4 font-semibold text-white">
+                        <td className="py-3 px-4 font-semibold text-fg">
                           <div className="flex items-center gap-2">
-                            <span className="w-2.5 h-2.5 rounded-full bg-slate-900 border border-slate-600" />
-                            <span className={isBye ? 'text-amber-400/80 font-mono italic' : ''}>
+                            <span className="w-2.5 h-2.5 rounded-xs bg-zinc-900 border border-border-strong shrink-0" />
+                            <span className={isBye ? 'text-warning font-mono italic' : ''}>
                               {m.black_player_name || 'BYE'}
                             </span>
                           </div>
@@ -492,10 +502,11 @@ export default function AdminPairingsTab({ tournaments }: AdminPairingsTabProps)
                                 type="button"
                                 onClick={() => handleSwapClick(m.id)}
                                 title="Swap White Player with another board"
-                                className={`p-1.5 rounded-lg border transition ${
+                                aria-label="Swap White Player with another board"
+                                className={`p-1.5 rounded-sm border transition-colors cursor-pointer ${
                                   isSwappingThis
-                                    ? 'bg-amber-500 text-black border-amber-400'
-                                    : 'text-[#A0A6B0] hover:text-white bg-white/5 border-white/10'
+                                    ? 'bg-warning text-on-accent border-warning'
+                                    : 'text-fg-muted hover:text-fg bg-surface-elevated border-border'
                                 }`}
                               >
                                 <ArrowLeftRight className="w-3.5 h-3.5" />
@@ -509,7 +520,8 @@ export default function AdminPairingsTab({ tournaments }: AdminPairingsTabProps)
                                 setPgnInput(m.pgn || '');
                               }}
                               title="Attach PGN Match Record"
-                              className="p-1.5 rounded-lg text-[#D4AF7C] hover:text-[#F3E2B8] bg-[#D4AF7C]/10 hover:bg-[#D4AF7C]/20 border border-[#D4AF7C]/30 transition"
+                              aria-label="Attach PGN Match Record"
+                              className="p-1.5 rounded-sm text-accent bg-accent/10 hover:bg-accent/20 border border-accent/30 transition-colors cursor-pointer"
                             >
                               <FileText className="w-3.5 h-3.5" />
                             </button>
@@ -525,9 +537,9 @@ export default function AdminPairingsTab({ tournaments }: AdminPairingsTabProps)
 
           {/* Live Standings Preview */}
           {standings.length > 0 && (
-            <div className="rounded-2xl border border-white/10 bg-[#0E121A] p-5 space-y-4">
+            <div className="rounded-md border border-border bg-surface p-5 space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#D4AF7C]">
+                <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-accent">
                   <Award className="w-4 h-4" />
                   <span>Collegiate Standings (Top 5 Leaderboard)</span>
                 </div>
@@ -535,7 +547,7 @@ export default function AdminPairingsTab({ tournaments }: AdminPairingsTabProps)
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-white/[0.02] text-[11px] uppercase tracking-wider text-[#A0A6B0] border-b border-white/10">
+                  <thead className="bg-surface-elevated text-[10px] font-mono uppercase tracking-wider text-fg-muted border-b border-border">
                     <tr>
                       <th className="py-2 px-3">#</th>
                       <th className="py-2 px-3">Player</th>
@@ -544,16 +556,16 @@ export default function AdminPairingsTab({ tournaments }: AdminPairingsTabProps)
                       <th className="py-2 px-3 font-mono">Sonneborn-Berger</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5">
+                  <tbody className="divide-y divide-border">
                     {standings.slice(0, 5).map(s => (
                       <tr key={s.playerId}>
-                        <td className="py-2 px-3 font-bold text-[#D4AF7C]">#{s.rank}</td>
-                        <td className="py-2 px-3 font-semibold text-white">{s.playerName}</td>
-                        <td className="py-2 px-3 font-mono font-bold text-amber-300">{s.points}</td>
-                        <td className="py-2 px-3 font-mono text-slate-300">
+                        <td className="py-2 px-3 font-mono font-bold text-accent tabular-nums">#{s.rank}</td>
+                        <td className="py-2 px-3 font-semibold text-fg">{s.playerName}</td>
+                        <td className="py-2 px-3 font-mono font-bold text-accent tabular-nums">{s.points}</td>
+                        <td className="py-2 px-3 font-mono text-fg-muted tabular-nums">
                           {s.tieBreaks.buchholzCut1}
                         </td>
-                        <td className="py-2 px-3 font-mono text-slate-300">
+                        <td className="py-2 px-3 font-mono text-fg-muted tabular-nums">
                           {s.tieBreaks.sonnebornBerger}
                         </td>
                       </tr>
@@ -565,10 +577,10 @@ export default function AdminPairingsTab({ tournaments }: AdminPairingsTabProps)
           )}
         </div>
       ) : (
-        <div className="p-12 text-center rounded-2xl bg-[#10141C] border border-white/10 space-y-3">
-          <Trophy className="w-10 h-10 text-[#D4AF7C]/40 mx-auto" />
-          <h3 className="text-base font-bold text-white">No Rounds Generated Yet</h3>
-          <p className="text-xs text-[#A0A6B0] max-w-sm mx-auto">
+        <div className="p-12 text-center rounded-md bg-surface border border-border space-y-3">
+          <Trophy className="w-9 h-9 text-accent/50 mx-auto" />
+          <h3 className="font-heading text-base font-bold text-fg">No Rounds Generated Yet</h3>
+          <p className="text-xs text-fg-muted max-w-sm mx-auto">
             Ready to start the tournament? Click &quot;Generate Next Round&quot; above to create Round 1 pairings from the registered player list.
           </p>
         </div>
@@ -577,22 +589,26 @@ export default function AdminPairingsTab({ tournaments }: AdminPairingsTabProps)
       {/* PGN Attachment Modal */}
       {editingPgnMatch && (
         <div
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm p-4 flex items-center justify-center animate-in fade-in duration-200"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Attach PGN"
+          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs p-4 flex items-center justify-center"
           onClick={() => setEditingPgnMatch(null)}
         >
           <div
-            className="w-full max-w-lg bg-[#141922] rounded-2xl p-6 border border-[#D4AF7C]/40 space-y-4 shadow-2xl"
+            className="w-full max-w-lg bg-surface rounded-md p-6 border border-border-strong space-y-4 shadow-md"
             onClick={e => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
-              <h4 className="text-sm font-bold text-white">
+            <div className="flex items-center justify-between pb-3 border-b border-border">
+              <h4 className="font-heading text-sm font-bold text-fg">
                 Attach PGN: Board {editingPgnMatch.board_number} ({editingPgnMatch.white_player_name} vs{' '}
                 {editingPgnMatch.black_player_name})
               </h4>
               <button
                 type="button"
+                aria-label="Close PGN Modal"
                 onClick={() => setEditingPgnMatch(null)}
-                className="text-slate-400 hover:text-white"
+                className="p-1 rounded-sm text-fg-muted hover:text-fg hover:bg-surface-subtle transition-colors cursor-pointer"
               >
                 ✕
               </button>
@@ -603,21 +619,21 @@ export default function AdminPairingsTab({ tournaments }: AdminPairingsTabProps)
               value={pgnInput}
               onChange={e => setPgnInput(e.target.value)}
               placeholder="Paste PGN move notation here (e.g. 1. e4 e5 2. Nf3 Nc6 1-0)..."
-              className="w-full p-3 rounded-xl bg-black/60 border border-white/15 text-xs font-mono text-slate-200 focus:outline-none focus:border-[#D4AF7C]"
+              className="w-full p-3 rounded-sm bg-surface-elevated border border-border text-xs font-mono text-fg placeholder:text-fg-subtle focus:border-accent"
             />
 
             <div className="flex justify-end gap-3 pt-2">
               <button
                 type="button"
                 onClick={() => setEditingPgnMatch(null)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
+                className="px-4 py-2 rounded-sm text-xs font-semibold text-fg-muted hover:text-fg cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleSavePgn}
-                className="px-5 py-2 rounded-xl text-xs font-bold text-black bg-[#D4AF7C] hover:bg-[#E5C396]"
+                className="px-5 py-2 rounded-sm text-xs font-heading font-semibold text-on-accent bg-accent hover:bg-accent-hover cursor-pointer"
               >
                 Save PGN Match
               </button>

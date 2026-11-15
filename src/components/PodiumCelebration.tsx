@@ -27,10 +27,8 @@ export const fireGoldenConfetti = async () => {
     const mod = await import('canvas-confetti');
     const confetti = mod.default || mod;
 
-    // Campus collegiate colors: Gold (#D4AF7C, #E6C98A), Emerald (#10B981), Cyan (#06B6D4)
-    const colors = ['#D4AF7C', '#E6C98A', '#10B981', '#06B6D4', '#F5F5F5'];
+    const colors = ['#D4AF7C', '#8F6415', '#10B981', '#1D4ED8', '#FAFAFA'];
 
-    // Cannon 1: Left Burst
     confetti({
       particleCount: 50,
       angle: 60,
@@ -39,7 +37,6 @@ export const fireGoldenConfetti = async () => {
       colors,
     });
 
-    // Cannon 2: Right Burst
     confetti({
       particleCount: 50,
       angle: 120,
@@ -48,7 +45,6 @@ export const fireGoldenConfetti = async () => {
       colors,
     });
 
-    // Cannon 3: High Center Golden Shower
     setTimeout(() => {
       confetti({
         particleCount: 75,
@@ -60,7 +56,6 @@ export const fireGoldenConfetti = async () => {
       });
     }, 200);
   } catch (err) {
-    // Graceful fallback for headless environments
     console.debug('Confetti effect bypassed in current environment:', err);
   }
 };
@@ -81,7 +76,6 @@ export const PodiumCelebration: React.FC<PodiumCelebrationProps> = ({
     }
   }, [autoTrigger, winners, triggerConfetti]);
 
-  // Extract 1st, 2nd, 3rd place winners
   const first = winners[0];
   const second = winners[1];
   const third = winners[2];
@@ -91,112 +85,111 @@ export const PodiumCelebration: React.FC<PodiumCelebrationProps> = ({
   return (
     <div
       data-testid="podium-celebration"
-      className={`rounded-3xl p-6 sm:p-8 bg-gradient-to-b from-[#141A24]/90 via-[#0E121A]/95 to-[#070A0E] border border-[#D4AF7C]/30 shadow-2xl backdrop-blur-xl relative overflow-hidden space-y-8 ${className}`}
+      className={`rounded-md p-6 sm:p-8 bg-surface border border-border-strong relative overflow-hidden space-y-8 ${className}`}
     >
-      {/* Background radial gold glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-48 bg-[#D4AF7C]/10 blur-3xl pointer-events-none rounded-full" />
-
       {/* Header with Title and Celebrate Button */}
-      <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/10 pb-5">
+      <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border pb-5">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold text-[#D4AF7C] bg-[#D4AF7C]/15 border border-[#D4AF7C]/40 mb-2">
-            <Crown className="w-3.5 h-3.5 text-[#D4AF7C]" />
+          <div className="inline-flex items-center gap-2 text-[11px] font-mono font-bold text-accent uppercase tracking-[0.2em] mb-1.5">
+            <Crown className="w-3.5 h-3.5 text-accent" aria-hidden="true" />
             <span>Collegiate Arena Champions</span>
           </div>
-          <h3 className="text-xl sm:text-2xl font-black text-white font-['Montserrat',sans-serif] tracking-wide">
+          <h3 className="text-xl sm:text-2xl font-extrabold text-fg font-heading tracking-tight">
             {tournamentTitle ? `${tournamentTitle} • Podium Ceremony` : 'Tournament Grand Champions'}
           </h3>
-          <p className="text-xs text-[#A0A6B0] mt-1">
+          <p className="text-xs text-fg-muted font-body mt-1">
             Official inter-department podium standings, cash prizes, and merit credentials.
           </p>
         </div>
 
         <button
+          type="button"
           onClick={triggerConfetti}
           aria-label="Celebrate Champions with golden confetti bursts"
-          className="self-start sm:self-auto inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold text-[#0B0F14] bg-gradient-to-r from-[#D4AF7C] via-[#E6C98A] to-[#D4AF7C] hover:brightness-110 shadow-lg shadow-[#D4AF7C]/30 transition transform active:scale-95 cursor-pointer"
+          className="self-start sm:self-auto inline-flex items-center gap-2 px-5 py-2.5 rounded-xs text-xs font-bold uppercase tracking-wider text-on-accent bg-accent hover:bg-accent-hover transition-colors cursor-pointer btn-tactile"
         >
-          <Sparkles className="w-4 h-4 text-[#0B0F14]" />
+          <Sparkles className="w-4 h-4" aria-hidden="true" />
           <span>Celebrate Champions</span>
         </button>
       </div>
 
-      {/* 3D-Style Podium Stand Display */}
-      <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-5 items-end pt-4">
-        {/* 2nd Place (Silver - Left) */}
+      {/* Podium Stand Display */}
+      <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-5 items-end pt-2">
+        {/* 2nd Place (Silver) */}
         {second && (
           <div
             data-testid="podium-card-silver"
-            className="order-2 md:order-1 rounded-2xl p-5 bg-[#10141C]/80 border border-slate-300/30 flex flex-col justify-between space-y-4 shadow-lg hover:border-slate-300/50 transition-all duration-300 md:min-h-[220px]"
+            className="order-2 md:order-1 rounded-sm p-5 bg-surface-elevated border border-border flex flex-col justify-between space-y-4 md:min-h-[210px]"
           >
-            <div className="flex items-center justify-between">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-300/20 text-slate-200 border border-slate-300/30">
-                <Medal className="w-3.5 h-3.5 text-slate-300" />
+            <div className="flex items-center justify-between gap-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xs text-xs font-mono font-bold bg-surface text-fg border border-border">
+                <Medal className="w-3.5 h-3.5 text-fg-muted" aria-hidden="true" />
                 <span>2nd (Silver)</span>
               </span>
               {second.rating && (
-                <span className="font-mono text-xs px-2 py-0.5 rounded bg-white/5 text-[#A0A6B0] border border-white/10">
+                <span className="font-mono text-xs px-2 py-0.5 rounded-xs bg-surface text-fg-muted border border-border">
                   Rating: {second.rating}
                 </span>
               )}
             </div>
 
             <div className="space-y-1">
-              <h4 className="text-lg font-bold text-white truncate" title={second.name}>
+              <h4 className="text-lg font-bold text-fg font-heading truncate" title={second.name}>
                 {second.name || 'Runner Up'}
               </h4>
-              <p className="text-xs text-slate-300 font-medium">
+              <p className="text-xs text-fg-muted font-mono">
                 {second.dept ? `Dept: ${second.dept}` : 'Collegiate Contender'}
               </p>
               {second.score && (
-                <p className="text-xs font-mono text-[#A0A6B0]">
-                  Score: <span className="text-white font-bold">{second.score}</span>
+                <p className="text-xs font-mono text-fg-muted">
+                  Score: <span className="text-fg font-bold">{second.score}</span>
                 </p>
               )}
             </div>
 
             {second.prize && (
-              <div className="pt-2 border-t border-white/10 text-xs font-semibold text-slate-300">
+              <div className="pt-2 border-t border-border text-xs font-mono font-semibold text-fg">
                 Prize: {second.prize}
               </div>
             )}
           </div>
         )}
 
-        {/* 1st Place (Gold Champion - Center Elevated) */}
+        {/* 1st Place (Champion) */}
         {first && (
           <div
             data-testid="podium-card-gold"
-            className="order-1 md:order-2 rounded-2xl p-6 bg-gradient-to-b from-[#D4AF7C]/20 via-[#141A24]/90 to-[#0B0F14] border-2 border-[#D4AF7C] flex flex-col justify-between space-y-4 shadow-2xl shadow-[#D4AF7C]/20 hover:shadow-[#D4AF7C]/30 transition-all duration-300 md:min-h-[260px] md:-translate-y-3"
+            className="order-1 md:order-2 rounded-sm p-6 bg-surface-elevated border-2 border-accent flex flex-col justify-between space-y-4 md:min-h-[250px] relative"
           >
-            <div className="flex items-center justify-between">
-              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-[#D4AF7C] text-[#0B0F14] shadow-md shadow-[#D4AF7C]/40">
-                <Trophy className="w-4 h-4 text-[#0B0F14]" />
+            <div className="absolute top-0 left-0 right-0 h-1 bg-accent" aria-hidden="true" />
+            <div className="flex items-center justify-between gap-2">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xs text-xs font-mono font-extrabold bg-accent text-on-accent">
+                <Trophy className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>1st (Grand Champion)</span>
               </span>
               {first.rating && (
-                <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-[#D4AF7C]/20 text-[#D4AF7C] font-bold border border-[#D4AF7C]/30">
+                <span className="font-mono text-xs px-2 py-0.5 rounded-xs bg-surface text-accent font-bold border border-accent/40">
                   Rating: {first.rating}
                 </span>
               )}
             </div>
 
             <div className="space-y-1.5">
-              <h4 className="text-xl sm:text-2xl font-black text-[#F5F5F5] truncate" title={first.name}>
+              <h4 className="text-xl sm:text-2xl font-extrabold text-fg font-heading truncate" title={first.name}>
                 {first.name || 'Grand Champion'}
               </h4>
-              <p className="text-xs text-[#D4AF7C] font-bold tracking-wide">
+              <p className="text-xs text-accent font-mono font-bold tracking-wide">
                 {first.dept ? `Department of ${first.dept}` : 'Inter-Department Champion'}
               </p>
               {first.score && (
-                <p className="text-xs font-mono text-[#A0A6B0]">
-                  Final Score: <span className="text-[#F5F5F5] font-bold text-sm">{first.score}</span>
+                <p className="text-xs font-mono text-fg-muted">
+                  Final Score: <span className="text-fg font-bold text-sm">{first.score}</span>
                 </p>
               )}
             </div>
 
             {first.prize && (
-              <div className="pt-2.5 border-t border-[#D4AF7C]/30 text-xs font-bold text-[#E6C98A] flex items-center justify-between">
+              <div className="pt-2.5 border-t border-border text-xs font-mono font-bold text-accent flex items-center justify-between">
                 <span>Award:</span>
                 <span>{first.prize}</span>
               </div>
@@ -204,40 +197,40 @@ export const PodiumCelebration: React.FC<PodiumCelebrationProps> = ({
           </div>
         )}
 
-        {/* 3rd Place (Bronze - Right) */}
+        {/* 3rd Place (Bronze) */}
         {third && (
           <div
             data-testid="podium-card-bronze"
-            className="order-3 rounded-2xl p-5 bg-[#10141C]/80 border border-amber-700/40 flex flex-col justify-between space-y-4 shadow-lg hover:border-amber-700/60 transition-all duration-300 md:min-h-[200px]"
+            className="order-3 rounded-sm p-5 bg-surface-elevated border border-warning/40 flex flex-col justify-between space-y-4 md:min-h-[195px]"
           >
-            <div className="flex items-center justify-between">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-700/20 text-amber-400 border border-amber-700/40">
-                <Award className="w-3.5 h-3.5 text-amber-500" />
+            <div className="flex items-center justify-between gap-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xs text-xs font-mono font-bold bg-warning/10 text-warning border border-warning/30">
+                <Award className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>3rd (Bronze)</span>
               </span>
               {third.rating && (
-                <span className="font-mono text-xs px-2 py-0.5 rounded bg-white/5 text-[#A0A6B0] border border-white/10">
+                <span className="font-mono text-xs px-2 py-0.5 rounded-xs bg-surface text-fg-muted border border-border">
                   Rating: {third.rating}
                 </span>
               )}
             </div>
 
             <div className="space-y-1">
-              <h4 className="text-lg font-bold text-white truncate" title={third.name}>
+              <h4 className="text-lg font-bold text-fg font-heading truncate" title={third.name}>
                 {third.name || '2nd Runner Up'}
               </h4>
-              <p className="text-xs text-amber-500 font-medium">
+              <p className="text-xs text-warning font-mono font-medium">
                 {third.dept ? `Dept: ${third.dept}` : 'Collegiate Contender'}
               </p>
               {third.score && (
-                <p className="text-xs font-mono text-[#A0A6B0]">
-                  Score: <span className="text-white font-bold">{third.score}</span>
+                <p className="text-xs font-mono text-fg-muted">
+                  Score: <span className="text-fg font-bold">{third.score}</span>
                 </p>
               )}
             </div>
 
             {third.prize && (
-              <div className="pt-2 border-t border-white/10 text-xs font-semibold text-amber-400">
+              <div className="pt-2 border-t border-border text-xs font-mono font-semibold text-warning">
                 Prize: {third.prize}
               </div>
             )}
@@ -247,5 +240,3 @@ export const PodiumCelebration: React.FC<PodiumCelebrationProps> = ({
     </div>
   );
 };
-
-export default PodiumCelebration;

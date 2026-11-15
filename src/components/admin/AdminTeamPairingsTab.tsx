@@ -116,61 +116,67 @@ export const AdminTeamPairingsTab: React.FC<AdminTeamPairingsTabProps> = ({
   return (
     <div className="space-y-6">
       {/* Top Header & Sub-nav */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-5 rounded-2xl bg-zinc-900/80 border border-zinc-800 backdrop-blur-md">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-5 rounded-md bg-surface border border-border">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
+          <div className="p-2.5 rounded-sm bg-accent/10 text-accent border border-accent/30">
             <Shield className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-white tracking-wide">
+            <h2 className="font-heading text-xl font-bold text-fg tracking-tight">
               Collegiate Team Swiss Arena
             </h2>
-            <p className="text-xs text-zinc-400">
-              FIDE Olympiad 4-Board Dutch Swiss Pairing Engine, Color Alternation & Standings
+            <p className="text-xs text-fg-muted">
+              FIDE Olympiad 4-Board Dutch Swiss Pairing Engine, Color Alternation &amp; Standings
             </p>
           </div>
         </div>
 
         {/* Sub-nav Buttons */}
-        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-zinc-950/80 border border-zinc-800 self-start sm:self-auto">
+        <div className="flex items-center gap-1 p-1 rounded-sm bg-surface-elevated border border-border self-start sm:self-auto">
           <button
+            type="button"
             onClick={() => setActiveSubTab('pairings')}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 ${
+            className={`px-3.5 py-1.5 rounded-xs text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${
               activeSubTab === 'pairings'
-                ? 'bg-amber-500 text-zinc-950 font-bold shadow-sm'
-                : 'text-zinc-400 hover:text-white'
+                ? 'bg-accent text-on-accent'
+                : 'text-fg-muted hover:text-fg hover:bg-surface-subtle'
             }`}
           >
             <Swords className="w-3.5 h-3.5" />
-            <span>Pairings & Scoring</span>
+            <span>Pairings &amp; Scoring</span>
           </button>
           <button
+            type="button"
             onClick={() => setActiveSubTab('standings')}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 ${
+            className={`px-3.5 py-1.5 rounded-xs text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${
               activeSubTab === 'standings'
-                ? 'bg-amber-500 text-zinc-950 font-bold shadow-sm'
-                : 'text-zinc-400 hover:text-white'
+                ? 'bg-accent text-on-accent'
+                : 'text-fg-muted hover:text-fg hover:bg-surface-subtle'
             }`}
           >
             <Trophy className="w-3.5 h-3.5" />
             <span>Live Standings</span>
           </button>
           <button
+            type="button"
             onClick={() => setActiveSubTab('rosters')}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 ${
+            className={`px-3.5 py-1.5 rounded-xs text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${
               activeSubTab === 'rosters'
-                ? 'bg-amber-500 text-zinc-950 font-bold shadow-sm'
-                : 'text-zinc-400 hover:text-white'
+                ? 'bg-accent text-on-accent'
+                : 'text-fg-muted hover:text-fg hover:bg-surface-subtle'
             }`}
           >
             <Users className="w-3.5 h-3.5" />
-            <span>Teams & Rosters</span>
+            <span>Teams &amp; Rosters</span>
           </button>
         </div>
       </div>
 
       {feedbackMessage && (
-        <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center gap-2">
+        <div
+          role="status"
+          className="p-3.5 rounded-sm bg-warning/10 border border-warning/30 text-warning text-xs font-medium flex items-center gap-2"
+        >
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{feedbackMessage}</span>
         </div>
@@ -180,18 +186,19 @@ export const AdminTeamPairingsTab: React.FC<AdminTeamPairingsTabProps> = ({
       {activeSubTab === 'pairings' && (
         <div className="space-y-6">
           {/* Round Controls */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-zinc-900/60 border border-zinc-800">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-md bg-surface border border-border">
             {/* Round Pills */}
             <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
-              <span className="text-xs text-zinc-400 font-medium mr-1">Rounds:</span>
+              <span className="text-xs font-mono uppercase tracking-wider text-fg-muted font-medium mr-1">Rounds:</span>
               {rounds.map(r => (
                 <button
+                  type="button"
                   key={r.round_number}
                   onClick={() => setCurrentRoundNumber(r.round_number)}
-                  className={`px-3 py-1 rounded-md text-xs font-mono font-bold transition ${
+                  className={`px-3 py-1 rounded-xs text-xs font-mono font-bold transition-colors cursor-pointer ${
                     currentRoundNumber === r.round_number
-                      ? 'bg-zinc-100 text-zinc-950'
-                      : 'bg-zinc-800/80 text-zinc-400 hover:text-zinc-200 border border-zinc-700/60'
+                      ? 'bg-primary text-on-primary'
+                      : 'bg-surface-elevated text-fg-muted hover:text-fg border border-border'
                   }`}
                 >
                   Round {r.round_number}
@@ -202,8 +209,9 @@ export const AdminTeamPairingsTab: React.FC<AdminTeamPairingsTabProps> = ({
             {/* Action Buttons */}
             <div className="flex items-center gap-3">
               <button
+                type="button"
                 onClick={handleGenerateNextRound}
-                className="px-4 py-2 rounded-lg text-xs font-bold text-zinc-950 bg-amber-400 hover:bg-amber-300 transition flex items-center gap-1.5 shadow-md shadow-amber-400/20 cursor-pointer"
+                className="px-4 py-2 rounded-sm text-xs font-heading font-semibold text-on-accent bg-accent hover:bg-accent-hover transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 <span>Generate Round {rounds.length + 1} Pairings</span>
@@ -217,18 +225,18 @@ export const AdminTeamPairingsTab: React.FC<AdminTeamPairingsTabProps> = ({
               {activeRound.matches.map(match => (
                 <div
                   key={match.id}
-                  className="rounded-xl border border-zinc-800 bg-zinc-900/70 overflow-hidden shadow-lg backdrop-blur-sm"
+                  className="rounded-md border border-border bg-surface overflow-hidden shadow-xs"
                 >
                   {/* Match Header Banner */}
-                  <div className="p-4 bg-zinc-900/90 border-b border-zinc-800 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                  <div className="p-4 bg-surface-elevated border-b border-border flex flex-col md:flex-row md:items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <span className="font-mono text-xs px-2.5 py-1 rounded-md bg-zinc-800 text-zinc-300 font-bold border border-zinc-700">
+                      <span className="font-mono text-xs px-2.5 py-1 rounded-xs bg-surface text-fg font-bold border border-border tabular-nums">
                         Table {match.table_number}
                       </span>
-                      <div className="flex items-center gap-2 text-sm sm:text-base font-bold text-white">
-                        <span className="text-amber-400">{match.white_team_name}</span>
-                        <span className="text-zinc-500 font-normal">vs</span>
-                        <span className={match.is_bye ? 'text-zinc-500 italic' : 'text-zinc-200'}>
+                      <div className="flex items-center gap-2 text-sm sm:text-base font-heading font-bold text-fg">
+                        <span className="text-accent">{match.white_team_name}</span>
+                        <span className="text-fg-subtle font-normal text-xs font-mono">vs</span>
+                        <span className={match.is_bye ? 'text-fg-subtle italic' : 'text-fg'}>
                           {match.black_team_name}
                         </span>
                       </div>
@@ -236,19 +244,19 @@ export const AdminTeamPairingsTab: React.FC<AdminTeamPairingsTabProps> = ({
 
                     {/* Match Result Badge */}
                     <div className="flex items-center gap-3 self-start md:self-auto">
-                      <div className="font-mono text-xs px-3 py-1 rounded-full font-bold border flex items-center gap-1.5 bg-zinc-950/70 text-zinc-200 border-zinc-700">
+                      <div className="font-mono text-xs px-3 py-1 rounded-xs font-semibold border flex items-center gap-1.5 bg-surface text-fg border-border tabular-nums">
                         <span>Score: {match.white_game_points.toFixed(1)} - {match.black_game_points.toFixed(1)}</span>
                         {match.outcome === 'white_win' && (
-                          <span className="text-emerald-400">({match.white_team_dept} Win +2 MP)</span>
+                          <span className="text-success">({match.white_team_dept} Win +2 MP)</span>
                         )}
                         {match.outcome === 'black_win' && (
-                          <span className="text-emerald-400">({match.black_team_dept} Win +2 MP)</span>
+                          <span className="text-success">({match.black_team_dept} Win +2 MP)</span>
                         )}
                         {match.outcome === 'draw' && (
-                          <span className="text-amber-400">(Draw 1-1 MP)</span>
+                          <span className="text-warning">(Draw 1-1 MP)</span>
                         )}
                         {match.outcome === 'bye' && (
-                          <span className="text-amber-400">(Bye +2 MP)</span>
+                          <span className="text-warning">(Bye +2 MP)</span>
                         )}
                       </div>
                     </div>
@@ -256,23 +264,25 @@ export const AdminTeamPairingsTab: React.FC<AdminTeamPairingsTabProps> = ({
 
                   {/* Boards List (if not bye) */}
                   {!match.is_bye && match.boards && match.boards.length > 0 && (
-                    <div className="divide-y divide-zinc-800/50">
+                    <div className="divide-y divide-border">
                       {match.boards.map(board => (
                         <div
                           key={board.board_number}
-                          className="p-3 sm:px-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-zinc-950/30 hover:bg-zinc-800/20 transition-colors"
+                          className="p-3 sm:px-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface hover:bg-surface-elevated/50 transition-colors"
                         >
                           <div className="flex items-center gap-3">
-                            <span className="font-mono text-xs text-zinc-500 w-16">
+                            <span className="font-mono text-xs text-fg-subtle w-16 tabular-nums">
                               Board {board.board_number}
                             </span>
-                            <div className="text-xs sm:text-sm">
-                              <span className="font-medium text-zinc-200">
-                                ⚪ {board.white_player.name}
+                            <div className="text-xs sm:text-sm flex flex-wrap items-center gap-2">
+                              <span className="inline-flex items-center gap-1.5 font-medium text-fg">
+                                <span className="w-2.5 h-2.5 rounded-xs bg-white border border-border-strong shrink-0" />
+                                {board.white_player.name}
                               </span>
-                              <span className="text-zinc-500 mx-2">vs</span>
-                              <span className="font-medium text-zinc-300">
-                                ⚫ {board.black_player.name}
+                              <span className="text-fg-subtle font-mono text-xs">vs</span>
+                              <span className="inline-flex items-center gap-1.5 font-medium text-fg-muted">
+                                <span className="w-2.5 h-2.5 rounded-xs bg-zinc-900 border border-border-strong shrink-0" />
+                                {board.black_player.name}
                               </span>
                             </div>
                           </div>
@@ -281,18 +291,19 @@ export const AdminTeamPairingsTab: React.FC<AdminTeamPairingsTabProps> = ({
                           <div className="flex items-center gap-1.5 self-end sm:self-auto">
                             {(['pending', '1-0', '0.5-0.5', '0-1'] as MatchResult[]).map(res => (
                               <button
+                                type="button"
                                 key={res}
                                 onClick={() => handleScoreChange(match.id, board.board_number, res)}
-                                className={`px-2.5 py-1 rounded text-xs font-mono font-bold transition cursor-pointer ${
+                                className={`px-2.5 py-1 rounded-xs text-xs font-mono font-bold transition-colors cursor-pointer ${
                                   board.result === res
                                     ? res === '1-0'
-                                      ? 'bg-emerald-600 text-white'
+                                      ? 'bg-success text-on-success'
                                       : res === '0-1'
-                                      ? 'bg-rose-600 text-white'
+                                      ? 'bg-danger text-on-danger'
                                       : res === '0.5-0.5'
-                                      ? 'bg-amber-600 text-white'
-                                      : 'bg-zinc-700 text-white'
-                                    : 'bg-zinc-800/60 text-zinc-400 hover:text-white border border-zinc-700/50'
+                                      ? 'bg-warning text-on-warning'
+                                      : 'bg-primary text-on-primary'
+                                    : 'bg-surface-elevated text-fg-muted hover:text-fg border border-border'
                                 }`}
                               >
                                 {res}
@@ -305,7 +316,7 @@ export const AdminTeamPairingsTab: React.FC<AdminTeamPairingsTabProps> = ({
                   )}
 
                   {match.is_bye && (
-                    <div className="p-4 text-xs text-zinc-400 bg-zinc-950/40 italic">
+                    <div className="p-4 text-xs text-fg-muted bg-surface-elevated/60 italic">
                       Odd-team round bye allocated to {match.white_team_name}. Automatically awarded 2.0 Match Points and 4.0 Game Points.
                     </div>
                   )}
@@ -313,7 +324,7 @@ export const AdminTeamPairingsTab: React.FC<AdminTeamPairingsTabProps> = ({
               ))}
             </div>
           ) : (
-            <div className="p-8 text-center text-zinc-500 bg-zinc-900/40 border border-zinc-800 rounded-xl">
+            <div className="p-8 text-center text-fg-muted bg-surface border border-border rounded-md">
               No matches found for Round {currentRoundNumber}.
             </div>
           )}
@@ -336,31 +347,31 @@ export const AdminTeamPairingsTab: React.FC<AdminTeamPairingsTabProps> = ({
             {teams.map(team => (
               <div
                 key={team.id}
-                className="p-4 rounded-xl border border-zinc-800 bg-zinc-900/70 space-y-3"
+                className="p-4 rounded-md border border-border bg-surface space-y-3"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 font-bold">
+                  <span className="font-mono text-xs px-2 py-0.5 rounded-xs bg-accent/10 text-accent border border-accent/30 font-bold">
                     {team.department_code}
                   </span>
-                  <span className="text-xs text-zinc-500 font-mono">
+                  <span className="text-xs text-fg-muted font-mono tabular-nums">
                     Rating: {team.seed_rating || 1700}
                   </span>
                 </div>
                 <div>
-                  <h4 className="font-bold text-white text-sm">{team.department_name}</h4>
-                  <p className="text-xs text-zinc-400 mt-0.5">Captain: {team.captain_name}</p>
+                  <h4 className="font-heading font-bold text-fg text-sm">{team.department_name}</h4>
+                  <p className="text-xs text-fg-muted mt-0.5">Captain: {team.captain_name}</p>
                 </div>
 
-                <div className="pt-2 border-t border-zinc-800 space-y-1">
-                  <div className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
-                    Active Boards (1-4) & Reserves
+                <div className="pt-2 border-t border-border space-y-1">
+                  <div className="text-[11px] font-mono font-semibold uppercase tracking-wider text-fg-subtle">
+                    Active Boards (1-4) &amp; Reserves
                   </div>
                   {team.roster.map(p => (
                     <div key={p.id} className="flex items-center justify-between text-xs py-0.5">
-                      <span className="text-zinc-300">
+                      <span className="text-fg">
                         {p.is_reserve ? `R${p.board_number - 4}` : `B${p.board_number}`}. {p.name}
                       </span>
-                      <span className="font-mono text-zinc-500 text-[11px]">{p.rating}</span>
+                      <span className="font-mono text-fg-muted text-[11px] tabular-nums">{p.rating}</span>
                     </div>
                   ))}
                 </div>

@@ -5,18 +5,14 @@ import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import type { TeamMember } from '@/data/teamData';
-import { 
-  Users, 
-  Trophy, 
-  Shield, 
-  Sparkles, 
-  GraduationCap, 
-  ArrowRight, 
-  Award, 
-  Swords, 
-  CheckCircle2, 
-  BookOpen 
+import {
+  Users,
+  ArrowRight,
+  Swords,
+  CheckCircle2,
+  BookOpen,
 } from 'lucide-react';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 export default function TeamView() {
   const [members, setMembers] = useState<TeamMember[]>([]);
@@ -56,30 +52,40 @@ export default function TeamView() {
     return m.category === activeTab;
   });
 
+  const getChessPieceGlyph = (piece?: string) => {
+    switch (piece) {
+      case 'King': return '♚';
+      case 'Queen': return '♛';
+      case 'Rook': return '♜';
+      case 'Bishop': return '♝';
+      default: return '♞';
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[#0B0F14] text-[#F5F5F5] antialiased selection:bg-[#D4AF7C] selection:text-[#0B0F14] relative overflow-x-hidden font-['Inter',sans-serif]">
+    <div className="min-h-screen bg-bg text-fg antialiased selection:bg-accent selection:text-on-accent relative overflow-x-hidden font-ui">
       <Navbar />
 
       <main id="main-content" className="w-full pt-28 pb-20">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
           {/* Header Banner */}
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-white/10 pb-8">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-border pb-8">
             <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold text-[#D4AF7C] bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 uppercase tracking-widest">
-                <Users className="w-3.5 h-3.5" />
-                <span>EXECUTIVE COUNCIL & LEADERSHIP</span>
+              <div className="inline-flex items-center gap-2 text-[11px] font-mono font-bold text-accent uppercase tracking-[0.2em]">
+                <Users className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>EXECUTIVE COUNCIL &amp; LEADERSHIP</span>
               </div>
-              <h1 className="font-['Montserrat',sans-serif] font-black text-3xl sm:text-5xl text-[#F5F5F5] tracking-tight">
-                The Arbiters <span className="text-[#D4AF7C]">&</span> Guardians of 64 Squares
+              <h1 className="font-heading font-extrabold text-3xl sm:text-5xl text-fg tracking-tight">
+                The Arbiters <span className="text-accent">&amp;</span> Guardians of 64 Squares
               </h1>
-              <p className="text-sm sm:text-base text-[#A0A6B0] max-w-2xl font-['Poppins',sans-serif] leading-relaxed">
+              <p className="text-sm sm:text-base text-fg-muted max-w-2xl font-body leading-relaxed">
                 Meet the collegiate organizers, FIDE-certified arbiters, and faculty patrons dedicated to advancing competitive chess culture at Jalpaiguri Government Engineering College.
               </p>
             </div>
 
             {/* Filter Pills */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-2">
               {[
                 { id: 'all', label: 'All Leadership' },
                 { id: 'core', label: 'Core Executive' },
@@ -92,10 +98,10 @@ export default function TeamView() {
                     key={tab.id}
                     type="button"
                     onClick={() => setActiveTab(tab.id as any)}
-                    className={`px-4 py-2 rounded-2xl text-xs sm:text-sm font-semibold transition cursor-pointer whitespace-nowrap ${
+                    className={`px-3.5 py-2 rounded-xs text-xs font-mono font-semibold transition-colors cursor-pointer whitespace-nowrap border ${
                       activeTab === tab.id
-                        ? 'bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] text-[#0B0F14] font-bold shadow-lg shadow-[#D4AF7C]/20'
-                        : 'bg-[#12161D] text-[#A0A6B0] hover:text-[#F5F5F5] hover:bg-white/5 border border-white/10'
+                        ? 'bg-primary text-on-primary border-primary'
+                        : 'bg-surface text-fg-muted hover:text-fg border-border hover:border-border-strong'
                     }`}
                   >
                     {tab.label}{count !== null ? ` (${count})` : ''}
@@ -111,45 +117,33 @@ export default function TeamView() {
               Array.from({ length: 8 }).map((_, i) => (
                 <div
                   key={`skeleton-${i}`}
-                  className="rounded-3xl bg-[#12161D] border border-white/10 p-6 flex flex-col justify-between animate-pulse space-y-4"
+                  className="rounded-md bg-surface border border-border p-6 flex flex-col justify-between space-y-4"
                 >
                   <div className="space-y-4">
                     <div className="flex items-start justify-between gap-3">
-                      <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10" />
-                      <div className="w-20 h-6 rounded-full bg-white/5" />
+                      <Skeleton className="w-14 h-14" />
+                      <Skeleton className="w-20 h-6" />
                     </div>
                     <div className="space-y-2">
-                      <div className="h-5 w-3/4 rounded-md bg-white/10" />
-                      <div className="h-3.5 w-1/2 rounded-md bg-white/5" />
-                      <div className="h-3 w-2/3 rounded-md bg-white/5" />
+                      <Skeleton className="h-5 w-3/4" />
+                      <Skeleton className="h-3.5 w-1/2" />
                     </div>
-                    <div className="space-y-1.5">
-                      <div className="h-3 w-full rounded bg-white/5" />
-                      <div className="h-3 w-5/6 rounded bg-white/5" />
-                    </div>
-                    <div className="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1.5">
-                      <div className="h-3 w-1/3 rounded bg-white/10" />
-                      <div className="h-3 w-2/3 rounded bg-white/5" />
-                    </div>
-                  </div>
-                  <div className="pt-4 border-t border-white/10 flex items-center justify-between">
-                    <div className="h-3 w-20 rounded bg-white/5" />
-                    <div className="h-3 w-16 rounded bg-white/5" />
+                    <Skeleton className="h-14 w-full" />
                   </div>
                 </div>
               ))
             ) : filteredMembers.length === 0 ? (
-              <div className="col-span-full py-16 px-6 text-center rounded-3xl bg-[#12161D]/60 border border-white/5 space-y-4">
-                <div className="w-16 h-16 rounded-2xl bg-[#D4AF7C]/10 border border-[#D4AF7C]/20 flex items-center justify-center mx-auto text-[#D4AF7C]">
-                  <Users className="w-8 h-8 opacity-60" />
+              <div className="col-span-full py-16 px-6 text-center rounded-md bg-surface border border-border space-y-4">
+                <div className="w-14 h-14 rounded-sm bg-surface-elevated border border-border flex items-center justify-center mx-auto text-accent">
+                  <Users className="w-7 h-7 opacity-70" aria-hidden="true" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-lg font-bold font-['Montserrat',sans-serif] text-white/90">
+                  <h3 className="text-lg font-bold font-heading text-fg">
                     No Team Members Found
                   </h3>
-                  <p className="text-sm text-[#A0A6B0] max-w-md mx-auto font-['Poppins',sans-serif]">
-                    {activeTab === 'all' 
-                      ? 'Leadership roster is being finalized for the upcoming collegiate session.' 
+                  <p className="text-sm text-fg-muted max-w-md mx-auto font-body">
+                    {activeTab === 'all'
+                      ? 'Leadership roster is being finalized for the upcoming collegiate session.'
                       : `No members currently listed under the ${activeTab} category.`}
                   </p>
                 </div>
@@ -157,9 +151,9 @@ export default function TeamView() {
                   <button
                     type="button"
                     onClick={() => setActiveTab('all')}
-                    className="text-xs font-semibold text-[#D4AF7C] hover:underline cursor-pointer"
+                    className="text-xs font-mono font-semibold text-accent hover:underline cursor-pointer"
                   >
-                    View all leadership &rarr;
+                    View all leadership →
                   </button>
                 )}
               </div>
@@ -167,58 +161,52 @@ export default function TeamView() {
               filteredMembers.map((member) => (
                 <div
                   key={member.id}
-                  className="group relative rounded-3xl bg-[#12161D] border border-white/10 hover:border-[#D4AF7C]/50 p-6 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/60 overflow-hidden"
+                  className="group relative rounded-md bg-surface border border-border hover:border-border-strong p-6 flex flex-col justify-between transition-colors overflow-hidden"
                 >
-                  {/* Gold Sheen on Hover */}
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-[#D4AF7C]/5 rounded-full blur-2xl group-hover:bg-[#D4AF7C]/15 transition-all pointer-events-none" />
-
                   <div className="space-y-4 relative z-10">
                     
-                    {/* Top Avatar with Portrait and Insignia */}
+                    {/* Top Avatar + Elo */}
                     <div className="flex items-start justify-between gap-3">
                       <div className="relative">
                         {member.imageUrl ? (
-                          <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-[#D4AF7C]/50 shadow-md group-hover:border-[#D4AF7C] transition-all bg-black/60">
+                          <div className="w-14 h-14 rounded-sm overflow-hidden border border-border-strong bg-surface-elevated">
                             <img
                               src={member.imageUrl}
                               alt={member.name}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                              className="w-full h-full object-cover"
                               loading="lazy"
                             />
                           </div>
                         ) : (
-                          <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${member.avatarColor} border-2 border-[#D4AF7C]/50 flex items-center justify-center text-[#0B0F14] font-black text-2xl shadow-md`}>
-                            {member.chessPiece === 'King' ? '♚' :
-                             member.chessPiece === 'Queen' ? '♛' :
-                             member.chessPiece === 'Rook' ? '♜' :
-                             member.chessPiece === 'Bishop' ? '♝' : '♞'}
+                          <div className="w-14 h-14 rounded-sm bg-surface-elevated border border-border-strong flex items-center justify-center text-accent font-serif text-2xl">
+                            {getChessPieceGlyph(member.chessPiece)}
                           </div>
                         )}
                         
-                        {/* Chess Piece Insignia Badge */}
-                        <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#12161D] border-2 border-[#D4AF7C] flex items-center justify-center text-[10px] text-[#D4AF7C]" title={member.titleBadge}>
-                          {member.chessPiece === 'King' ? '♚' :
-                           member.chessPiece === 'Queen' ? '♛' :
-                           member.chessPiece === 'Rook' ? '♜' :
-                           member.chessPiece === 'Bishop' ? '♝' : '♞'}
+                        <div
+                          className="absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-xs bg-surface border border-border-strong flex items-center justify-center text-[11px] text-accent"
+                          title={member.titleBadge}
+                          aria-hidden="true"
+                        >
+                          {getChessPieceGlyph(member.chessPiece)}
                         </div>
                       </div>
 
                       <div className="text-right">
-                        <span className="inline-block px-3 py-1 rounded-full text-xs font-mono font-bold text-[#F3E2B8] bg-[#D4AF7C]/15 border border-[#D4AF7C]/40 shadow-sm">
+                        <span className="inline-block px-2.5 py-1 rounded-xs text-xs font-mono font-bold text-accent bg-surface-elevated border border-border tabular-nums">
                           {member.elo}
                         </span>
                         {member.fideId && (
-                          <div className="text-xs text-[#A0A6B0] font-mono mt-1">
+                          <div className="text-[11px] text-fg-muted font-mono mt-1">
                             {member.fideId.startsWith('@') ? (
                               <a
                                 href={`https://lichess.org/@/${member.fideId.replace('@', '')}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-sky-300 hover:text-sky-200 hover:underline inline-flex items-center gap-0.5"
+                                className="text-info hover:underline inline-flex items-center gap-0.5"
                               >
                                 <span>Lichess: {member.fideId}</span>
-                                <span>↗</span>
+                                <span aria-hidden="true">↗</span>
                               </a>
                             ) : (
                               <span>FIDE: {member.fideId}</span>
@@ -230,43 +218,43 @@ export default function TeamView() {
 
                     {/* Name & Role */}
                     <div className="space-y-1">
-                      <h2 className="font-['Montserrat',sans-serif] font-bold text-lg text-[#F5F5F5] group-hover:text-[#D4AF7C] transition-colors">
+                      <h2 className="font-heading font-bold text-lg text-fg group-hover:text-accent transition-colors">
                         {member.name}
                       </h2>
-                      <div className="text-xs font-bold text-[#D4AF7C]">
+                      <div className="text-xs font-mono font-bold text-accent">
                         {member.role}
                       </div>
-                      <div className="text-xs text-[#A0A6B0]">
+                      <div className="text-xs text-fg-muted font-body">
                         {member.year} • {member.titleBadge || 'Club Member'}
                       </div>
                     </div>
 
                     {/* Bio */}
-                    <p className="text-xs text-[#A0A6B0] font-['Poppins',sans-serif] leading-relaxed line-clamp-3">
+                    <p className="text-xs text-fg-muted font-body leading-relaxed line-clamp-3">
                       {member.bio}
                     </p>
 
                     {/* Favorite Opening */}
-                    <div className="p-3 rounded-xl bg-black/50 border border-white/5 space-y-1">
-                      <div className="text-xs font-bold uppercase tracking-wider text-[#D4AF7C] flex items-center gap-1.5">
-                        <Swords className="w-3.5 h-3.5 text-[#D4AF7C]" />
+                    <div className="p-3 rounded-sm bg-surface-elevated border border-border space-y-1">
+                      <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-accent flex items-center gap-1.5">
+                        <Swords className="w-3.5 h-3.5 text-accent" aria-hidden="true" />
                         <span>Signature Opening</span>
                       </div>
-                      <div className="text-xs text-[#F5F5F5] font-mono font-medium truncate">
+                      <div className="text-xs text-fg font-mono font-medium truncate">
                         {member.favoriteOpening}
                       </div>
                     </div>
 
-                    {/* Core Achievements */}
+                    {/* Key Highlights */}
                     <div className="space-y-1.5 pt-1">
-                      <div className="text-xs font-bold uppercase tracking-wider text-[#D4AF7C]">
+                      <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-fg-muted">
                         Key Highlights
                       </div>
-                      <ul className="space-y-1 text-xs text-[#A0A6B0]">
+                      <ul className="space-y-1 text-xs text-fg-muted">
                         {member.achievements.slice(0, 2).map((ach, idx) => (
                           <li key={idx} className="flex items-start gap-1.5">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-[#D4AF7C] shrink-0 mt-0.5" />
-                            <span className="leading-tight">{ach}</span>
+                            <CheckCircle2 className="w-3.5 h-3.5 text-accent shrink-0 mt-0.5" aria-hidden="true" />
+                            <span className="leading-tight font-body">{ach}</span>
                           </li>
                         ))}
                       </ul>
@@ -274,10 +262,10 @@ export default function TeamView() {
 
                   </div>
 
-                  {/* Card Footer: Category badge */}
-                  <div className="pt-4 mt-5 border-t border-white/10 flex items-center justify-between text-xs text-[#A0A6B0] relative z-10">
-                    <span className="capitalize font-medium">{member.category} Committee</span>
-                    <span className="text-[#D4AF7C] font-semibold">Active 2026</span>
+                  {/* Card Footer */}
+                  <div className="pt-4 mt-5 border-t border-border flex items-center justify-between text-xs font-mono text-fg-muted">
+                    <span className="capitalize font-medium">{member.category}</span>
+                    <span className="text-accent font-semibold">Active 2026</span>
                   </div>
                 </div>
               ))
@@ -285,18 +273,19 @@ export default function TeamView() {
           </div>
 
           {/* Club Governance & Elections Callout */}
-          <section className="p-8 sm:p-10 rounded-3xl bg-gradient-to-r from-[#12161D] via-[#161B22] to-[#12161D] border border-white/10 space-y-6 shadow-2xl">
+          <section className="p-8 sm:p-10 rounded-md bg-surface border border-border-strong relative overflow-hidden">
+            <div className="absolute top-0 bottom-0 left-0 w-1.5 bg-accent" aria-hidden="true" />
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               
               <div className="lg:col-span-8 space-y-3">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold text-[#D4AF7C] bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 uppercase tracking-widest">
-                  <BookOpen className="w-3.5 h-3.5" />
-                  <span>CLUB GOVERNANCE & ELECTIONS</span>
+                <div className="inline-flex items-center gap-2 text-[11px] font-mono font-bold text-accent uppercase tracking-[0.2em]">
+                  <BookOpen className="w-3.5 h-3.5" aria-hidden="true" />
+                  <span>CLUB GOVERNANCE &amp; ELECTIONS</span>
                 </div>
-                <h2 className="font-['Montserrat',sans-serif] text-2xl sm:text-3xl font-bold text-[#F5F5F5]">
+                <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-fg">
                   Interested in Joining the Executive Council?
                 </h2>
-                <p className="text-xs sm:text-sm text-[#A0A6B0] leading-relaxed max-w-2xl font-['Poppins',sans-serif]">
+                <p className="text-xs sm:text-sm text-fg-muted leading-relaxed max-w-2xl font-body">
                   Elections and arbiter council inductions are conducted every Spring semester. Active club members with demonstrable tournament participation or arbitration background are eligible to run for coordinator and executive positions.
                 </p>
               </div>
@@ -304,10 +293,10 @@ export default function TeamView() {
               <div className="lg:col-span-4 flex lg:justify-end">
                 <Link
                   href="/register"
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-xs font-bold text-[#0B0F14] bg-[#D4AF7C] hover:bg-[#E6C98A] transition-all shadow-md shadow-[#D4AF7C]/20 hover:scale-[1.02] cursor-pointer"
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xs text-xs font-bold uppercase tracking-wider text-on-accent bg-accent hover:bg-accent-hover transition-colors cursor-pointer"
                 >
                   <span>Join Chaturanga First</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4" aria-hidden="true" />
                 </Link>
               </div>
 

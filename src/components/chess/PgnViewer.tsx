@@ -38,12 +38,11 @@ export const PgnViewer: React.FC<PgnViewerProps> = ({
   });
   const [boardOrientation, setBoardOrientation] = useState<'white' | 'black'>(initialOrientation);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [playSpeed, setPlaySpeed] = useState<number>(1500); // 1.5s default
+  const [playSpeed, setPlaySpeed] = useState<number>(1500);
 
   const moveListRef = useRef<HTMLDivElement>(null);
   const activeMoveRef = useRef<HTMLButtonElement>(null);
 
-  // Group moves into pairs (1. e4 e5)
   const movePairs = useMemo(() => {
     const pairs: { moveNumber: number; white?: ParsedMove; black?: ParsedMove }[] = [];
     for (let i = 0; i < game.moves.length; i += 2) {
@@ -56,12 +55,10 @@ export const PgnViewer: React.FC<PgnViewerProps> = ({
     return pairs;
   }, [game.moves]);
 
-  // Current board state and move metadata
   const currentMove = currentMoveIndex > 0 ? game.moves[currentMoveIndex - 1] : null;
   const currentFen = currentMove ? currentMove.fen : game.initialFen;
   const lastMove = currentMove ? { from: currentMove.from, to: currentMove.to } : null;
 
-  // Auto-play interval
   useEffect(() => {
     if (!isPlaying) return;
 
@@ -83,7 +80,6 @@ export const PgnViewer: React.FC<PgnViewerProps> = ({
     return () => clearInterval(timer);
   }, [isPlaying, currentMoveIndex, game.moves.length, playSpeed]);
 
-  // Auto-scroll move list to keep active move in view
   useEffect(() => {
     if (activeMoveRef.current && moveListRef.current) {
       activeMoveRef.current.scrollIntoView({
@@ -93,7 +89,6 @@ export const PgnViewer: React.FC<PgnViewerProps> = ({
     }
   }, [currentMoveIndex]);
 
-  // Navigation handlers
   const handleFirst = () => {
     setIsPlaying(false);
     setCurrentMoveIndex(0);
@@ -129,7 +124,6 @@ export const PgnViewer: React.FC<PgnViewerProps> = ({
     setBoardOrientation(prev => (prev === 'white' ? 'black' : 'white'));
   };
 
-  // Touch & Swipe navigation for mobile viewports
   const touchStartCoords = useRef<{ x: number; y: number } | null>(null);
 
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
@@ -145,19 +139,15 @@ export const PgnViewer: React.FC<PgnViewerProps> = ({
     const deltaY = touch.clientY - touchStartCoords.current.y;
     touchStartCoords.current = null;
 
-    // Horizontal swipe threshold: 40px
     if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
       if (deltaX < 0) {
-        // Swiped left -> advance move
         handleNext();
       } else {
-        // Swiped right -> previous move
         handlePrev();
       }
       return;
     }
 
-    // Tap detection (minimal movement)
     if (Math.abs(deltaX) < 15 && Math.abs(deltaY) < 15) {
       const target = e.currentTarget.getBoundingClientRect();
       const relativeX = touch.clientX - target.left;
@@ -171,37 +161,37 @@ export const PgnViewer: React.FC<PgnViewerProps> = ({
 
   return (
     <div
-      className={`rounded-2xl bg-[#0B0F15] border border-amber-500/25 p-4 sm:p-6 shadow-2xl backdrop-blur-xl ${className}`}
+      className={`rounded-md bg-surface border border-border p-4 sm:p-6 ${className}`}
       data-testid="pgn-viewer"
     >
       {/* Game Header Banner */}
-      <div className="mb-5 pb-4 border-b border-white/10 flex flex-wrap items-center justify-between gap-3">
+      <div className="mb-5 pb-4 border-b border-border flex flex-wrap items-center justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#D4AF7C]">
-            <Trophy className="w-4 h-4 text-[#D4AF7C]" />
+          <div className="flex items-center gap-2 text-[11px] font-mono font-semibold uppercase tracking-wider text-accent">
+            <Trophy className="w-3.5 h-3.5 text-accent" aria-hidden="true" />
             <span>{title || game.event}</span>
             {game.round && <span>• Round {game.round}</span>}
           </div>
           <div className="mt-1 flex items-baseline gap-2">
-            <h3 className="font-['Montserrat',sans-serif] font-bold text-lg sm:text-xl text-white">
-              {game.white} <span className="text-[#D4AF7C]/70 font-normal">vs</span> {game.black}
+            <h3 className="font-heading font-bold text-lg sm:text-xl text-fg">
+              {game.white} <span className="text-fg-muted font-normal">vs</span> {game.black}
             </h3>
           </div>
         </div>
 
         <div className="flex items-center gap-2.5">
           {game.eco && (
-            <span className="px-2.5 py-1 rounded-md text-[11px] font-mono font-semibold bg-white/5 border border-white/10 text-[#A0A6B0]">
+            <span className="px-2.5 py-1 rounded-xs text-[11px] font-mono font-semibold bg-surface-elevated border border-border text-fg-muted">
               ECO: {game.eco}
             </span>
           )}
           <span
-            className={`px-3 py-1 rounded-full text-xs font-mono font-bold border ${
+            className={`px-3 py-1 rounded-xs text-xs font-mono font-bold border ${
               game.result === '1-0'
-                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                ? 'bg-accent/15 text-accent border-accent/40'
                 : game.result === '0-1'
-                ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
-                : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                ? 'bg-info/15 text-info border-info/40'
+                : 'bg-success/15 text-success border-success/40'
             }`}
           >
             {game.result}
@@ -209,9 +199,8 @@ export const PgnViewer: React.FC<PgnViewerProps> = ({
         </div>
       </div>
 
-      {/* Main Grid: Board & Move Notation */}
+      {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left: SVG Chess Board */}
         <div className="lg:col-span-7 flex flex-col items-center">
           <div
             onTouchStart={handleTouchStart}
@@ -224,87 +213,80 @@ export const PgnViewer: React.FC<PgnViewerProps> = ({
               orientation={boardOrientation}
               lastMove={lastMove}
             />
-            {/* Mobile Touch Navigation Hint */}
-            <div className="md:hidden mt-2 text-[11px] text-zinc-400 flex items-center justify-center gap-1.5">
-              <span className="text-[#D4AF7C] font-semibold">Touch:</span> Tap left/right or swipe to navigate
+            <div className="md:hidden mt-2 text-[11px] text-fg-muted flex items-center justify-center gap-1.5 font-mono">
+              <span className="text-accent font-semibold">Touch:</span> Tap left/right or swipe to navigate
             </div>
           </div>
 
           {/* Playback Controls Toolbar */}
-          <div className="w-full max-w-[520px] mt-4 flex items-center justify-between gap-2 bg-[#12161F] p-2.5 rounded-xl border border-white/10">
-            {/* Jump Start */}
+          <div className="w-full max-w-[520px] mt-4 flex items-center justify-between gap-2 bg-surface-elevated p-2.5 rounded-sm border border-border">
             <button
               type="button"
               onClick={handleFirst}
               disabled={currentMoveIndex === 0}
               title="First Move (|<<)"
               aria-label="First Move"
-              className="p-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition"
+              className="p-2 rounded-xs text-fg-muted hover:text-fg hover:bg-surface disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
             >
               <SkipBack className="w-4 h-4" />
             </button>
 
-            {/* Step Back */}
             <button
               type="button"
               onClick={handlePrev}
               disabled={currentMoveIndex === 0}
               title="Previous Move (<)"
               aria-label="Previous Move"
-              className="p-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition"
+              className="p-2 rounded-xs text-fg-muted hover:text-fg hover:bg-surface disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
 
-            {/* Play / Pause Toggle */}
             <button
               type="button"
               onClick={handleTogglePlay}
               title={isPlaying ? 'Pause' : 'Auto Play'}
               aria-label={isPlaying ? 'Pause' : 'Auto Play'}
-              className="px-4 py-2 rounded-lg font-semibold text-xs flex items-center gap-1.5 bg-[#D4AF7C] text-black hover:bg-[#E5C396] active:scale-95 transition shadow-md shadow-[#D4AF7C]/20"
+              className="px-4 py-2 rounded-xs font-mono font-bold text-xs flex items-center gap-1.5 bg-accent text-on-accent hover:bg-accent-hover transition-colors cursor-pointer"
             >
-              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-black" />}
+              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-current" />}
               <span>{isPlaying ? 'Pause' : 'Play'}</span>
             </button>
 
-            {/* Step Forward */}
             <button
               type="button"
               onClick={handleNext}
               disabled={currentMoveIndex >= game.moves.length}
               title="Next Move (>)"
               aria-label="Next Move"
-              className="p-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition"
+              className="p-2 rounded-xs text-fg-muted hover:text-fg hover:bg-surface disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
 
-            {/* Jump End */}
             <button
               type="button"
               onClick={handleLast}
               disabled={currentMoveIndex >= game.moves.length}
               title="Last Move (>>|)"
               aria-label="Last Move"
-              className="p-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition"
+              className="p-2 rounded-xs text-fg-muted hover:text-fg hover:bg-surface disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
             >
               <SkipForward className="w-4 h-4" />
             </button>
 
-            <div className="h-4 w-px bg-white/10 mx-1" />
+            <div className="h-4 w-px bg-border mx-1" />
 
-            {/* Speed Selector */}
             <div className="flex items-center gap-1 text-[11px] font-mono">
               {[1000, 1500, 2500].map(s => (
                 <button
                   key={s}
                   type="button"
                   onClick={() => setPlaySpeed(s)}
-                  className={`px-1.5 py-0.5 rounded text-[10px] font-medium transition ${
+                  className={`px-1.5 py-0.5 rounded-xs text-[10px] font-semibold transition-colors cursor-pointer border ${
                     playSpeed === s
-                      ? 'bg-[#D4AF7C]/20 text-[#D4AF7C] border border-[#D4AF7C]/40'
-                      : 'text-slate-400 hover:text-white'
+                      ? 'bg-accent/15 text-accent border-accent/40'
+                      : 'text-fg-muted hover:text-fg border-transparent'
                   }`}
                 >
                   {s / 1000}s
@@ -312,13 +294,12 @@ export const PgnViewer: React.FC<PgnViewerProps> = ({
               ))}
             </div>
 
-            {/* Flip Board */}
             <button
               type="button"
               onClick={handleFlip}
               title="Flip Board Orientation"
               aria-label="Flip Board"
-              className="p-2 rounded-lg text-slate-300 hover:text-[#D4AF7C] hover:bg-white/10 transition"
+              className="p-2 rounded-xs text-fg-muted hover:text-accent hover:bg-surface transition-colors cursor-pointer"
             >
               <RotateCw className="w-4 h-4" />
             </button>
@@ -326,13 +307,13 @@ export const PgnViewer: React.FC<PgnViewerProps> = ({
         </div>
 
         {/* Right: Interactive Move History List */}
-        <div className="lg:col-span-5 flex flex-col h-[420px] bg-[#12161F] rounded-xl border border-white/10 overflow-hidden shadow-inner">
-          <div className="p-3 bg-black/40 border-b border-white/10 flex items-center justify-between text-xs font-semibold text-[#A0A6B0]">
-            <span className="flex items-center gap-1.5 text-[#D4AF7C]">
-              <Layers className="w-3.5 h-3.5" />
+        <div className="lg:col-span-5 flex flex-col h-[420px] bg-surface-elevated rounded-sm border border-border overflow-hidden">
+          <div className="p-3 bg-surface border-b border-border flex items-center justify-between text-xs font-mono font-semibold text-fg-muted">
+            <span className="flex items-center gap-1.5 text-accent">
+              <Layers className="w-3.5 h-3.5" aria-hidden="true" />
               <span>Moves List</span>
             </span>
-            <span className="font-mono text-[11px]">
+            <span className="text-[11px] tabular-nums">
               Ply: {currentMoveIndex} / {game.moves.length}
             </span>
           </div>
@@ -348,14 +329,12 @@ export const PgnViewer: React.FC<PgnViewerProps> = ({
               return (
                 <div
                   key={pair.moveNumber}
-                  className="grid grid-cols-12 gap-1 items-center py-0.5 px-2 rounded hover:bg-white/[0.02]"
+                  className="grid grid-cols-12 gap-1 items-center py-0.5 px-2 rounded-xs hover:bg-surface/60"
                 >
-                  {/* Move Number */}
-                  <span className="col-span-2 text-slate-500 font-semibold text-right pr-2 select-none">
+                  <span className="col-span-2 text-fg-muted font-semibold text-right pr-2 select-none tabular-nums">
                     {pair.moveNumber}.
                   </span>
 
-                  {/* White Move */}
                   <div className="col-span-5">
                     {pair.white ? (
                       <button
@@ -365,10 +344,10 @@ export const PgnViewer: React.FC<PgnViewerProps> = ({
                           setIsPlaying(false);
                           setCurrentMoveIndex(whitePly);
                         }}
-                        className={`w-full text-left px-2 py-1 rounded transition text-xs font-semibold ${
+                        className={`w-full text-left px-2 py-1 rounded-xs transition-colors text-xs font-semibold cursor-pointer ${
                           isWhiteActive
-                            ? 'bg-[#D4AF7C] text-black font-bold shadow-sm'
-                            : 'text-slate-200 hover:bg-white/10'
+                            ? 'bg-accent text-on-accent font-bold'
+                            : 'text-fg hover:bg-surface'
                         }`}
                       >
                         {pair.white.san}
@@ -376,7 +355,6 @@ export const PgnViewer: React.FC<PgnViewerProps> = ({
                     ) : null}
                   </div>
 
-                  {/* Black Move */}
                   <div className="col-span-5">
                     {pair.black ? (
                       <button
@@ -386,10 +364,10 @@ export const PgnViewer: React.FC<PgnViewerProps> = ({
                           setIsPlaying(false);
                           setCurrentMoveIndex(blackPly);
                         }}
-                        className={`w-full text-left px-2 py-1 rounded transition text-xs font-semibold ${
+                        className={`w-full text-left px-2 py-1 rounded-xs transition-colors text-xs font-semibold cursor-pointer ${
                           isBlackActive
-                            ? 'bg-[#D4AF7C] text-black font-bold shadow-sm'
-                            : 'text-slate-200 hover:bg-white/10'
+                            ? 'bg-accent text-on-accent font-bold'
+                            : 'text-fg hover:bg-surface'
                         }`}
                       >
                         {pair.black.san}
@@ -401,13 +379,12 @@ export const PgnViewer: React.FC<PgnViewerProps> = ({
             })}
           </div>
 
-          {/* Footer Status */}
-          <div className="p-2.5 bg-black/50 border-t border-white/10 flex items-center justify-between text-[11px] text-[#A0A6B0]">
+          <div className="p-2.5 bg-surface border-t border-border flex items-center justify-between text-[11px] font-mono text-fg-muted">
             <span className="flex items-center gap-1.5">
-              <Calendar className="w-3.5 h-3.5 text-[#D4AF7C]" />
+              <Calendar className="w-3.5 h-3.5 text-accent" aria-hidden="true" />
               <span>{game.date}</span>
             </span>
-            <span className="font-semibold text-white">Result: {game.result}</span>
+            <span className="font-semibold text-fg">Result: {game.result}</span>
           </div>
         </div>
       </div>

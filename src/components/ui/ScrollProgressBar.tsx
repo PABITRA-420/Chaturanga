@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 
 /**
- * Award-Winning Hairline Gold Scroll Progress Bar
+ * Swiss Hairline Top Scroll Progress Rule
  * Uses hardware-accelerated transform3d with zero React re-renders on scroll.
  */
 export default function ScrollProgressBar() {
@@ -38,12 +38,12 @@ export default function ScrollProgressBar() {
     <div
       aria-hidden="true"
       suppressHydrationWarning
-      className="fixed top-0 left-0 right-0 h-[2.5px] z-50 pointer-events-none bg-transparent"
+      className="fixed top-0 left-0 right-0 h-[2px] z-[60] pointer-events-none bg-transparent"
     >
       <div
         ref={barRef}
         data-testid="scroll-progress-bar"
-        className="h-full w-full bg-gradient-to-r from-[#D4AF7C] via-[#F3E2B8] to-[#D4AF7C] origin-left shadow-[0_0_10px_rgba(212,175,124,0.7)] transition-transform duration-75 ease-out"
+        className="h-full w-full bg-accent origin-left transition-transform duration-75 ease-out"
         style={{ transform: 'scaleX(0)' }}
       />
     </div>

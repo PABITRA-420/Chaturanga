@@ -6,8 +6,9 @@ import ChaturangaLogo from '@/components/ChaturangaLogo';
 import {
   ShieldCheck, Shield, Users, Trophy, LogOut, Download, CheckCircle2,
   ExternalLink, Sparkles, Database, Plus, Award, Crown, Bell, Cloud, Camera,
-  Swords, Menu, X, ChevronRight, Activity, Clock
+  Swords, Menu, X, ChevronRight, Activity, Clock, Sun, Moon
 } from 'lucide-react';
+import { useUIStore } from '@/stores/useUIStore';
 import { useAdminManagement } from '@/hooks/useAdminManagement';
 import AdminTournamentsTab from '@/components/admin/AdminTournamentsTab';
 import AdminParticipantsTab from '@/components/admin/AdminParticipantsTab';
@@ -50,6 +51,8 @@ export default function AdminDashboardPage() {
   } = useAdminManagement();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const theme = useUIStore((s) => s.theme);
+  const toggleTheme = useUIStore((s) => s.toggleTheme);
 
   // Grouped Navigation for Calm, Structured Access
   const NAV_GROUPS: NavGroup[] = [
@@ -99,9 +102,9 @@ export default function AdminDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#070A0E] flex flex-col items-center justify-center text-[#D4AF7C] space-y-4">
-        <div className="w-10 h-10 border-2 border-[#D4AF7C] border-t-transparent rounded-full animate-spin" />
-        <p className="text-xs text-[#A0A6B0] tracking-widest uppercase font-semibold">
+      <div className="min-h-screen bg-bg flex flex-col items-center justify-center text-accent space-y-4">
+        <div className="w-9 h-9 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+        <p className="text-xs font-mono text-fg-muted tracking-widest uppercase font-semibold">
           Verifying Chief Arbiter Credentials...
         </p>
       </div>
@@ -109,54 +112,64 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#070A0E] text-[#F5F5F5] font-['Inter',sans-serif] flex flex-col selection:bg-[#D4AF7C] selection:text-[#0B0F14]">
+    <div className="min-h-screen bg-bg text-fg font-body flex flex-col selection:bg-accent selection:text-on-accent">
       {/* 1. TOP EXECUTIVE HEADER */}
-      <header className="sticky top-0 z-40 bg-[#0B0F14]/95 backdrop-blur-xl border-b border-white/10 h-16 shrink-0">
+      <header className="sticky top-0 z-40 bg-surface/95 backdrop-blur-xs border-b border-border h-16 shrink-0">
         <div className="w-full px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between gap-4">
-          
           {/* Left: Brand & Arbiter Identity */}
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl text-[#A0A6B0] hover:text-[#F5F5F5] hover:bg-white/5 transition btn-tactile"
+              className="lg:hidden p-2 rounded-sm text-fg-muted hover:text-fg hover:bg-surface-subtle border border-border transition-colors"
               aria-label="Toggle navigation drawer"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5 text-[#D4AF7C]" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <X className="w-5 h-5 text-accent" /> : <Menu className="w-5 h-5" />}
             </button>
 
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-8 h-8 rounded-full bg-black/60 border border-[#D4AF7C]/40 p-1 flex items-center justify-center shadow-md shadow-[#D4AF7C]/15 group-hover:border-[#D4AF7C] transition">
+              <div className="w-8 h-8 rounded-sm bg-[#111114] border border-border-strong p-1 flex items-center justify-center group-hover:border-accent transition-colors">
                 <ChaturangaLogo className="w-full h-full" />
               </div>
               <div className="flex flex-col">
-                <span className="font-['Montserrat',sans-serif] font-black tracking-widest text-[#F5F5F5] text-sm leading-none">
+                <span className="font-heading font-bold tracking-widest text-fg text-sm leading-none">
                   CHATURANGA
                 </span>
-                <span className="text-[9px] font-semibold text-[#D4AF7C] tracking-[0.2em] uppercase mt-0.5">
+                <span className="text-[9px] font-mono font-semibold text-accent tracking-[0.2em] uppercase mt-0.5">
                   ARBITER CONSOLE
                 </span>
               </div>
             </Link>
 
             {/* Desktop Arbiter Badge */}
-            <div className="hidden md:flex items-center gap-2 ml-4 pl-4 border-l border-white/10 text-xs">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 text-[11px] font-medium text-[#D4AF7C]">
+            <div className="hidden md:flex items-center gap-2 ml-4 pl-4 border-l border-border text-xs">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xs bg-accent/10 border border-accent/30 text-[11px] font-mono font-medium text-accent">
                 <ShieldCheck className="w-3.5 h-3.5" />
                 <span>{adminUser?.role || 'Chief Arbiter'}: {adminUser?.username || adminUser?.email || 'admin'}</span>
               </span>
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[10px] text-emerald-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-xs bg-success/10 border border-success/30 text-[10px] font-mono text-success">
+                <span className="w-1.5 h-1.5 rounded-full bg-success" />
                 <span>Live Supabase RLS</span>
               </span>
             </div>
           </div>
 
           {/* Right Header Actions */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2">
             <button
+              type="button"
+              onClick={toggleTheme}
+              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+              className="p-2 rounded-sm text-fg-muted hover:text-fg bg-surface-elevated hover:bg-surface-subtle border border-border transition-colors cursor-pointer"
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4 text-accent" /> : <Moon className="w-4 h-4 text-fg" />}
+            </button>
+
+            <button
+              type="button"
               onClick={() => openCreateModal()}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold text-[#0B0F14] bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] shadow-md shadow-[#D4AF7C]/20 btn-tactile cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-sm text-xs font-heading font-semibold text-on-accent bg-accent hover:bg-accent-hover transition-colors cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">New Tournament</span>
@@ -166,15 +179,16 @@ export default function AdminDashboardPage() {
             <Link
               href="/"
               target="_blank"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-[#A0A6B0] hover:text-[#F5F5F5] bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 transition btn-tactile"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-semibold text-fg-muted hover:text-fg bg-surface-elevated hover:bg-surface-subtle border border-border transition-colors"
             >
               <span>Public Site</span>
               <ExternalLink className="w-3 h-3" />
             </Link>
 
             <button
+              type="button"
               onClick={handleLogout}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-red-300 hover:text-white bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 transition btn-tactile cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-semibold text-danger bg-danger/10 hover:bg-danger/20 border border-danger/30 transition-colors cursor-pointer"
               title="Sign Out of Arbiter Console"
             >
               <LogOut className="w-3.5 h-3.5" />
@@ -186,12 +200,11 @@ export default function AdminDashboardPage() {
 
       {/* 2. BODY LAYOUT: PRO SIDEBAR + CLEAN WORKSPACE */}
       <div className="flex-1 w-full max-w-[1600px] mx-auto flex overflow-hidden">
-        
         {/* SIDEBAR NAVIGATION (Desktop) */}
-        <aside className="w-64 xl:w-72 shrink-0 border-r border-white/10 bg-[#090D13]/70 p-4 space-y-6 hidden lg:block overflow-y-auto max-h-[calc(100vh-4rem)] sticky top-16 no-scrollbar">
+        <aside className="w-64 xl:w-72 shrink-0 border-r border-border bg-surface p-4 space-y-6 hidden lg:block overflow-y-auto max-h-[calc(100vh-4rem)] sticky top-16 no-scrollbar">
           {NAV_GROUPS.map((group) => (
             <div key={group.title} className="space-y-1.5">
-              <div className="px-3 text-[10px] font-mono font-bold tracking-widest text-[#A0A6B0]/70 uppercase">
+              <div className="px-3 text-[10px] font-mono font-bold tracking-widest text-fg-subtle uppercase">
                 {group.title}
               </div>
               <div className="space-y-0.5">
@@ -201,30 +214,31 @@ export default function AdminDashboardPage() {
 
                   return (
                     <button
+                      type="button"
                       key={item.id}
                       onClick={() => setActiveTab(item.id as any)}
-                      className={`w-full px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-between gap-2.5 transition-all cursor-pointer ${
+                      className={`w-full px-3 py-2 rounded-sm text-xs font-medium flex items-center justify-between gap-2.5 transition-colors cursor-pointer ${
                         isActive
-                          ? 'bg-[#D4AF7C] text-[#0B0F14] font-bold shadow-md shadow-[#D4AF7C]/20'
-                          : 'text-[#A0A6B0] hover:text-[#F5F5F5] hover:bg-white/[0.04]'
+                          ? 'bg-accent text-on-accent font-semibold'
+                          : 'text-fg-muted hover:text-fg hover:bg-surface-subtle'
                       }`}
                     >
                       <div className="flex items-center gap-2.5 truncate">
-                        <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-[#0B0F14]' : 'text-[#D4AF7C]'}`} />
+                        <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-on-accent' : 'text-accent'}`} />
                         <span className="truncate">{item.label}</span>
                       </div>
 
                       {item.badge && (
-                        <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full uppercase tracking-wider shrink-0 ${
-                          isActive ? 'bg-black/20 text-[#0B0F14]' : 'bg-[#D4AF7C]/15 text-[#D4AF7C]'
+                        <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-xs uppercase tracking-wider shrink-0 ${
+                          isActive ? 'bg-black/15 text-on-accent' : 'bg-accent/15 text-accent'
                         }`}>
                           {item.badge}
                         </span>
                       )}
 
                       {typeof item.count === 'number' && (
-                        <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-md shrink-0 ${
-                          isActive ? 'bg-black/20 text-[#0B0F14]' : 'bg-white/5 text-[#A0A6B0]'
+                        <span className={`text-[10px] font-mono tabular-nums px-1.5 py-0.2 rounded-xs shrink-0 ${
+                          isActive ? 'bg-black/15 text-on-accent' : 'bg-surface-elevated border border-border text-fg-muted'
                         }`}>
                           {item.count}
                         </span>
@@ -237,11 +251,11 @@ export default function AdminDashboardPage() {
           ))}
 
           {/* Campus Arbiter Footer Info in Sidebar */}
-          <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/5 text-[11px] text-[#A0A6B0] space-y-1">
-            <div className="font-semibold text-[#F5F5F5] flex items-center gap-1.5">
+          <div className="p-3.5 rounded-sm bg-surface-elevated border border-border text-[11px] text-fg-muted space-y-1">
+            <div className="font-semibold text-fg flex items-center gap-1.5">
               <span>Jalpaiguri Govt. Engg. College</span>
             </div>
-            <p className="text-[10px] text-[#A0A6B0]/80">
+            <p className="text-[10px] font-mono text-fg-subtle">
               Official Collegiate FIDE Swiss Arbiter Portal • Est. 2012
             </p>
           </div>
@@ -249,21 +263,23 @@ export default function AdminDashboardPage() {
 
         {/* MOBILE NAVIGATION DRAWER */}
         {mobileMenuOpen && (
-          <div 
-            className="fixed inset-0 z-50 lg:hidden bg-black/80 backdrop-blur-md flex"
+          <div
+            className="fixed inset-0 z-50 lg:hidden bg-black/75 backdrop-blur-xs flex"
             onClick={() => setMobileMenuOpen(false)}
           >
             <div
-              className="w-72 bg-[#0B0F14] h-full p-5 space-y-6 overflow-y-auto border-r border-white/10"
+              className="w-72 bg-surface h-full p-5 space-y-6 overflow-y-auto border-r border-border-strong"
               onClick={e => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                <span className="text-xs font-bold text-[#D4AF7C] uppercase tracking-wider">
+              <div className="flex items-center justify-between pb-3 border-b border-border">
+                <span className="text-xs font-mono font-bold text-accent uppercase tracking-wider">
                   Arbiter Menu
                 </span>
                 <button
+                  type="button"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="p-1 rounded-lg text-[#A0A6B0] hover:text-white"
+                  className="p-1 rounded-sm text-fg-muted hover:text-fg"
+                  aria-label="Close menu"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -271,7 +287,7 @@ export default function AdminDashboardPage() {
 
               {NAV_GROUPS.map((group) => (
                 <div key={group.title} className="space-y-1.5">
-                  <div className="px-2 text-[10px] font-mono font-bold tracking-widest text-[#A0A6B0]/70 uppercase">
+                  <div className="px-2 text-[10px] font-mono font-bold tracking-widest text-fg-subtle uppercase">
                     {group.title}
                   </div>
                   <div className="space-y-1">
@@ -281,23 +297,24 @@ export default function AdminDashboardPage() {
 
                       return (
                         <button
+                          type="button"
                           key={item.id}
                           onClick={() => {
                             setActiveTab(item.id as any);
                             setMobileMenuOpen(false);
                           }}
-                          className={`w-full px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-between gap-2.5 transition ${
+                          className={`w-full px-3 py-2 rounded-sm text-xs font-medium flex items-center justify-between gap-2.5 transition-colors ${
                             isActive
-                              ? 'bg-[#D4AF7C] text-[#0B0F14] font-bold'
-                              : 'text-[#A0A6B0] hover:text-white hover:bg-white/5'
+                              ? 'bg-accent text-on-accent font-semibold'
+                              : 'text-fg-muted hover:text-fg hover:bg-surface-subtle'
                           }`}
                         >
                           <div className="flex items-center gap-2.5">
-                            <Icon className={`w-4 h-4 ${isActive ? 'text-[#0B0F14]' : 'text-[#D4AF7C]'}`} />
+                            <Icon className={`w-4 h-4 ${isActive ? 'text-on-accent' : 'text-accent'}`} />
                             <span>{item.label}</span>
                           </div>
                           {typeof item.count === 'number' && (
-                            <span className="text-[10px] font-mono opacity-80">{item.count}</span>
+                            <span className="text-[10px] font-mono tabular-nums opacity-80">{item.count}</span>
                           )}
                         </button>
                       );
@@ -311,17 +328,16 @@ export default function AdminDashboardPage() {
 
         {/* 3. MAIN OPERATIONAL WORKSPACE */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto min-w-0 space-y-6">
-          
           {/* Breadcrumb & Section Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
             <div>
-              <div className="text-[11px] font-mono text-[#D4AF7C] uppercase tracking-wider mb-1 flex items-center gap-1.5">
+              <div className="text-[11px] font-mono text-accent uppercase tracking-wider mb-1 flex items-center gap-1.5">
                 <span>Console</span>
                 <span>/</span>
-                <span className="text-[#A0A6B0]">{currentGroup.title}</span>
+                <span className="text-fg-muted">{currentGroup.title}</span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-black font-['Montserrat',sans-serif] text-[#F5F5F5] flex items-center gap-2.5">
-                <CurrentIcon className="w-5 h-5 sm:w-6 sm:h-6 text-[#D4AF7C]" />
+              <h1 className="text-xl sm:text-2xl font-bold font-heading text-fg flex items-center gap-2.5 tracking-tight">
+                <CurrentIcon className="w-5 h-5 sm:w-6 sm:h-6 text-accent" />
                 <span>{currentItem.label}</span>
               </h1>
             </div>
@@ -330,19 +346,21 @@ export default function AdminDashboardPage() {
             <div className="flex items-center gap-2.5 self-start sm:self-auto">
               {activeTab !== 'roster' && (
                 <button
+                  type="button"
                   onClick={() => setActiveTab('roster')}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-[#A0A6B0] hover:text-[#F5F5F5] bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 transition btn-tactile"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-semibold text-fg-muted hover:text-fg bg-surface-elevated hover:bg-surface-subtle border border-border transition-colors"
                 >
-                  <Users className="w-3.5 h-3.5 text-[#D4AF7C]" />
+                  <Users className="w-3.5 h-3.5 text-accent" />
                   <span>Roster ({participants.length})</span>
                 </button>
               )}
               {activeTab !== 'tournaments' && (
                 <button
+                  type="button"
                   onClick={() => setActiveTab('tournaments')}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-[#A0A6B0] hover:text-[#F5F5F5] bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 transition btn-tactile"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-semibold text-fg-muted hover:text-fg bg-surface-elevated hover:bg-surface-subtle border border-border transition-colors"
                 >
-                  <Trophy className="w-3.5 h-3.5 text-[#D4AF7C]" />
+                  <Trophy className="w-3.5 h-3.5 text-accent" />
                   <span>Events ({tournaments.length})</span>
                 </button>
               )}
@@ -351,52 +369,52 @@ export default function AdminDashboardPage() {
 
           {/* Cockpit Executive Overview (Only on cockpit tab so it doesn't clutter other workspaces) */}
           {activeTab === 'cockpit' && (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 animate-fade-in">
-              <div className="p-4 sm:p-5 rounded-2xl bg-[#10141C] border border-white/10 flex items-center justify-between">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              <div className="p-4 sm:p-5 rounded-md bg-surface border border-border flex items-center justify-between">
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-[#A0A6B0]">Total Events</p>
-                  <p className="text-xl sm:text-2xl font-black text-[#F5F5F5] mt-0.5 font-['Montserrat',sans-serif]">
-                    {tournaments.length} <span className="text-xs text-[#A0A6B0] font-normal">Championships</span>
+                  <p className="text-[11px] font-mono font-semibold uppercase tracking-wider text-fg-muted">Total Events</p>
+                  <p className="text-xl sm:text-2xl font-bold text-fg mt-0.5 font-heading tabular-nums">
+                    {tournaments.length} <span className="text-xs text-fg-muted font-normal font-body">Championships</span>
                   </p>
                 </div>
-                <div className="w-10 h-10 rounded-xl bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 flex items-center justify-center text-[#D4AF7C] shrink-0">
+                <div className="w-10 h-10 rounded-sm bg-accent/10 border border-accent/30 flex items-center justify-center text-accent shrink-0">
                   <Trophy className="w-5 h-5" />
                 </div>
               </div>
 
-              <div className="p-4 sm:p-5 rounded-2xl bg-[#10141C] border border-white/10 flex items-center justify-between">
+              <div className="p-4 sm:p-5 rounded-md bg-surface border border-border flex items-center justify-between">
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-[#A0A6B0]">Registration</p>
-                  <p className="text-xl sm:text-2xl font-black text-emerald-400 mt-0.5 font-['Montserrat',sans-serif]">
-                    {tournaments.filter(t => t.status === 'open').length} <span className="text-xs text-[#A0A6B0] font-normal">Active</span>
+                  <p className="text-[11px] font-mono font-semibold uppercase tracking-wider text-fg-muted">Registration</p>
+                  <p className="text-xl sm:text-2xl font-bold text-success mt-0.5 font-heading tabular-nums">
+                    {tournaments.filter(t => t.status === 'open').length} <span className="text-xs text-fg-muted font-normal font-body">Active</span>
                   </p>
                 </div>
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                <div className="w-10 h-10 rounded-sm bg-success/10 border border-success/30 flex items-center justify-center text-success shrink-0">
                   <CheckCircle2 className="w-5 h-5" />
                 </div>
               </div>
 
-              <div className="p-4 sm:p-5 rounded-2xl bg-[#10141C] border border-white/10 flex items-center justify-between">
+              <div className="p-4 sm:p-5 rounded-md bg-surface border border-border flex items-center justify-between">
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-[#A0A6B0]">Total Players</p>
-                  <p className="text-xl sm:text-2xl font-black text-[#F5F5F5] mt-0.5 font-['Montserrat',sans-serif]">
-                    {participants.length} <span className="text-xs text-[#A0A6B0] font-normal">Registered</span>
+                  <p className="text-[11px] font-mono font-semibold uppercase tracking-wider text-fg-muted">Total Players</p>
+                  <p className="text-xl sm:text-2xl font-bold text-fg mt-0.5 font-heading tabular-nums">
+                    {participants.length} <span className="text-xs text-fg-muted font-normal font-body">Registered</span>
                   </p>
                 </div>
-                <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+                <div className="w-10 h-10 rounded-sm bg-warning/10 border border-warning/30 flex items-center justify-center text-warning shrink-0">
                   <Users className="w-5 h-5" />
                 </div>
               </div>
 
-              <div className="p-4 sm:p-5 rounded-2xl bg-[#10141C] border border-white/10 flex items-center justify-between">
+              <div className="p-4 sm:p-5 rounded-md bg-surface border border-border flex items-center justify-between">
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-[#A0A6B0]">Database Health</p>
-                  <p className="text-xs font-bold text-emerald-400 mt-1.5 flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <p className="text-[11px] font-mono font-semibold uppercase tracking-wider text-fg-muted">Database Health</p>
+                  <p className="text-xs font-mono font-bold text-success mt-1.5 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-success" />
                     <span>PostgreSQL Sync</span>
                   </p>
                 </div>
-                <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
+                <div className="w-10 h-10 rounded-sm bg-info/10 border border-info/30 flex items-center justify-center text-info shrink-0">
                   <Database className="w-5 h-5" />
                 </div>
               </div>

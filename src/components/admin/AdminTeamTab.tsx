@@ -266,19 +266,18 @@ export default function AdminTeamTab() {
 
   return (
     <div className="space-y-6">
-      
       {/* Header Banner */}
-      <div className="p-6 rounded-3xl bg-[#10141C] border border-white/10 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-6 rounded-md bg-surface border border-border shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold text-[#D4AF7C] bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xs text-[11px] font-mono font-bold text-accent bg-accent/10 border border-accent/30 mb-2">
             <Users className="w-3.5 h-3.5" />
-            <span>EXECUTIVE COUNCIL & ARBITER ROSTER</span>
+            <span>EXECUTIVE COUNCIL &amp; ARBITER ROSTER</span>
           </div>
-          <h2 className="font-['Montserrat',sans-serif] text-xl sm:text-2xl font-black text-[#F5F5F5]">
+          <h2 className="font-heading text-xl sm:text-2xl font-bold text-fg tracking-tight">
             Leadership &amp; Council Member CMS
           </h2>
-          <p className="text-xs text-[#A0A6B0] mt-1 max-w-2xl font-['Poppins',sans-serif]">
-            Manage club executives, FIDE arbiters, event coordinators, and faculty patrons. Changes immediately update the live public roster at <span className="text-[#D4AF7C]">/team</span>.
+          <p className="text-xs text-fg-muted mt-1 max-w-2xl">
+            Manage club executives, FIDE arbiters, event coordinators, and faculty patrons. Changes immediately update the live public roster at <span className="font-mono text-accent">/team</span>.
           </p>
         </div>
 
@@ -287,16 +286,17 @@ export default function AdminTeamTab() {
             type="button"
             onClick={loadTeamMembers}
             disabled={loading}
-            className="p-2.5 rounded-xl bg-white/[0.05] hover:bg-white/10 border border-white/10 text-[#A0A6B0] hover:text-[#F5F5F5] transition cursor-pointer"
+            className="p-2.5 rounded-sm bg-surface-elevated hover:bg-surface-subtle border border-border text-fg-muted hover:text-fg transition-colors cursor-pointer"
             title="Refresh Roster"
+            aria-label="Refresh Roster"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
-          
+
           <button
             type="button"
             onClick={handleOpenCreateModal}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-[#0B0F14] bg-[#D4AF7C] hover:bg-[#E6C98A] transition cursor-pointer shadow-md shadow-[#D4AF7C]/20 whitespace-nowrap"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-sm text-xs font-heading font-semibold text-on-accent bg-accent hover:bg-accent-hover transition-colors cursor-pointer whitespace-nowrap"
           >
             <Plus className="w-4 h-4" />
             <span>Add Council Member</span>
@@ -306,11 +306,14 @@ export default function AdminTeamTab() {
 
       {/* Notice Banner */}
       {notice && (
-        <div className={`p-4 rounded-2xl flex items-center gap-3 text-xs font-semibold ${
-          notice.type === 'success' 
-            ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400' 
-            : 'bg-rose-500/10 border border-rose-500/30 text-rose-400'
-        }`}>
+        <div
+          role="status"
+          className={`p-4 rounded-sm flex items-center gap-3 text-xs font-semibold border ${
+            notice.type === 'success'
+              ? 'bg-success/10 border-success/30 text-success'
+              : 'bg-danger/10 border-danger/30 text-danger'
+          }`}
+        >
           {notice.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
           <span>{notice.text}</span>
         </div>
@@ -325,10 +328,10 @@ export default function AdminTeamTab() {
               key={cat.id}
               type="button"
               onClick={() => setSelectedCategory(cat.id)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer whitespace-nowrap ${
+              className={`px-3.5 py-1.5 rounded-sm text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap ${
                 selectedCategory === cat.id
-                  ? 'bg-[#D4AF7C] text-[#0B0F14] shadow-sm'
-                  : 'bg-[#12161D] text-[#A0A6B0] hover:text-white border border-white/5'
+                  ? 'bg-accent text-on-accent'
+                  : 'bg-surface text-fg-muted hover:text-fg border border-border'
               }`}
             >
               {cat.label} {cat.id === 'all' ? `(${members.length})` : `(${members.filter(m => m.category === cat.id).length})`}
@@ -338,13 +341,13 @@ export default function AdminTeamTab() {
 
         {/* Search Input */}
         <div className="relative min-w-[240px]">
-          <Search className="w-4 h-4 text-[#A0A6B0] absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-fg-subtle absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search member, role, dept..."
-            className="w-full bg-[#12161D] border border-white/10 rounded-xl pl-9 pr-4 py-2 text-xs text-[#F5F5F5] placeholder-[#A0A6B0]/60 focus:outline-none focus:border-[#D4AF7C]/60"
+            className="w-full bg-surface border border-border rounded-sm pl-9 pr-4 py-2 text-xs text-fg placeholder:text-fg-subtle focus:border-accent transition-colors"
           />
         </div>
       </div>
@@ -353,23 +356,23 @@ export default function AdminTeamTab() {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="p-5 rounded-2xl bg-[#10141C] border border-white/5 animate-pulse space-y-3">
+            <div key={i} className="p-5 rounded-md bg-surface border border-border animate-pulse space-y-3">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-white/5" />
+                <div className="w-12 h-12 rounded-sm bg-surface-subtle" />
                 <div className="space-y-1.5 flex-1">
-                  <div className="h-4 w-3/4 bg-white/10 rounded" />
-                  <div className="h-3 w-1/2 bg-white/5 rounded" />
+                  <div className="h-4 w-3/4 bg-surface-subtle rounded-xs" />
+                  <div className="h-3 w-1/2 bg-surface-subtle rounded-xs" />
                 </div>
               </div>
-              <div className="h-3 w-full bg-white/5 rounded" />
+              <div className="h-3 w-full bg-surface-subtle rounded-xs" />
             </div>
           ))}
         </div>
       ) : filteredMembers.length === 0 ? (
-        <div className="py-16 text-center rounded-3xl bg-[#10141C] border border-white/5 space-y-3">
-          <Users className="w-10 h-10 text-[#D4AF7C]/40 mx-auto" />
-          <h3 className="font-bold text-sm text-[#F5F5F5]">No Council Members Found</h3>
-          <p className="text-xs text-[#A0A6B0]">
+        <div className="py-16 text-center rounded-md bg-surface border border-border space-y-3">
+          <Users className="w-9 h-9 text-accent/50 mx-auto" />
+          <h3 className="font-heading font-bold text-sm text-fg">No Council Members Found</h3>
+          <p className="text-xs text-fg-muted">
             {searchQuery ? 'No members match your search criteria.' : 'Click "Add Council Member" above to register the first member.'}
           </p>
         </div>
@@ -378,10 +381,9 @@ export default function AdminTeamTab() {
           {filteredMembers.map((member) => (
             <div
               key={member.id}
-              className="p-5 rounded-2xl bg-[#10141C] border border-white/10 hover:border-[#D4AF7C]/40 transition group flex flex-col justify-between space-y-4"
+              className="p-5 rounded-md bg-surface border border-border hover:border-border-strong transition-colors group flex flex-col justify-between space-y-4"
             >
               <div className="space-y-3">
-                
                 {/* Top Row: Avatar & Badges */}
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
@@ -389,10 +391,10 @@ export default function AdminTeamTab() {
                       <img
                         src={member.imageUrl}
                         alt={member.name}
-                        className="w-12 h-12 rounded-xl object-cover border border-[#D4AF7C]/40 bg-black/40"
+                        className="w-12 h-12 rounded-sm object-cover border border-border-strong bg-surface-elevated"
                       />
                     ) : (
-                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${member.avatarColor} border border-[#D4AF7C]/40 flex items-center justify-center text-[#0B0F14] font-black text-xl`}>
+                      <div className="w-12 h-12 rounded-sm bg-[#111114] border border-border-strong flex items-center justify-center text-[#D4AF7C] font-bold text-xl shrink-0">
                         {member.chessPiece === 'King' ? '♚' :
                          member.chessPiece === 'Queen' ? '♛' :
                          member.chessPiece === 'Rook' ? '♜' :
@@ -400,41 +402,40 @@ export default function AdminTeamTab() {
                       </div>
                     )}
                     <div>
-                      <h4 className="font-['Montserrat',sans-serif] font-bold text-sm text-[#F5F5F5] group-hover:text-[#D4AF7C] transition-colors">
+                      <h4 className="font-heading font-bold text-sm text-fg group-hover:text-accent transition-colors">
                         {member.name}
                       </h4>
-                      <p className="text-xs font-semibold text-[#D4AF7C]">
+                      <p className="text-xs font-semibold text-accent">
                         {member.role}
                       </p>
                     </div>
                   </div>
 
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/5 border border-white/10 text-[#A0A6B0]">
+                  <span className="px-2 py-0.5 rounded-xs text-[10px] font-mono font-bold uppercase tracking-wider bg-surface-elevated border border-border text-fg-muted">
                     {member.category}
                   </span>
                 </div>
 
                 {/* Sub details */}
-                <div className="text-[11px] text-[#A0A6B0] space-y-1">
+                <div className="text-[11px] text-fg-muted space-y-1">
                   <div>{member.department} • {member.year}</div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-emerald-400 font-bold">{member.elo}</span>
-                    {member.fideId && <span className="font-mono text-[#A0A6B0]">FIDE: {member.fideId}</span>}
+                  <div className="flex items-center gap-2 font-mono">
+                    <span className="text-success font-bold tabular-nums">{member.elo}</span>
+                    {member.fideId && <span className="text-fg-subtle tabular-nums">FIDE: {member.fideId}</span>}
                   </div>
                 </div>
 
                 {/* Bio snippet */}
                 {member.bio && (
-                  <p className="text-xs text-[#A0A6B0] line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-fg-muted line-clamp-2 leading-relaxed">
                     {member.bio}
                   </p>
                 )}
-
               </div>
 
               {/* Bottom Actions */}
-              <div className="pt-3 border-t border-white/5 flex items-center justify-between">
-                <span className="text-[11px] font-mono text-[#A0A6B0]">
+              <div className="pt-3 border-t border-border flex items-center justify-between">
+                <span className="text-[11px] font-mono text-fg-subtle">
                   Piece: {member.chessPiece}
                 </span>
 
@@ -442,16 +443,18 @@ export default function AdminTeamTab() {
                   <button
                     type="button"
                     onClick={() => handleOpenEditModal(member)}
-                    className="p-1.5 rounded-lg bg-white/5 hover:bg-[#D4AF7C]/20 hover:text-[#D4AF7C] text-[#A0A6B0] transition cursor-pointer"
+                    className="p-1.5 rounded-sm bg-surface-elevated hover:bg-accent/15 hover:text-accent text-fg-muted border border-border transition-colors cursor-pointer"
                     title="Edit Member"
+                    aria-label={`Edit ${member.name}`}
                   >
                     <Edit className="w-3.5 h-3.5" />
                   </button>
                   <button
                     type="button"
                     onClick={() => handleDelete(member)}
-                    className="p-1.5 rounded-lg bg-white/5 hover:bg-rose-500/20 hover:text-rose-400 text-[#A0A6B0] transition cursor-pointer"
+                    className="p-1.5 rounded-sm bg-surface-elevated hover:bg-danger/15 hover:text-danger text-fg-muted border border-border transition-colors cursor-pointer"
                     title="Delete Member"
+                    aria-label={`Delete ${member.name}`}
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -464,24 +467,29 @@ export default function AdminTeamTab() {
 
       {/* CREATE / EDIT MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-          <div className="relative max-w-2xl w-full my-8 bg-[#12161D] border border-white/15 rounded-3xl shadow-2xl p-6 sm:p-8 space-y-6">
-            
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={editingMember ? 'Edit Council Member' : 'Add New Council Member'}
+          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto"
+        >
+          <div className="relative max-w-2xl w-full my-8 bg-surface border border-border-strong rounded-md shadow-md p-6 sm:p-8 space-y-6">
             {/* Modal Header */}
-            <div className="flex items-center justify-between pb-4 border-b border-white/10">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 flex items-center justify-center text-[#D4AF7C]">
+            <div className="flex items-center justify-between pb-4 border-b border-border">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-sm bg-accent/10 border border-accent/30 flex items-center justify-center text-accent">
                   <Users className="w-4 h-4" />
                 </div>
-                <h3 className="font-['Montserrat',sans-serif] font-bold text-lg text-[#F5F5F5]">
+                <h3 className="font-heading font-bold text-lg text-fg">
                   {editingMember ? 'Edit Council Member' : 'Add New Council Member'}
                 </h3>
               </div>
 
               <button
                 type="button"
+                aria-label="Close modal"
                 onClick={() => setIsModalOpen(false)}
-                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-[#A0A6B0] hover:text-[#F5F5F5] transition cursor-pointer"
+                className="p-2 rounded-sm bg-surface-elevated hover:bg-surface-subtle text-fg-muted hover:text-fg transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -489,11 +497,10 @@ export default function AdminTeamTab() {
 
             {/* Modal Form */}
             <form onSubmit={handleSave} className="space-y-4">
-              
               {/* Row 1: Name & Role */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-[#D4AF7C] uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-mono font-bold text-accent uppercase tracking-wider mb-1">
                     Full Name *
                   </label>
                   <input
@@ -502,12 +509,12 @@ export default function AdminTeamTab() {
                     value={formData.name}
                     onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                     placeholder="e.g. Aniket Roy"
-                    className="w-full bg-[#0E1218] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                    className="w-full bg-surface-elevated border border-border rounded-sm px-3.5 py-2 text-xs text-fg placeholder:text-fg-subtle focus:border-accent"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#D4AF7C] uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-mono font-bold text-accent uppercase tracking-wider mb-1">
                     Club Role / Designation *
                   </label>
                   <input
@@ -516,7 +523,7 @@ export default function AdminTeamTab() {
                     value={formData.role}
                     onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value }))}
                     placeholder="e.g. President & Head Arbiter"
-                    className="w-full bg-[#0E1218] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                    className="w-full bg-surface-elevated border border-border rounded-sm px-3.5 py-2 text-xs text-fg placeholder:text-fg-subtle focus:border-accent"
                   />
                 </div>
               </div>
@@ -524,22 +531,22 @@ export default function AdminTeamTab() {
               {/* Row 2: Category, Department, Year */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-[#D4AF7C] uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-mono font-bold text-accent uppercase tracking-wider mb-1">
                     Category *
                   </label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as any }))}
-                    className="w-full bg-[#0E1218] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                    className="w-full bg-surface-elevated border border-border rounded-sm px-3.5 py-2 text-xs text-fg focus:border-accent"
                   >
                     <option value="core">Core Executive</option>
                     <option value="coordinator">Coordinator</option>
-                    <option value="mentor">Faculty & Mentor</option>
+                    <option value="mentor">Faculty &amp; Mentor</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#D4AF7C] uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-mono font-bold text-accent uppercase tracking-wider mb-1">
                     Department
                   </label>
                   <input
@@ -547,12 +554,12 @@ export default function AdminTeamTab() {
                     value={formData.department}
                     onChange={(e) => setFormData(prev => ({ ...prev, department: e.target.value }))}
                     placeholder="e.g. Computer Science & Engg"
-                    className="w-full bg-[#0E1218] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                    className="w-full bg-surface-elevated border border-border rounded-sm px-3.5 py-2 text-xs text-fg placeholder:text-fg-subtle focus:border-accent"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#D4AF7C] uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-mono font-bold text-accent uppercase tracking-wider mb-1">
                     Academic Year
                   </label>
                   <input
@@ -560,7 +567,7 @@ export default function AdminTeamTab() {
                     value={formData.year}
                     onChange={(e) => setFormData(prev => ({ ...prev, year: e.target.value }))}
                     placeholder="e.g. 4th Year / Faculty"
-                    className="w-full bg-[#0E1218] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                    className="w-full bg-surface-elevated border border-border rounded-sm px-3.5 py-2 text-xs text-fg placeholder:text-fg-subtle focus:border-accent"
                   />
                 </div>
               </div>
@@ -568,7 +575,7 @@ export default function AdminTeamTab() {
               {/* Row 3: Elo, FIDE ID, Chess Piece */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-[#D4AF7C] uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-mono font-bold text-accent uppercase tracking-wider mb-1">
                     Elo Rating / Title
                   </label>
                   <input
@@ -576,12 +583,12 @@ export default function AdminTeamTab() {
                     value={formData.elo}
                     onChange={(e) => setFormData(prev => ({ ...prev, elo: e.target.value }))}
                     placeholder="e.g. 2085 FIDE / 1950 Elo"
-                    className="w-full bg-[#0E1218] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                    className="w-full bg-surface-elevated border border-border rounded-sm px-3.5 py-2 text-xs text-fg placeholder:text-fg-subtle focus:border-accent"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#D4AF7C] uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-mono font-bold text-accent uppercase tracking-wider mb-1">
                     FIDE ID (Optional)
                   </label>
                   <input
@@ -589,18 +596,18 @@ export default function AdminTeamTab() {
                     value={formData.fideId}
                     onChange={(e) => setFormData(prev => ({ ...prev, fideId: e.target.value }))}
                     placeholder="e.g. 25048112"
-                    className="w-full bg-[#0E1218] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                    className="w-full bg-surface-elevated border border-border rounded-sm px-3.5 py-2 text-xs text-fg font-mono placeholder:text-fg-subtle focus:border-accent"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#D4AF7C] uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-mono font-bold text-accent uppercase tracking-wider mb-1">
                     Insignia Piece
                   </label>
                   <select
                     value={formData.chessPiece}
                     onChange={(e) => setFormData(prev => ({ ...prev, chessPiece: e.target.value as any }))}
-                    className="w-full bg-[#0E1218] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                    className="w-full bg-surface-elevated border border-border rounded-sm px-3.5 py-2 text-xs text-fg focus:border-accent"
                   >
                     {CHESS_PIECES.map(p => (
                       <option key={p} value={p}>{p}</option>
@@ -612,7 +619,7 @@ export default function AdminTeamTab() {
               {/* Row 4: Signature Opening & Title Badge */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-[#D4AF7C] uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-mono font-bold text-accent uppercase tracking-wider mb-1">
                     Signature Opening
                   </label>
                   <input
@@ -620,12 +627,12 @@ export default function AdminTeamTab() {
                     value={formData.favoriteOpening}
                     onChange={(e) => setFormData(prev => ({ ...prev, favoriteOpening: e.target.value }))}
                     placeholder="e.g. Sicilian Defense (Najdorf)"
-                    className="w-full bg-[#0E1218] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                    className="w-full bg-surface-elevated border border-border rounded-sm px-3.5 py-2 text-xs text-fg placeholder:text-fg-subtle focus:border-accent"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#D4AF7C] uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-mono font-bold text-accent uppercase tracking-wider mb-1">
                     Title Badge Text
                   </label>
                   <input
@@ -633,23 +640,23 @@ export default function AdminTeamTab() {
                     value={formData.titleBadge}
                     onChange={(e) => setFormData(prev => ({ ...prev, titleBadge: e.target.value }))}
                     placeholder="e.g. Club President"
-                    className="w-full bg-[#0E1218] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                    className="w-full bg-surface-elevated border border-border rounded-sm px-3.5 py-2 text-xs text-fg placeholder:text-fg-subtle focus:border-accent"
                   />
                 </div>
               </div>
 
               {/* Row 5: Profile Photo Uploader (Netlify Blobs direct upload + paste URL) */}
-              <div className="p-4 rounded-2xl bg-[#0E1218] border border-white/10 space-y-3">
+              <div className="p-4 rounded-sm bg-surface-elevated border border-border space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-[#D4AF7C] uppercase tracking-wider flex items-center gap-1.5">
+                  <label className="text-[11px] font-mono font-bold text-accent uppercase tracking-wider flex items-center gap-1.5">
                     <ImageIcon className="w-3.5 h-3.5" />
                     <span>Profile Photo (Netlify Blobs / Direct URL)</span>
                   </label>
-                  
+
                   <button
                     type="button"
                     onClick={() => setShowMediaPicker(!showMediaPicker)}
-                    className="text-[11px] font-semibold text-[#D4AF7C] hover:underline flex items-center gap-1 cursor-pointer"
+                    className="text-[11px] font-semibold text-accent hover:underline flex items-center gap-1 cursor-pointer"
                   >
                     <FolderOpen className="w-3.5 h-3.5" />
                     <span>{showMediaPicker ? 'Hide Library' : 'Browse Blobs Library'}</span>
@@ -658,11 +665,11 @@ export default function AdminTeamTab() {
 
                 <div className="flex items-center gap-3">
                   {/* Photo Preview */}
-                  <div className="w-14 h-14 rounded-xl border border-white/15 bg-black/50 overflow-hidden shrink-0 flex items-center justify-center">
+                  <div className="w-14 h-14 rounded-sm border border-border-strong bg-surface overflow-hidden shrink-0 flex items-center justify-center">
                     {formData.imageUrl ? (
                       <img src={formData.imageUrl} alt="Preview" className="w-full h-full object-cover" />
                     ) : (
-                      <ImageIcon className="w-5 h-5 text-[#A0A6B0]/40" />
+                      <ImageIcon className="w-5 h-5 text-fg-subtle" />
                     )}
                   </div>
 
@@ -673,7 +680,7 @@ export default function AdminTeamTab() {
                       value={formData.imageUrl}
                       onChange={(e) => setFormData(prev => ({ ...prev, imageUrl: e.target.value }))}
                       placeholder="Paste image URL (https://...) or upload directly below"
-                      className="w-full bg-[#12161D] border border-white/10 rounded-xl px-3 py-1.5 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                      className="w-full bg-surface border border-border rounded-sm px-3 py-1.5 text-xs text-fg placeholder:text-fg-subtle focus:border-accent"
                     />
 
                     <div className="flex items-center gap-2">
@@ -688,9 +695,9 @@ export default function AdminTeamTab() {
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
                         disabled={uploadingImage}
-                        className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-bold text-[#F5F5F5] flex items-center gap-1.5 transition cursor-pointer disabled:opacity-50"
+                        className="px-3 py-1.5 rounded-sm bg-surface hover:bg-surface-subtle border border-border text-xs font-semibold text-fg flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
                       >
-                        <Upload className={`w-3.5 h-3.5 ${uploadingImage ? 'animate-bounce' : ''}`} />
+                        <Upload className={`w-3.5 h-3.5 ${uploadingImage ? 'animate-spin' : ''}`} />
                         <span>{uploadingImage ? 'Uploading to Blobs...' : 'Upload from Computer'}</span>
                       </button>
 
@@ -698,7 +705,7 @@ export default function AdminTeamTab() {
                         <button
                           type="button"
                           onClick={() => setFormData(prev => ({ ...prev, imageUrl: '' }))}
-                          className="px-2.5 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-semibold transition cursor-pointer"
+                          className="px-2.5 py-1.5 rounded-sm bg-danger/10 hover:bg-danger/20 border border-danger/30 text-danger text-xs font-semibold transition-colors cursor-pointer"
                         >
                           Clear
                         </button>
@@ -709,8 +716,8 @@ export default function AdminTeamTab() {
 
                 {/* Optional Embedded Media Manager Picker */}
                 {showMediaPicker && (
-                  <div className="mt-3 pt-3 border-t border-white/10">
-                    <p className="text-[11px] text-[#A0A6B0] mb-2">Click any photo below to set as profile image:</p>
+                  <div className="mt-3 pt-3 border-t border-border">
+                    <p className="text-[11px] text-fg-muted mb-2">Click any photo below to set as profile image:</p>
                     <AdminMediaManager
                       selectedUrl={formData.imageUrl}
                       onSelectImage={(url) => {
@@ -724,7 +731,7 @@ export default function AdminTeamTab() {
 
               {/* Bio Description */}
               <div>
-                <label className="block text-xs font-bold text-[#D4AF7C] uppercase tracking-wider mb-1">
+                <label className="block text-[11px] font-mono font-bold text-accent uppercase tracking-wider mb-1">
                   Biography / Summary
                 </label>
                 <textarea
@@ -732,13 +739,13 @@ export default function AdminTeamTab() {
                   value={formData.bio}
                   onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
                   placeholder="Short bio covering chess background and leadership scope..."
-                  className="w-full bg-[#0E1218] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                  className="w-full bg-surface-elevated border border-border rounded-sm px-3.5 py-2 text-xs text-fg placeholder:text-fg-subtle focus:border-accent"
                 />
               </div>
 
               {/* Key Responsibilities */}
               <div>
-                <label className="block text-xs font-bold text-[#D4AF7C] uppercase tracking-wider mb-1">
+                <label className="block text-[11px] font-mono font-bold text-accent uppercase tracking-wider mb-1">
                   Key Responsibilities (One item per line)
                 </label>
                 <textarea
@@ -746,13 +753,13 @@ export default function AdminTeamTab() {
                   value={formData.responsibilitiesText}
                   onChange={(e) => setFormData(prev => ({ ...prev, responsibilitiesText: e.target.value }))}
                   placeholder="Overseeing round pairings using Swiss-Manager&#10;Organizing weekly blitz arenas"
-                  className="w-full bg-[#0E1218] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-[#F5F5F5] font-mono focus:outline-none focus:border-[#D4AF7C]"
+                  className="w-full bg-surface-elevated border border-border rounded-sm px-3.5 py-2 text-xs text-fg font-mono placeholder:text-fg-subtle focus:border-accent"
                 />
               </div>
 
               {/* Key Achievements */}
               <div>
-                <label className="block text-xs font-bold text-[#D4AF7C] uppercase tracking-wider mb-1">
+                <label className="block text-[11px] font-mono font-bold text-accent uppercase tracking-wider mb-1">
                   Key Achievements / Highlights (One item per line)
                 </label>
                 <textarea
@@ -760,34 +767,32 @@ export default function AdminTeamTab() {
                   value={formData.achievementsText}
                   onChange={(e) => setFormData(prev => ({ ...prev, achievementsText: e.target.value }))}
                   placeholder="Winner - Autumn Swiss Cup 2025&#10;Gold Board 1 - Inter-Tech Cup"
-                  className="w-full bg-[#0E1218] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-[#F5F5F5] font-mono focus:outline-none focus:border-[#D4AF7C]"
+                  className="w-full bg-surface-elevated border border-border rounded-sm px-3.5 py-2 text-xs text-fg font-mono placeholder:text-fg-subtle focus:border-accent"
                 />
               </div>
 
               {/* Modal Actions */}
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-[#A0A6B0] hover:text-[#F5F5F5] bg-white/5 hover:bg-white/10 transition cursor-pointer"
+                  className="px-4 py-2 rounded-sm text-xs font-semibold text-fg-muted hover:text-fg bg-surface-elevated border border-border transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2 rounded-xl text-xs font-bold text-[#0B0F14] bg-[#D4AF7C] hover:bg-[#E6C98A] transition cursor-pointer shadow-md shadow-[#D4AF7C]/20 disabled:opacity-50 flex items-center gap-2"
+                  className="px-5 py-2 rounded-sm text-xs font-heading font-semibold text-on-accent bg-accent hover:bg-accent-hover transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-2"
                 >
                   {saving && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
                   <span>{saving ? 'Saving Member...' : editingMember ? 'Update Member' : 'Create Member'}</span>
                 </button>
               </div>
-
             </form>
           </div>
         </div>
       )}
-
     </div>
   );
 }

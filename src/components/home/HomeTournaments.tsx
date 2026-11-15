@@ -5,7 +5,7 @@ import Link from 'next/link';
 import UpcomingEventCard from '@/components/UpcomingEventCard';
 import PastEventCard from '@/components/PastEventCard';
 import TournamentCalendar from '@/components/TournamentCalendar';
-import { Calendar, Trophy, ArrowRight, Sparkles } from 'lucide-react';
+import { Calendar, Trophy, ArrowRight } from 'lucide-react';
 import { SkeletonCard } from '@/components/ui/Skeleton';
 
 interface HomeTournamentsProps {
@@ -20,27 +20,27 @@ export default function HomeTournaments({ upcomingEvents, pastEvents, loading = 
   const recentPast = pastEvents.slice(0, 2);
 
   return (
-    <div className="space-y-20 py-8">
+    <div className="space-y-16 py-8">
       
       {/* 1. UPCOMING TOURNAMENTS SECTION */}
       <section id="tournaments" className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-4">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest text-[#D4AF7C] bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 mb-2">
-              <Calendar className="w-3.5 h-3.5" />
-              <span>COLLEGIATE CALENDAR 2026</span>
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-border pb-4">
+          <div className="space-y-1.5">
+            <div className="inline-flex items-center gap-2 text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-accent">
+              <Calendar className="w-3.5 h-3.5" aria-hidden="true" />
+              <span>04 / COLLEGIATE CALENDAR 2026</span>
             </div>
-            <h2 className="text-2xl sm:text-4xl font-black font-['Montserrat',sans-serif] text-[#F5F5F5]">
-              Upcoming Championships <span className="text-[#D4AF7C]">&</span> Arenas
+            <h2 className="text-2xl sm:text-4xl font-extrabold font-heading text-fg tracking-tight">
+              Upcoming Championships <span className="text-accent">&amp;</span> Arenas
             </h2>
           </div>
 
           <Link
             href="/upcoming"
-            className="text-xs font-bold text-[#D4AF7C] hover:underline inline-flex items-center gap-1.5 self-start sm:self-end"
+            className="text-xs font-mono font-bold uppercase tracking-wider text-accent hover:text-accent-hover inline-flex items-center gap-1.5 self-start sm:self-end"
           >
             <span>View All Scheduled Events</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
           </Link>
         </div>
 
@@ -54,25 +54,25 @@ export default function HomeTournaments({ upcomingEvents, pastEvents, loading = 
             </div>
           </div>
         ) : upcomingEvents.length === 0 ? (
-          <div className="p-10 sm:p-12 rounded-3xl bg-[#12161D] border border-white/10 text-center space-y-4 shadow-xl relative overflow-hidden">
-            <div className="w-14 h-14 rounded-2xl bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 flex items-center justify-center mx-auto text-[#D4AF7C]">
-              <Calendar className="w-7 h-7" />
+          <div className="p-10 sm:p-12 rounded-md bg-surface border border-border text-center space-y-4">
+            <div className="w-12 h-12 rounded-sm bg-surface-elevated border border-border flex items-center justify-center mx-auto text-accent">
+              <Calendar className="w-6 h-6" aria-hidden="true" />
             </div>
             <div className="space-y-1.5 max-w-md mx-auto">
-              <h3 className="text-lg font-bold font-['Montserrat',sans-serif] text-[#F5F5F5]">
+              <h3 className="text-lg font-bold font-heading text-fg">
                 No tournaments currently scheduled
               </h3>
-              <p className="text-xs sm:text-sm text-[#A0A6B0] leading-relaxed font-['Poppins',sans-serif]">
-                The boards are quiet for a moment. Our arbiters are calibrating the next Swiss championship schedule over campus canteen chai. Follow club notices below for upcoming round drops.
+              <p className="text-xs sm:text-sm text-fg-muted leading-relaxed font-body">
+                The boards are quiet for a moment. Our arbiters are calibrating the next Swiss championship schedule. Follow club notices above for upcoming round drops.
               </p>
             </div>
             <div className="pt-2">
               <Link
                 href="/#announcements"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold text-[#0B0F14] bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] shadow-md btn-tactile"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-sm text-xs font-bold uppercase tracking-wider text-on-accent bg-accent hover:bg-accent-hover transition-colors btn-tactile"
               >
                 <span>View Club Notices</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
               </Link>
             </div>
           </div>
@@ -84,7 +84,6 @@ export default function HomeTournaments({ upcomingEvents, pastEvents, loading = 
               </div>
             )}
 
-            {/* Other Upcoming */}
             {otherUpcoming.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                 {otherUpcoming.map(evt => (
@@ -98,16 +97,16 @@ export default function HomeTournaments({ upcomingEvents, pastEvents, loading = 
 
       {/* 2. CALENDAR SECTION */}
       <section id="calendar" className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-4">
-          <div>
-            <span className="text-xs font-bold text-[#D4AF7C] uppercase tracking-wider block mb-1">
-              Interactive Grid
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-border pb-4">
+          <div className="space-y-1">
+            <span className="text-[11px] font-mono font-bold text-accent uppercase tracking-[0.2em] block">
+              05 / INTERACTIVE GRID
             </span>
-            <h2 className="text-2xl sm:text-3xl font-bold font-['Montserrat',sans-serif] text-[#F5F5F5]">
+            <h2 className="text-2xl sm:text-3xl font-extrabold font-heading text-fg tracking-tight">
               Season Schedule &amp; Timetable
             </h2>
           </div>
-          <p className="text-xs text-[#A0A6B0] max-w-sm font-['Poppins',sans-serif]">
+          <p className="text-xs text-fg-muted max-w-sm font-body">
             Select calendar dates to inspect event venue, round schedules, and time controls.
           </p>
         </div>
@@ -117,23 +116,23 @@ export default function HomeTournaments({ upcomingEvents, pastEvents, loading = 
 
       {/* 3. PAST ARCHIVES SECTION */}
       <section id="past-events" className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-4">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest text-[#D4AF7C] bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 mb-2">
-              <Trophy className="w-3.5 h-3.5" />
-              <span>HALL OF FAME ARCHIVES</span>
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-border pb-4">
+          <div className="space-y-1.5">
+            <div className="inline-flex items-center gap-2 text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-accent">
+              <Trophy className="w-3.5 h-3.5" aria-hidden="true" />
+              <span>06 / HALL OF FAME ARCHIVES</span>
             </div>
-            <h2 className="text-2xl sm:text-4xl font-black font-['Montserrat',sans-serif] text-[#F5F5F5]">
+            <h2 className="text-2xl sm:text-4xl font-extrabold font-heading text-fg tracking-tight">
               Past Championship Results
             </h2>
           </div>
 
           <Link
             href="/past-events"
-            className="text-xs font-bold text-[#D4AF7C] hover:underline inline-flex items-center gap-1.5 self-start sm:self-end"
+            className="text-xs font-mono font-bold uppercase tracking-wider text-accent hover:text-accent-hover inline-flex items-center gap-1.5 self-start sm:self-end"
           >
             <span>Browse Full Archive &amp; Standings</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
           </Link>
         </div>
 
@@ -143,10 +142,10 @@ export default function HomeTournaments({ upcomingEvents, pastEvents, loading = 
             <SkeletonCard />
           </div>
         ) : recentPast.length === 0 ? (
-          <div className="p-8 sm:p-10 rounded-3xl bg-[#12161D] border border-white/10 text-center space-y-3 shadow-xl">
-            <Trophy className="w-8 h-8 text-[#D4AF7C]/40 mx-auto" />
-            <h3 className="font-bold text-base text-[#F5F5F5]">No archived championships yet</h3>
-            <p className="text-xs text-[#A0A6B0] max-w-md mx-auto leading-relaxed">
+          <div className="p-8 sm:p-10 rounded-md bg-surface border border-border text-center space-y-3">
+            <Trophy className="w-8 h-8 text-accent mx-auto opacity-60" aria-hidden="true" />
+            <h3 className="font-bold font-heading text-base text-fg">No archived championships yet</h3>
+            <p className="text-xs text-fg-muted max-w-md mx-auto leading-relaxed font-body">
               Concluded tournaments, Swiss standings, and podium winners will be certified and permanently archived here.
             </p>
           </div>

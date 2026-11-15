@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PastEventCard from '@/components/PastEventCard';
-import { Trophy, Search, Award, Sparkles, Filter } from 'lucide-react';
+import { Trophy, Search } from 'lucide-react';
 import { SkeletonCard } from '@/components/ui/Skeleton';
 
 export default function PastEventsView() {
@@ -26,12 +26,12 @@ export default function PastEventsView() {
   }, []);
 
   const filteredEvents = pastEvents.filter((event) => {
-    const matchesSearch = 
+    const matchesSearch =
       event.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       event.venue?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (event.podium && event.podium.some((p: any) => p.name?.toLowerCase().includes(searchQuery.toLowerCase())));
 
-    const matchesFormat = 
+    const matchesFormat =
       selectedFormat === 'ALL' ||
       (selectedFormat === 'SWISS' && event.format?.toLowerCase().includes('swiss')) ||
       (selectedFormat === 'BLITZ' && event.format?.toLowerCase().includes('blitz')) ||
@@ -41,60 +41,59 @@ export default function PastEventsView() {
   });
 
   return (
-    <div className="min-h-screen bg-[#0B0F14] text-[#F5F5F5] antialiased selection:bg-[#D4AF7C] selection:text-[#0B0F14] relative overflow-x-hidden font-['Inter',sans-serif]">
+    <div className="min-h-screen bg-bg text-fg antialiased selection:bg-accent selection:text-on-accent relative overflow-x-hidden font-ui">
       <Navbar />
 
       <main id="main-content" className="w-full pt-28 pb-20">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
           {/* Header Banner */}
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-white/10 pb-8">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-border pb-8">
             <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold text-[#D4AF7C] bg-[#D4AF7C]/10 border border-[#D4AF7C]/30 uppercase tracking-widest">
-                <Trophy className="w-3.5 h-3.5" />
-                <span>CHAMPIONSHIP ARCHIVES & RESULTS</span>
+              <div className="inline-flex items-center gap-2 text-[11px] font-mono font-bold text-accent uppercase tracking-[0.2em]">
+                <Trophy className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>CHAMPIONSHIP ARCHIVES &amp; RESULTS</span>
               </div>
-              <h1 className="font-['Montserrat',sans-serif] font-black text-3xl sm:text-5xl text-[#F5F5F5] tracking-tight">
-                Past Tournaments <span className="text-[#D4AF7C]">&</span> Hall of Fame
+              <h1 className="font-heading font-extrabold text-3xl sm:text-5xl text-fg tracking-tight">
+                Past Tournaments <span className="text-accent">&amp;</span> Hall of Fame
               </h1>
-              <p className="text-sm sm:text-base text-[#A0A6B0] max-w-2xl font-['Poppins',sans-serif] leading-relaxed">
-                Relive memorable rounds, final standings, and tournament podiums of past events organized by CHATURANGA.JGEC. Click any tournament to inspect the complete crosstable.
+              <p className="text-sm sm:text-base text-fg-muted max-w-2xl font-body leading-relaxed">
+                Relive memorable rounds, final standings, and tournament podiums organized by CHATURANGA.JGEC. Select any tournament to inspect the complete crosstable.
               </p>
             </div>
 
-            {/* Quick Metrics */}
-            <div className="flex items-center gap-3">
-              <div className="px-4 py-2.5 rounded-2xl bg-[#12161D] border border-white/10">
-                <div className="text-[11px] text-[#A0A6B0] uppercase font-mono">Archived Events</div>
-                <div className="text-xl font-bold font-mono text-[#D4AF7C]">{pastEvents.length} Editions</div>
+            <div className="flex items-center gap-3 shrink-0">
+              <div className="px-4 py-2.5 rounded-sm bg-surface border border-border">
+                <div className="text-[10px] text-fg-muted uppercase font-mono">Archived Events</div>
+                <div className="text-xl font-bold font-mono text-accent tabular-nums">{pastEvents.length} Editions</div>
               </div>
             </div>
           </div>
 
           {/* Search & Filter Bar */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-3xl bg-[#12161D] border border-white/10 shadow-xl">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-md bg-surface border border-border">
             <div className="relative w-full sm:w-96">
-              <Search className="w-4 h-4 text-[#A0A6B0] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-4 h-4 text-fg-muted absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true" />
               <input
                 type="text"
                 placeholder="Search tournament title, winner, or venue..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] placeholder-[#A0A6B0]/50 focus:outline-none focus:border-[#D4AF7C]"
+                className="w-full pl-10 pr-4 py-2.5 rounded-sm bg-bg border border-border text-xs text-fg placeholder:text-fg-subtle focus:border-border-strong transition-colors"
                 aria-label="Search past tournaments"
               />
             </div>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+            <div className="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
               {['ALL', 'SWISS', 'BLITZ', 'TEAM'].map((format) => (
                 <button
                   key={format}
                   type="button"
                   onClick={() => setSelectedFormat(format)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer whitespace-nowrap ${
+                  className={`px-3.5 py-2 rounded-xs text-xs font-mono font-semibold transition-colors cursor-pointer whitespace-nowrap border ${
                     selectedFormat === format
-                      ? 'bg-gradient-to-r from-[#D4AF7C] to-[#E6C98A] text-[#0B0F14] font-bold shadow'
-                      : 'bg-[#080B0F] text-[#A0A6B0] hover:text-[#F5F5F5] border border-white/10'
+                      ? 'bg-primary text-on-primary border-primary'
+                      : 'bg-surface-elevated text-fg-muted hover:text-fg border-border hover:border-border-strong'
                   }`}
                 >
                   {format === 'ALL' ? 'All Formats' : format}
@@ -111,19 +110,19 @@ export default function PastEventsView() {
               ))}
             </div>
           ) : pastEvents.length === 0 ? (
-            <div className="p-12 text-center rounded-3xl bg-[#12161D] border border-white/10 space-y-3">
-              <Trophy className="w-10 h-10 text-[#D4AF7C]/40 mx-auto" />
-              <h3 className="font-bold text-lg text-[#F5F5F5]">No archived tournaments yet</h3>
-              <p className="text-xs text-[#A0A6B0] max-w-sm mx-auto leading-relaxed">
+            <div className="p-12 text-center rounded-md bg-surface border border-border space-y-3">
+              <Trophy className="w-10 h-10 text-accent mx-auto opacity-60" aria-hidden="true" />
+              <h3 className="font-heading font-bold text-lg text-fg">No archived tournaments yet</h3>
+              <p className="text-xs text-fg-muted max-w-sm mx-auto leading-relaxed font-body">
                 Past championships, full crosstables, and podium records will be certified and permanently displayed here.
               </p>
             </div>
           ) : filteredEvents.length === 0 ? (
-            <div className="p-12 text-center rounded-3xl bg-[#12161D] border border-white/10 space-y-3">
-              <Trophy className="w-8 h-8 text-[#D4AF7C]/40 mx-auto" />
-              <h3 className="font-bold text-lg text-[#F5F5F5]">No archived events match your filter</h3>
-              <p className="text-xs text-[#A0A6B0] max-w-sm mx-auto">
-                Try clearing your search query or selecting "All Formats" to view complete tournament history.
+            <div className="p-12 text-center rounded-md bg-surface border border-border space-y-3">
+              <Trophy className="w-8 h-8 text-accent mx-auto opacity-60" aria-hidden="true" />
+              <h3 className="font-heading font-bold text-lg text-fg">No archived events match your filter</h3>
+              <p className="text-xs text-fg-muted max-w-sm mx-auto font-body">
+                Try clearing your search query or selecting &quot;All Formats&quot; to view complete tournament history.
               </p>
             </div>
           ) : (

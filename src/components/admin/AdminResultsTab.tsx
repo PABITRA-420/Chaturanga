@@ -179,51 +179,63 @@ export default function AdminResultsTab({ tournaments, onTournamentUpdated }: Pr
 
   return (
     <div className="space-y-6">
-      
       {/* Header & Tournament Selector */}
-      <div className="p-6 rounded-3xl bg-[#10141C] border border-white/10 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-6 rounded-md bg-surface border border-border shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold text-purple-400 bg-purple-500/10 border border-purple-500/30 mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xs text-[11px] font-mono font-bold text-accent bg-accent/10 border border-accent/30 mb-2">
             <Trophy className="w-3.5 h-3.5" />
-            <span>RESULTS & PODIUM PUBLISHER</span>
+            <span>RESULTS &amp; PODIUM PUBLISHER</span>
           </div>
-          <h2 className="font-['Montserrat',sans-serif] text-xl sm:text-2xl font-black text-[#F5F5F5]">
+          <h2 className="font-heading text-xl sm:text-2xl font-bold text-fg tracking-tight">
             Championship Standings, Prizes &amp; Podiums
           </h2>
-          <p className="text-xs text-[#A0A6B0] mt-1 max-w-2xl font-['Poppins',sans-serif]">
+          <p className="text-xs text-fg-muted mt-1 max-w-2xl">
             Select any tournament to publish or update final podium medalists, prize disbursement, and Swiss crosstable rankings.
           </p>
         </div>
 
         {/* Tournament Picker */}
         <div className="w-full md:w-80">
-          <label className="block text-[11px] font-semibold text-[#A0A6B0] mb-1">Select Event to Conclude / Edit</label>
+          <label
+            htmlFor="results-tournament-select"
+            className="block text-[11px] font-mono uppercase tracking-wider font-semibold text-fg-muted mb-1"
+          >
+            Select Event to Conclude / Edit
+          </label>
           <div className="relative">
             <select
+              id="results-tournament-select"
               value={selectedTournamentId}
               onChange={(e) => setSelectedTournamentId(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C] appearance-none cursor-pointer pr-10"
+              className="w-full px-3.5 py-2.5 rounded-sm bg-surface-elevated border border-border text-xs text-fg focus:border-accent appearance-none cursor-pointer pr-10 transition-colors"
             >
               {tournaments.map(t => (
-                <option key={t.id} value={t.id} className="bg-[#10141C]">
-                  {t.title} {t.status === 'completed' ? '✓ (Completed)' : ''}
+                <option key={t.id} value={t.id} className="bg-surface text-fg">
+                  {t.title} {t.status === 'completed' ? '(Completed)' : ''}
                 </option>
               ))}
             </select>
-            <ChevronDown className="w-4 h-4 text-[#A0A6B0] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <ChevronDown className="w-4 h-4 text-fg-muted absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
         </div>
       </div>
 
       {/* Notice Alert */}
       {notice && (
-        <div className={`p-4 rounded-2xl border text-xs flex items-center justify-between gap-3 animate-fadeIn ${
-          notice.type === 'success'
-            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-            : 'bg-red-500/10 border-red-500/30 text-red-300'
-        }`}>
+        <div
+          role="status"
+          className={`p-4 rounded-sm border text-xs flex items-center justify-between gap-3 ${
+            notice.type === 'success'
+              ? 'bg-success/10 border-success/30 text-success'
+              : 'bg-danger/10 border-danger/30 text-danger'
+          }`}
+        >
           <div className="flex items-center gap-2">
-            {notice.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" /> : <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />}
+            {notice.type === 'success' ? (
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-success" />
+            ) : (
+              <AlertCircle className="w-4 h-4 shrink-0 text-danger" />
+            )}
             <span className="font-semibold">{notice.text}</span>
           </div>
         </div>
@@ -231,35 +243,34 @@ export default function AdminResultsTab({ tournaments, onTournamentUpdated }: Pr
 
       {selectedTournament && (
         <form onSubmit={handleSaveResults} className="space-y-6">
-          
           {/* 1. TOURNAMENT SUMMARY & TOTAL TURNOUT */}
-          <div className="p-6 rounded-3xl bg-[#10141C] border border-white/10 shadow-xl space-y-4">
-            <h3 className="font-['Montserrat',sans-serif] text-base font-bold text-[#F5F5F5] flex items-center gap-2">
-              <FileCheck className="w-4 h-4 text-[#D4AF7C]" />
+          <div className="p-6 rounded-md bg-surface border border-border shadow-xs space-y-4">
+            <h3 className="font-heading text-base font-bold text-fg flex items-center gap-2">
+              <FileCheck className="w-4 h-4 text-accent" />
               <span>Event Concluding Summary &amp; Attendance</span>
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="sm:col-span-2">
-                <label className="block text-xs font-semibold text-[#A0A6B0] mb-1">Official Summary / Arbiter Report</label>
+                <label className="block text-xs font-semibold text-fg-muted mb-1">Official Summary / Arbiter Report</label>
                 <textarea
                   rows={3}
                   value={summary}
                   onChange={(e) => setSummary(e.target.value)}
                   placeholder="Enter official arbiter summary, round-by-round highlights, and championship deciders..."
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                  className="w-full px-3.5 py-2.5 rounded-sm bg-surface-elevated border border-border text-xs text-fg placeholder:text-fg-subtle focus:border-accent transition-colors"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#A0A6B0] mb-1">Total Turnout / Participants</label>
+                <label className="block text-xs font-semibold text-fg-muted mb-1">Total Turnout / Participants</label>
                 <input
                   type="number"
                   value={totalParticipants}
                   onChange={(e) => setTotalParticipants(Number(e.target.value))}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                  className="w-full px-3.5 py-2.5 rounded-sm bg-surface-elevated border border-border text-xs text-fg font-mono tabular-nums focus:border-accent transition-colors"
                 />
-                <p className="text-[10px] text-[#A0A6B0] mt-1.5">
+                <p className="text-[10px] text-fg-muted mt-1.5">
                   Displayed on the Past Events card and archive banner.
                 </p>
               </div>
@@ -267,14 +278,14 @@ export default function AdminResultsTab({ tournaments, onTournamentUpdated }: Pr
           </div>
 
           {/* 2. PODIUM WINNERS (GOLD, SILVER, BRONZE) */}
-          <div className="p-6 rounded-3xl bg-[#10141C] border border-white/10 shadow-xl space-y-5">
+          <div className="p-6 rounded-md bg-surface border border-border shadow-xs space-y-5">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-['Montserrat',sans-serif] text-base font-bold text-[#F5F5F5] flex items-center gap-2">
-                  <Medal className="w-4 h-4 text-amber-400" />
+                <h3 className="font-heading text-base font-bold text-fg flex items-center gap-2">
+                  <Medal className="w-4 h-4 text-accent" />
                   <span>Podium Winners &amp; Cash Prizes</span>
                 </h3>
-                <p className="text-xs text-[#A0A6B0]">
+                <p className="text-xs text-fg-muted">
                   Displayed with medal graphics on both Past Tournaments and Homepage.
                 </p>
               </div>
@@ -293,33 +304,40 @@ export default function AdminResultsTab({ tournaments, onTournamentUpdated }: Pr
               {podium.map((pod, idx) => {
                 const isGold = idx === 0;
                 const isSilver = idx === 1;
-                const isBronze = idx === 2;
 
                 return (
                   <div
                     key={idx}
-                    className={`p-5 rounded-2xl border flex flex-col justify-between space-y-4 ${
-                      isGold ? 'bg-amber-500/10 border-amber-500/30' :
-                      isSilver ? 'bg-slate-400/10 border-slate-400/30' :
-                      'bg-orange-500/10 border-orange-500/30'
+                    className={`p-5 rounded-md border flex flex-col justify-between space-y-4 ${
+                      isGold
+                        ? 'bg-accent/10 border-accent/40'
+                        : isSilver
+                        ? 'bg-surface-elevated border-border-strong'
+                        : 'bg-warning/10 border-warning/30'
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                        isGold ? 'bg-amber-400 text-[#0B0F14]' :
-                        isSilver ? 'bg-slate-300 text-[#0B0F14]' :
-                        'bg-orange-400 text-[#0B0F14]'
-                      }`}>
+                      <span
+                        className={`px-2.5 py-1 rounded-xs text-[11px] font-mono font-bold ${
+                          isGold
+                            ? 'bg-accent text-on-accent'
+                            : isSilver
+                            ? 'bg-primary text-on-primary'
+                            : 'bg-warning text-on-warning'
+                        }`}
+                      >
                         {pod.rank}
                       </span>
-                      <Trophy className={`w-4 h-4 ${
-                        isGold ? 'text-amber-400' : isSilver ? 'text-slate-300' : 'text-orange-400'
-                      }`} />
+                      <Trophy
+                        className={`w-4 h-4 ${
+                          isGold ? 'text-accent' : isSilver ? 'text-fg-muted' : 'text-warning'
+                        }`}
+                      />
                     </div>
 
                     <div className="space-y-3">
                       <div>
-                        <label className="block text-[11px] text-[#A0A6B0] mb-1">Player Name *</label>
+                        <label className="block text-[11px] text-fg-muted mb-1">Player Name *</label>
                         <input
                           type="text"
                           required
@@ -329,14 +347,14 @@ export default function AdminResultsTab({ tournaments, onTournamentUpdated }: Pr
                             next[idx].name = e.target.value;
                             setPodium(next);
                           }}
-                          placeholder={isGold ? "e.g. Suman Sen" : isSilver ? "e.g. Rohan Mukherjee" : "e.g. Aritra Sen"}
-                          className="w-full px-3 py-2 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#D4AF7C]"
+                          placeholder={isGold ? 'e.g. Suman Sen' : isSilver ? 'e.g. Rohan Mukherjee' : 'e.g. Aritra Sen'}
+                          className="w-full px-3 py-2 rounded-sm bg-surface border border-border text-xs text-fg placeholder:text-fg-subtle focus:border-accent"
                         />
                       </div>
 
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <label className="block text-[11px] text-[#A0A6B0] mb-1">Dept</label>
+                          <label className="block text-[11px] text-fg-muted mb-1">Dept</label>
                           <input
                             type="text"
                             value={pod.dept}
@@ -346,11 +364,11 @@ export default function AdminResultsTab({ tournaments, onTournamentUpdated }: Pr
                               setPodium(next);
                             }}
                             placeholder="CSE"
-                            className="w-full px-3 py-2 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5]"
+                            className="w-full px-3 py-2 rounded-sm bg-surface border border-border text-xs text-fg placeholder:text-fg-subtle focus:border-accent"
                           />
                         </div>
                         <div>
-                          <label className="block text-[11px] text-[#A0A6B0] mb-1">Score</label>
+                          <label className="block text-[11px] text-fg-muted mb-1">Score</label>
                           <input
                             type="text"
                             value={pod.score}
@@ -360,13 +378,13 @@ export default function AdminResultsTab({ tournaments, onTournamentUpdated }: Pr
                               setPodium(next);
                             }}
                             placeholder="6.5 / 7.0"
-                            className="w-full px-3 py-2 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5]"
+                            className="w-full px-3 py-2 rounded-sm bg-surface border border-border text-xs text-fg font-mono placeholder:text-fg-subtle focus:border-accent"
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label className="block text-[11px] text-[#A0A6B0] mb-1">Prize / Trophy Disbursed</label>
+                        <label className="block text-[11px] text-fg-muted mb-1">Prize / Trophy Disbursed</label>
                         <input
                           type="text"
                           value={pod.prize}
@@ -375,8 +393,8 @@ export default function AdminResultsTab({ tournaments, onTournamentUpdated }: Pr
                             next[idx].prize = e.target.value;
                             setPodium(next);
                           }}
-                          placeholder={isGold ? "₹10,000 + Gold Trophy" : isSilver ? "₹6,000 + Trophy" : "₹4,000 + Medal"}
-                          className="w-full px-3 py-2 rounded-xl bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5]"
+                          placeholder={isGold ? '₹10,000 + Gold Trophy' : isSilver ? '₹6,000 + Trophy' : '₹4,000 + Medal'}
+                          className="w-full px-3 py-2 rounded-sm bg-surface border border-border text-xs text-fg placeholder:text-fg-subtle focus:border-accent"
                         />
                       </div>
                     </div>
@@ -387,14 +405,14 @@ export default function AdminResultsTab({ tournaments, onTournamentUpdated }: Pr
           </div>
 
           {/* 3. FULL SWISS CROSSTABLE STANDINGS */}
-          <div className="p-6 rounded-3xl bg-[#10141C] border border-white/10 shadow-xl space-y-4">
+          <div className="p-6 rounded-md bg-surface border border-border shadow-xs space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <h3 className="font-['Montserrat',sans-serif] text-base font-bold text-[#F5F5F5] flex items-center gap-2">
-                  <Users className="w-4 h-4 text-cyan-400" />
+                <h3 className="font-heading text-base font-bold text-fg flex items-center gap-2">
+                  <Users className="w-4 h-4 text-info" />
                   <span>Full Tournament Crosstable Standings ({standings.length} Players)</span>
                 </h3>
-                <p className="text-xs text-[#A0A6B0]">
+                <p className="text-xs text-fg-muted">
                   Public inspection table displayed when visitors click the tournament modal.
                 </p>
               </div>
@@ -403,14 +421,14 @@ export default function AdminResultsTab({ tournaments, onTournamentUpdated }: Pr
                 <button
                   type="button"
                   onClick={handleAutoPopulateFromRoster}
-                  className="px-3 py-1.5 rounded-xl text-xs font-semibold text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 transition cursor-pointer"
+                  className="px-3 py-1.5 rounded-sm text-xs font-semibold text-info bg-info/10 hover:bg-info/20 border border-info/30 transition-colors cursor-pointer"
                 >
-                  ⚡ Auto-fill from Registration Roster
+                  Auto-fill from Registration Roster
                 </button>
                 <button
                   type="button"
                   onClick={handleAddStandingRow}
-                  className="px-3 py-1.5 rounded-xl text-xs font-bold text-[#0B0F14] bg-[#D4AF7C] hover:bg-[#E6C98A] transition cursor-pointer flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-sm text-xs font-heading font-semibold text-on-accent bg-accent hover:bg-accent-hover transition-colors cursor-pointer flex items-center gap-1.5"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Player Row</span>
@@ -419,9 +437,9 @@ export default function AdminResultsTab({ tournaments, onTournamentUpdated }: Pr
             </div>
 
             {/* Standings Table */}
-            <div className="overflow-x-auto rounded-2xl border border-white/10">
-              <table className="w-full min-w-[700px] text-xs text-left text-[#F5F5F5]">
-                <thead className="bg-[#080B0F] text-[#A0A6B0] text-[10px] uppercase tracking-wider border-b border-white/10">
+            <div className="overflow-x-auto rounded-sm border border-border">
+              <table className="w-full min-w-[700px] text-xs text-left text-fg">
+                <thead className="bg-surface-elevated text-fg-muted font-mono text-[10px] uppercase tracking-wider border-b border-border">
                   <tr>
                     <th className="py-2.5 px-3 w-16">Rank</th>
                     <th className="py-2.5 px-3">Player Full Name</th>
@@ -432,17 +450,17 @@ export default function AdminResultsTab({ tournaments, onTournamentUpdated }: Pr
                     <th className="py-2.5 px-3 w-12 text-center">Del</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-border">
                   {standings.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="py-8 text-center text-[#A0A6B0]">
-                        No standings added yet. Click "Add Player Row" or "Auto-fill from Registration Roster".
+                      <td colSpan={7} className="py-8 text-center text-fg-muted">
+                        No standings added yet. Click &quot;Add Player Row&quot; or &quot;Auto-fill from Registration Roster&quot;.
                       </td>
                     </tr>
                   ) : (
                     standings.map((row, idx) => (
-                      <tr key={idx} className="hover:bg-white/[0.02]">
-                        <td className="py-2 px-3 font-mono font-bold text-[#D4AF7C]">
+                      <tr key={idx} className="hover:bg-surface-elevated/60">
+                        <td className="py-2 px-3 font-mono font-bold text-accent tabular-nums">
                           #{row.rank}
                         </td>
                         <td className="py-2 px-3">
@@ -451,7 +469,7 @@ export default function AdminResultsTab({ tournaments, onTournamentUpdated }: Pr
                             value={row.name}
                             onChange={(e) => handleUpdateStanding(idx, 'name', e.target.value)}
                             placeholder="Player Name"
-                            className="w-full px-2 py-1 rounded bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5]"
+                            className="w-full px-2 py-1 rounded-xs bg-surface-elevated border border-border text-xs text-fg focus:border-accent"
                           />
                         </td>
                         <td className="py-2 px-3">
@@ -460,7 +478,7 @@ export default function AdminResultsTab({ tournaments, onTournamentUpdated }: Pr
                             value={row.idNumber}
                             onChange={(e) => handleUpdateStanding(idx, 'idNumber', e.target.value)}
                             placeholder="22101104012"
-                            className="w-full px-2 py-1 rounded bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5] font-mono"
+                            className="w-full px-2 py-1 rounded-xs bg-surface-elevated border border-border text-xs text-fg font-mono focus:border-accent"
                           />
                         </td>
                         <td className="py-2 px-3">
@@ -469,7 +487,7 @@ export default function AdminResultsTab({ tournaments, onTournamentUpdated }: Pr
                             value={row.dept}
                             onChange={(e) => handleUpdateStanding(idx, 'dept', e.target.value)}
                             placeholder="CSE"
-                            className="w-full px-2 py-1 rounded bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5]"
+                            className="w-full px-2 py-1 rounded-xs bg-surface-elevated border border-border text-xs text-fg focus:border-accent"
                           />
                         </td>
                         <td className="py-2 px-3">
@@ -478,7 +496,7 @@ export default function AdminResultsTab({ tournaments, onTournamentUpdated }: Pr
                             value={row.score}
                             onChange={(e) => handleUpdateStanding(idx, 'score', e.target.value)}
                             placeholder="6.0 / 7.0"
-                            className="w-full px-2 py-1 rounded bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5]"
+                            className="w-full px-2 py-1 rounded-xs bg-surface-elevated border border-border text-xs text-fg font-mono focus:border-accent"
                           />
                         </td>
                         <td className="py-2 px-3">
@@ -487,14 +505,15 @@ export default function AdminResultsTab({ tournaments, onTournamentUpdated }: Pr
                             value={row.tieBreak}
                             onChange={(e) => handleUpdateStanding(idx, 'tieBreak', e.target.value)}
                             placeholder="28.5"
-                            className="w-full px-2 py-1 rounded bg-[#080B0F] border border-white/10 text-xs text-[#F5F5F5]"
+                            className="w-full px-2 py-1 rounded-xs bg-surface-elevated border border-border text-xs text-fg font-mono focus:border-accent"
                           />
                         </td>
                         <td className="py-2 px-3 text-center">
                           <button
                             type="button"
                             onClick={() => handleRemoveStandingRow(idx)}
-                            className="p-1 text-[#A0A6B0] hover:text-red-400 cursor-pointer"
+                            aria-label={`Remove standing row ${row.rank}`}
+                            className="p-1 text-fg-muted hover:text-danger cursor-pointer"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -512,7 +531,7 @@ export default function AdminResultsTab({ tournaments, onTournamentUpdated }: Pr
             <button
               type="submit"
               disabled={saving}
-              className="px-6 py-3 rounded-2xl text-xs font-bold text-[#0B0F14] bg-[#D4AF7C] hover:bg-[#E6C98A] transition cursor-pointer shadow-xl shadow-[#D4AF7C]/20 flex items-center gap-2 disabled:opacity-50"
+              className="px-6 py-3 rounded-sm text-xs font-heading font-semibold text-on-accent bg-accent hover:bg-accent-hover transition-colors cursor-pointer flex items-center gap-2 disabled:opacity-50"
             >
               <Save className="w-4 h-4" />
               <span>{saving ? 'Publishing Standings...' : 'Save & Publish Standings to Live Site'}</span>
@@ -520,7 +539,6 @@ export default function AdminResultsTab({ tournaments, onTournamentUpdated }: Pr
           </div>
         </form>
       )}
-
     </div>
   );
 }

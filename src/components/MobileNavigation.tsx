@@ -37,10 +37,11 @@ export const MobileNavigation: React.FC = () => {
   return (
     <nav
       aria-label="Mobile Navigation Dock"
-      className="fixed bottom-0 left-0 right-0 z-50 md:hidden backdrop-blur-2xl bg-[#070A0E]/92 border-t border-white/10 shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.8)] pb-safe transition-all"
+      style={{ boxShadow: 'var(--shadow-sm)' }}
+      className="fixed bottom-0 left-0 right-0 z-50 md:hidden backdrop-blur-md bg-surface/95 border-t border-border pb-safe transition-colors"
     >
-      <div className="max-w-md mx-auto px-3 py-2 flex items-center justify-around">
-        {NAV_ITEMS.map(item => {
+      <div className="max-w-md mx-auto px-3 py-1.5 flex items-center justify-around">
+        {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           const active = isItemActive(item);
 
@@ -49,26 +50,22 @@ export const MobileNavigation: React.FC = () => {
               key={item.id}
               href={item.href}
               aria-current={active ? 'page' : undefined}
-              className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all duration-200 cursor-pointer active:scale-90 min-w-[56px] min-h-[46px] relative ${
+              className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-sm transition-colors duration-150 cursor-pointer min-w-[56px] min-h-[46px] relative ${
                 active
-                  ? 'text-[#D4AF7C]'
-                  : 'text-zinc-400 hover:text-zinc-200'
+                  ? 'text-accent'
+                  : 'text-fg-muted hover:text-fg'
               }`}
             >
-              {/* Active glow pill indicator */}
+              {/* Swiss Hairline Top Rule Indicator */}
               {active && (
-                <div className="absolute -top-1 w-8 h-1 rounded-full bg-[#D4AF7C] shadow-[0_0_10px_#D4AF7C]" />
+                <div className="absolute -top-1.5 w-8 h-0.5 bg-accent" aria-hidden="true" />
               )}
 
-              <div
-                className={`p-1 rounded-lg transition-transform ${
-                  active ? 'scale-110' : ''
-                }`}
-              >
-                <Icon className={`w-5 h-5 ${active ? 'stroke-[2.4]' : 'stroke-[1.8]'}`} />
+              <div className="p-1">
+                <Icon className={`w-5 h-5 ${active ? 'stroke-[2.25]' : 'stroke-[1.75]'}`} aria-hidden="true" />
               </div>
 
-              <span className={`text-[10px] tracking-tight font-medium mt-0.5 ${active ? 'font-bold' : ''}`}>
+              <span className={`text-[10px] tracking-tight font-ui mt-0.5 ${active ? 'font-bold' : 'font-medium'}`}>
                 {item.label}
               </span>
             </Link>
